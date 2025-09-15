@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Component library base styles */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+}
+
+@layer components {
+  .schedule-calendar {
+    @apply font-sans text-gray-900;
+  }
+  
+  .schedule-calendar * {
+    @apply box-border;
+  }
+}

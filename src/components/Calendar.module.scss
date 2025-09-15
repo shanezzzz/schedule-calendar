@@ -1,0 +1,7 @@
+.calendar {
+  @apply w-full max-w-sm mx-auto bg-white rounded-lg shadow-lg border border-gray-200;
+}
+
+.calendar:focus-within {
+  @apply ring-2 ring-primary-500 ring-opacity-50;
+}
