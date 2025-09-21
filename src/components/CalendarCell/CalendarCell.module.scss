@@ -1,0 +1,48 @@
+.calendarCell {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  border-right: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #fafafa;
+  min-height: 80px;
+  width: 100%;
+  min-width: 180px;
+  padding: 8px;
+  box-sizing: border-box;
+  flex-direction: column;
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  height: 100%;
+}
+
+.eventItem {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 6px;
+  padding: 8px 12px;
+  max-height: 50%;
+  box-sizing: border-box;
+  cursor: pointer;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease-in-out;
+  opacity: 0;
+  transform: translateY(-4px);
+  
+  &:hover {
+    opacity: 1;
+    transform: translateY(0);
+    background-color: #f1f5f9;
+    border-color: #94a3b8;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.timeLabel {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.4;
+}
+

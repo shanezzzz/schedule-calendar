@@ -1,0 +1,20 @@
+.calendarGrid {
+  position: relative;
+  height: fit-content;
+  background-color: #fafafa;
+  overflow: visible;
+}
+
+.gridContainer {
+  display: grid;
+  position: relative;
+  z-index: 1;
+  height: fit-content;
+  min-width: fit-content;
+  align-items: start;
+}
+
+.gridContainer > * {
+  min-width: 180px;
+  min-height: 80px;
+}
