@@ -87,5 +87,8 @@
   "bugs": {
     "url": "https://github.com/your-username/schedule-calendar/issues"
   },
-  "homepage": "https://github.com/your-username/schedule-calendar#readme"
+  "homepage": "https://github.com/your-username/schedule-calendar#readme",
+  "dependencies": {
+    "dayjs": "^1.11.18"
+  }
 }
