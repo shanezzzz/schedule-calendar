@@ -1,0 +1,19 @@
+.employeeHeader {
+  display: grid;
+  position: relative;
+  background-color: #fafafa;
+  border-bottom: 1px solid #e5e7eb;
+  height: 40px;
+  width: 100%;
+}
+
+.employeeHeaderItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  color: #6b7280;
+  border-right: 1px solid #e5e7eb;
+  min-width: 180px;
+  box-sizing: border-box;
+} 

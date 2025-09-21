@@ -1,0 +1,36 @@
+.timeColumn {
+  position: relative;
+  background: white;
+  z-index: 20;
+  border-right: 1px solid #e5e7eb;
+  width: 60px;
+  overflow: visible;
+  height: fit-content;
+}
+
+.timeSlot {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding-right: 8px;
+  font-size: 12px;
+  color: #6b7280;
+  border-bottom: 1px solid #f3f4f6;
+  box-sizing: border-box;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .timeColumn {
+    min-width: 50px;
+  }
+  
+  .timeSlot {
+    font-size: 11px;
+    padding-right: 6px;
+  }
+}
