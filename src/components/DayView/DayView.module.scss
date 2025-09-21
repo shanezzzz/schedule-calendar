@@ -1,0 +1,46 @@
+.dayView {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  background-color: #fafafa;
+}
+
+.dayViewContent {
+  display: grid;
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  grid-template-areas: 
+    "time-column employee-header"
+    "time-column calendar-grid";
+  grid-template-columns: 60px 1fr;
+  grid-template-rows: 40px 1fr;
+}
+
+.timeColumnArea {
+  grid-area: time-column;
+  position: sticky;
+  left: 0;
+  z-index: 20;
+}
+
+.employeeHeaderArea {
+  grid-area: employee-header;
+  position: sticky;
+  top: 0;
+  z-index: 15;
+}
+
+.calendarContainer {
+  grid-area: calendar-grid;
+  overflow: visible;
+  position: relative;
+  max-height: fit-content;
+}
+
+// 响应式设计
+// @media (max-width: 768px) {
+//   .dayView {
+//     height: 100vh;
+//   }
+// }
