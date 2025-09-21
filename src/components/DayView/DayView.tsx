@@ -9,6 +9,7 @@ interface DayViewProps {
   endHour?: number;
   stepMinutes?: number;
   cellHeight?: number;
+  use24HourFormat?: boolean; // true: 24小时制, false: 12小时制(AM/PM)
   employeeIds?: string[];
   events?: any[];
 }
@@ -18,6 +19,7 @@ const DayView: React.FC<DayViewProps> = ({
   endHour = 23,
   stepMinutes = 30,
   cellHeight = 80,
+  use24HourFormat = false, // 默认使用 12小时制 (AM/PM)
   employeeIds = ['1', '2', '3', '4', '5', '6', '7'],
   events = []
 }) => {
@@ -46,6 +48,7 @@ const DayView: React.FC<DayViewProps> = ({
             endHour={endHour}
             stepMinutes={stepMinutes}
             cellHeight={cellHeight}
+            use24HourFormat={use24HourFormat}
           />
         </div>
         <div className={styles.employeeHeaderArea}>
@@ -57,6 +60,8 @@ const DayView: React.FC<DayViewProps> = ({
             employeeIds={employeeIds}
             events={events}
             cellHeight={cellHeight}
+            stepMinutes={stepMinutes}
+            use24HourFormat={use24HourFormat}
           />
         </div>
       </div>
