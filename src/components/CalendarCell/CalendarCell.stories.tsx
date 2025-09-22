@@ -3,38 +3,26 @@ import CalendarCell from './CalendarCell';
 
 export const Default: Story = () => <CalendarCell />;
 
-export const WithCustomEvents: Story = () => (
+export const WithTimeSlot: Story = () => (
   <CalendarCell 
-    events={[
-      { id: '1', time: '9:00 AM', title: 'Morning Meeting' },
-      { id: '2', time: '2:00 PM', title: 'Project Review' },
-      { id: '3', time: '4:30 PM', title: 'Team Standup' }
-    ]}
-    onEventClick={(eventId) => console.log('Clicked event:', eventId)}
+    timeSlot="09:00"
+    stepMinutes={30}
+    use24HourFormat={false}
   />
 );
 
-export const EmptyCell: Story = () => (
-  <CalendarCell events={[]} />
-);
-
-export const SingleEvent: Story = () => (
+export const TwentyFourHourFormat: Story = () => (
   <CalendarCell 
-    events={[
-      { id: '1', time: '10:00 AM', title: 'Important Call' }
-    ]}
+    timeSlot="14:30"
+    stepMinutes={15}
+    use24HourFormat={true}
   />
 );
 
-export const ManyEvents: Story = () => (
+export const CustomStepMinutes: Story = () => (
   <CalendarCell 
-    events={[
-      { id: '1', time: '8:00 AM', title: 'Breakfast Meeting' },
-      { id: '2', time: '9:30 AM', title: 'Code Review' },
-      { id: '3', time: '11:00 AM', title: 'Client Call' },
-      { id: '4', time: '1:00 PM', title: 'Lunch' },
-      { id: '5', time: '3:00 PM', title: 'Planning Session' },
-      { id: '6', time: '5:00 PM', title: 'Wrap-up' }
-    ]}
+    timeSlot="10:00"
+    stepMinutes={15}
+    use24HourFormat={false}
   />
 );

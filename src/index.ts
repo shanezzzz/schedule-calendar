@@ -4,6 +4,7 @@ export { default as CalendarEvent } from './components/CalendarEvent/CalendarEve
 export { default as TimeColumn } from './components/TimeColumn/TimeColumn'
 export { default as EmployeeHeader } from './components/EmployeeHeader/EmployeeHeader'
 export { default as DayView } from './components/DayView/DayView'
+export { default as CurrentTimeLine } from './components/CurrentTimeLine/CurrentTimeLine'
 export type { CalendarEventData } from './components/CalendarEvent/CalendarEvent'
 
 // Auto-import styles - out of the box

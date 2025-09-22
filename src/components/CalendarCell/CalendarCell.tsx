@@ -53,7 +53,7 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
       {timeLabels.map((timeLabel, index) => (
         <div 
           key={`time-${index}`} 
-          className={styles.eventItem}
+          className={styles.itemLabel}
         >
           <div className={styles.timeLabel}>
             {timeLabel}

@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import TimeColumn from '../TimeColumn/TimeColumn';
 import CalendarGrid from '../CalendarGrid/CalendarGrid';
+import CurrentTimeLine from '../CurrentTimeLine/CurrentTimeLine';
 import styles from './DayView.module.scss';
 import EmployeeHeader from '../EmployeeHeader/EmployeeHeader';
 
@@ -15,6 +16,7 @@ interface DayViewProps {
   displayIntervalMinutes?: number; // 时间标签显示间隔，默认30分钟，独立于stepMinutes
   employeeIds?: string[];
   events?: any[];
+  showCurrentTimeLine?: boolean; // 是否显示当前时间线
 }
 
 const DayView: React.FC<DayViewProps> = ({
@@ -25,7 +27,8 @@ const DayView: React.FC<DayViewProps> = ({
   use24HourFormat = false, // 默认使用 12小时制 (AM/PM)
   displayIntervalMinutes = 30, // 默认30分钟间隔显示时间标签
   employeeIds = ['1', '2', '3', '4', '5', '6', '7'],
-  events = []
+  events = [],
+  showCurrentTimeLine = true // 默认显示当前时间线
 }) => {
   // 生成时间槽，确保与 TimeColumn 一致
   const timeSlots = useMemo(() => {
@@ -69,6 +72,14 @@ const DayView: React.FC<DayViewProps> = ({
             stepMinutes={stepMinutes}
             use24HourFormat={use24HourFormat}
           />
+          {showCurrentTimeLine && (
+            <CurrentTimeLine
+              startHour={startHour}
+              endHour={endHour}
+              cellHeight={slotsHeight}
+              displayIntervalMinutes={displayIntervalMinutes}
+            />
+          )}
         </div>
       </div>
     </div>

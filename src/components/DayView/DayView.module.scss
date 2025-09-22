@@ -21,7 +21,8 @@
   grid-area: time-column;
   position: sticky;
   left: 0;
-  z-index: 20;
+  z-index: 50;
+  overflow: visible; // 确保时间线可以显示
 }
 
 .employeeHeaderArea {

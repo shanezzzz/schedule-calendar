@@ -1,0 +1,12 @@
+.currentTimeLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #ea4335;
+  z-index: 10;
+  pointer-events: none;
+  
+  // 添加轻微的阴影效果，使其更突出
+  box-shadow: 0 1px 3px rgba(234, 67, 53, 0.3);
+}
