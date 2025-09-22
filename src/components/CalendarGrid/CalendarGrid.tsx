@@ -22,18 +22,8 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   stepMinutes = 30,
   use24HourFormat = false
 }) => {
-  // 默认时间槽 (每小时一个槽)
-  const defaultTimeSlots = [
-    '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', 
-    '14:00', '15:00', '16:00', '17:00', '18:00', '19:00'
-  ];
-
-  // 默认员工ID
-  const defaultEmployeeIds = ['1', '2', '3', '4', '5', '6', '7'];
-
-  const displayTimeSlots = timeSlots.length > 0 ? timeSlots : defaultTimeSlots;
-  const displayEmployeeIds = employeeIds.length > 0 ? employeeIds : defaultEmployeeIds;
-
+  const displayTimeSlots = timeSlots.length > 0 ? timeSlots : [];
+  const displayEmployeeIds = employeeIds.length > 0 ? employeeIds : [];
   return (
     <div className={styles.calendarGrid}>
       <div 

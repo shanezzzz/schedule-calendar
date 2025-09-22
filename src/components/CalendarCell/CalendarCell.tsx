@@ -5,35 +5,32 @@ interface CalendarCellProps {
   timeSlot?: string; // 时间槽，如 "07:00"
   stepMinutes?: number; // 时间间隔，如 30
   use24HourFormat?: boolean; // true: 24小时制, false: 12小时制(AM/PM)
-  events?: Array<{
-    id: string;
-    time: string;
-    title?: string;
-  }>;
-  onEventClick?: (eventId: string) => void;
 }
+
+const DEFAULT_TIME_LABEL_INTERVAL = 30; // 默认时间标签间隔（分钟）
 
 const CalendarCell: React.FC<CalendarCellProps> = ({ 
   timeSlot,
   stepMinutes = 30,
   use24HourFormat = false,
-  events = [], 
-  onEventClick 
 }) => {
   // 根据时间槽和间隔生成显示的时间
   const generateTimeLabels = () => {
     if (!timeSlot) return [];
+    
+    // 计算需要显示的时间标签数量
+    // 公式：DEFAULT_TIME_LABEL_INTERVAL / stepMinutes
+    const labelCount = Math.max(1, Math.round(DEFAULT_TIME_LABEL_INTERVAL / stepMinutes));
     
     const times: string[] = [];
     const [hours, minutes] = timeSlot.split(':').map(Number);
     const startTime = new Date();
     startTime.setHours(hours, minutes, 0, 0);
     
-    // 根据 stepMinutes 生成该时间段内的所有时间点
+    // 根据计算出的数量生成时间标签
     let currentTime = new Date(startTime);
-    const nextTimeSlot = new Date(startTime.getTime() + 60 * 60 * 1000); // 下一个小时
     
-    while (currentTime < nextTimeSlot) {
+    for (let i = 0; i < labelCount; i++) {
       const timeString = currentTime.toLocaleTimeString('en-US', {
         hour: 'numeric',
         minute: '2-digit',
@@ -47,9 +44,9 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
   };
 
   const timeLabels = generateTimeLabels();
-  
-  const displayEvents = events.length > 0 ? events : [];
 
+  console.log('timeLabels', timeLabels);
+  
   return (
     <div className={styles.calendarCell}>
       {/* 显示时间标签 */}
@@ -60,19 +57,6 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
         >
           <div className={styles.timeLabel}>
             {timeLabel}
-          </div>
-        </div>
-      ))}
-      
-      {/* 显示事件（如果有的话） */}
-      {displayEvents.map((event, index) => (
-        <div 
-          key={event.id || index} 
-          className={styles.eventItem}
-          onClick={() => onEventClick?.(event.id)}
-        >
-          <div className={styles.timeLabel}>
-            {event.time}
           </div>
         </div>
       ))}
