@@ -3,6 +3,6 @@ import DayView from './DayView';
 
 export const DayViews: Story = () => (
   <div style={{ height: '800px', width: '1000px', padding: '10px' }}>
-    <DayView use24HourFormat stepMinutes={30} />
+    <DayView stepMinutes={15} />
   </div>
 );
