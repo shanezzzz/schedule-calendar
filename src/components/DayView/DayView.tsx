@@ -4,19 +4,18 @@ import CalendarGrid from '../CalendarGrid/CalendarGrid';
 import CurrentTimeLine from '../CurrentTimeLine/CurrentTimeLine';
 import styles from './DayView.module.scss';
 import EmployeeHeader from '../EmployeeHeader/EmployeeHeader';
-
-const DEFAULT_TIME_LABEL_INTERVAL = 30;
+import { generateTimeSlots, calculateSlotHeight } from '../../utils/util';
 
 interface DayViewProps {
   startHour?: number;
   endHour?: number;
   stepMinutes?: number;
   cellHeight?: number;
-  use24HourFormat?: boolean; // true: 24小时制, false: 12小时制(AM/PM)
-  displayIntervalMinutes?: number; // 时间标签显示间隔，默认30分钟，独立于stepMinutes
+  use24HourFormat?: boolean; // true: 24-hour format, false: 12-hour format (AM/PM)
+  displayIntervalMinutes?: number; // Time label display interval, default 30 minutes, independent of stepMinutes
   employeeIds?: string[];
   events?: any[];
-  showCurrentTimeLine?: boolean; // 是否显示当前时间线
+  showCurrentTimeLine?: boolean; // Whether to show current time line
 }
 
 const DayView: React.FC<DayViewProps> = ({
@@ -24,31 +23,19 @@ const DayView: React.FC<DayViewProps> = ({
   endHour = 23,
   stepMinutes = 30,
   cellHeight = 40,
-  use24HourFormat = false, // 默认使用 12小时制 (AM/PM)
-  displayIntervalMinutes = 30, // 默认30分钟间隔显示时间标签
+  use24HourFormat = false, // Default to 12-hour format (AM/PM)
+  displayIntervalMinutes = 30, // Default 30-minute interval for time label display
   employeeIds = ['1', '2', '3', '4', '5', '6', '7'],
   events = [],
-  showCurrentTimeLine = true // 默认显示当前时间线
+  showCurrentTimeLine = true // Default to show current time line
 }) => {
-  // 生成时间槽，确保与 TimeColumn 一致
+  // Generate time slots, ensure consistency with TimeColumn
   const timeSlots = useMemo(() => {
-    const times: string[] = [];
-    const start = new Date();
-    start.setHours(startHour, 0, 0, 0);
-    const end = new Date();
-    end.setHours(endHour, 0, 0, 0);
-
-    let current = new Date(start);
-    while (current <= end) {
-      times.push(current.toTimeString().slice(0, 5));
-      current = new Date(current.getTime() + displayIntervalMinutes * 60000);
-    }
-    return times;
-  }, [startHour, endHour, displayIntervalMinutes]);
+    return generateTimeSlots(startHour, endHour, displayIntervalMinutes, use24HourFormat);
+  }, [startHour, endHour, displayIntervalMinutes, use24HourFormat]);
 
   const slotsHeight = useMemo(() => {
-    const height = DEFAULT_TIME_LABEL_INTERVAL / stepMinutes * 40;
-    return height <= 40 ? 52 : height;
+    return calculateSlotHeight(stepMinutes, cellHeight);
   }, [stepMinutes, cellHeight]);
 
   return (
