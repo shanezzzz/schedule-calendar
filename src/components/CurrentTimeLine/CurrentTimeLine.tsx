@@ -47,18 +47,13 @@ const CurrentTimeLine: React.FC<CurrentTimeLineProps> = ({
     // 计算从开始时间到当前时间的总分钟数
     const totalMinutesFromStart = (currentHour - startHour) * 60 + currentMinute;
     
-    // 计算在时间槽中的位置
+    // 计算精确的像素位置
     // 每个时间槽的高度 = cellHeight
     // 每个时间槽代表 displayIntervalMinutes 分钟
-    const positionInSlot = totalMinutesFromStart % displayIntervalMinutes;
-    const slotIndex = Math.floor(totalMinutesFromStart / displayIntervalMinutes);
-    
-    // 计算精确的像素位置
-    const slotHeight = cellHeight;
-    const positionInPixels = slotIndex * slotHeight + (positionInSlot / displayIntervalMinutes) * slotHeight;
+    const positionInPixels = (totalMinutesFromStart / displayIntervalMinutes) * cellHeight;
 
     return { 
-      top: positionInPixels + 40, // +40 是因为有 employee header 的高度
+      top: positionInPixels, // CalendarGrid 容器本身没有额外的偏移
       isInRange: true 
     };
   };
