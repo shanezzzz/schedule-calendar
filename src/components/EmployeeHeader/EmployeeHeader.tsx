@@ -1,27 +1,50 @@
+import React from 'react';
 import styles from './EmployeeHeader.module.scss';
 
-interface EmployeeHeaderProps {
-  employees: any[];
+export interface Employee {
+  id: string;
+  name: string;
+  [key: string]: any;
 }
 
-const EmployeeHeader: React.FC<EmployeeHeaderProps> = ({ employees }) => {
+export interface EmployeeHeaderProps {
+  employees: Employee[];
+  renderEmployee?: (employee: Employee, index: number) => React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+  minColumnWidth?: number;
+}
+
+const EmployeeHeader: React.FC<EmployeeHeaderProps> = ({ 
+  employees, 
+  renderEmployee,
+  className = '',
+  style = {},
+  minColumnWidth = 210
+}) => {
+  const defaultRenderEmployee = (employee: Employee) => (
+    <div className={styles.employeeHeaderItem}>
+      {employee.name}
+    </div>
+  );
+
+  const renderEmployeeContent = renderEmployee || defaultRenderEmployee;
+
   return (
     <div
-      className={styles.employeeHeader}
+      className={`${styles.employeeHeader} ${className}`}
       style={{
-        gridTemplateColumns: `repeat(${employees.length}, minmax(210px, 1fr))`,
+        gridTemplateColumns: `repeat(${employees.length}, minmax(${minColumnWidth}px, 1fr))`,
+        ...style,
       }}
     >
-      {employees.map((emp) => (
-        <div
-          key={emp.id}
-          className={styles.employeeHeaderItem}
-        >
-          {emp.name}
-        </div>
+      {employees.map((employee, index) => (
+        <React.Fragment key={employee.id}>
+          {renderEmployeeContent(employee, index)}
+        </React.Fragment>
       ))}
     </div>
-  )
-}
+  );
+};
 
-export default EmployeeHeader
+export default EmployeeHeader;

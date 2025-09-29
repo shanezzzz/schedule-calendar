@@ -1,9 +1,9 @@
-import React, { useMemo, useCallback } from 'react'
+import React, { useMemo, useCallback, useRef, useEffect, useState } from 'react'
 import TimeColumn from '../TimeColumn/TimeColumn'
 import CalendarGrid from '../CalendarGrid/CalendarGrid'
 import CurrentTimeLine from '../CurrentTimeLine/CurrentTimeLine'
 import styles from './DayView.module.scss'
-import EmployeeHeader from '../EmployeeHeader/EmployeeHeader'
+import EmployeeHeader, { Employee } from '../EmployeeHeader/EmployeeHeader'
 import { generateTimeSlots, calculateSlotHeight } from '../../utils/util'
 import { CalendarEventData } from '../CalendarEvent/CalendarEvent'
 import CalendarHeader from '../CalendarHeader/CalendarHeader'
@@ -40,6 +40,12 @@ interface DayViewProps {
     event: CalendarEventData
     isDragging: boolean
   }) => React.ReactNode
+  renderEmployee?: (employee: Employee, index: number) => React.ReactNode
+  employeeHeaderProps?: {
+    className?: string
+    style?: React.CSSProperties
+    minColumnWidth?: number
+  }
 }
 
 const DayView: React.FC<DayViewProps> = ({
@@ -60,7 +66,36 @@ const DayView: React.FC<DayViewProps> = ({
   onEventDragEnd,
   onEventDrop,
   renderEvent,
+  renderEmployee,
+  employeeHeaderProps,
 }) => {
+  // 用于动态获取EmployeeHeader高度的状态和引用
+  const [headerHeight, setHeaderHeight] = useState<number>(40) // 默认40px
+  const employeeHeaderRef = useRef<HTMLDivElement>(null)
+
+  // 监听EmployeeHeader高度变化
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      if (employeeHeaderRef.current) {
+        const height = employeeHeaderRef.current.offsetHeight
+        setHeaderHeight(height)
+      }
+    }
+
+    // 初始设置
+    updateHeaderHeight()
+
+    // 使用ResizeObserver监听高度变化
+    const resizeObserver = new ResizeObserver(updateHeaderHeight)
+    if (employeeHeaderRef.current) {
+      resizeObserver.observe(employeeHeaderRef.current)
+    }
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [renderEmployee]) // 当renderEmployee变化时重新监听
+
   // Generate time slots, ensure consistency with TimeColumn
   const timeSlots = useMemo(() => {
     return generateTimeSlots(
@@ -91,11 +126,17 @@ const DayView: React.FC<DayViewProps> = ({
       />
       <div className={styles.dayViewContent}>
         <div className={styles.timeColumnArea}>
-          <TimeColumn cellHeight={slotsHeight} timeSlots={timeSlots} />
+          <TimeColumn 
+            cellHeight={slotsHeight} 
+            timeSlots={timeSlots} 
+            headerHeight={headerHeight}
+          />
         </div>
-        <div className={styles.employeeHeaderArea}>
+        <div className={styles.employeeHeaderArea} ref={employeeHeaderRef}>
           <EmployeeHeader
             employees={employeeIds.map(id => ({ id, name: `${id}` }))}
+            renderEmployee={renderEmployee}
+            {...employeeHeaderProps}
           />
         </div>
         <div className={styles.calendarContainer}>
