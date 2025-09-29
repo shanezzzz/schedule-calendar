@@ -1,8 +1,18 @@
 .calendarGrid {
   position: relative;
   height: fit-content;
-  background-color: #fafafa;
-  overflow: visible;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  overflow: hidden;
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  
+  /* Hidden scrollbar for grid container */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .gridContainer {
@@ -17,6 +27,7 @@
 .gridContainer > * {
   min-width: 180px;
   min-height: 40px;
+  transition: all 0.2s ease-in-out;
 }
 
 .eventLayer {

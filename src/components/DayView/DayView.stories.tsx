@@ -43,7 +43,7 @@ const initialEvents: CalendarEventData[] = [
 export const DayViews: Story = () => {
   const [events, setEvents] = useState<CalendarEventData[]>(initialEvents)
   const [currentDate, setCurrentDate] = useState<Date>(new Date())
-  const [viewMode, setViewMode] = useState<'day' | 'week' | 'month'>('day')
+  // const [viewMode] = useState<'day' | 'week' | 'month'>('day')
 
   console.log('events', events)
   console.log('currentDate', currentDate)

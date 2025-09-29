@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useRef, useEffect } from 'react'
 import dayjs from 'dayjs'
 import styles from './CalendarHeader.module.scss'
 
@@ -17,10 +17,32 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
 }) => {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
   const [selectedDate, setSelectedDate] = useState(currentDate)
+  const datePickerRef = useRef<HTMLDivElement>(null)
 
   const formatDate = useCallback((date: Date) => {
     return dayjs(date).format('dddd, MMM D, YYYY')
   }, [])
+
+  // 处理点击外部关闭日期选择器
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isDatePickerOpen &&
+        datePickerRef.current &&
+        !datePickerRef.current.contains(event.target as Node)
+      ) {
+        setIsDatePickerOpen(false)
+      }
+    }
+
+    if (isDatePickerOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isDatePickerOpen])
 
   const handleDateClick = useCallback(() => {
     setIsDatePickerOpen(!isDatePickerOpen)
@@ -122,7 +144,7 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
         </button>
 
         {isDatePickerOpen && (
-          <div className={styles.datePicker}>
+          <div ref={datePickerRef} className={styles.datePicker}>
             <div className={styles.datePickerHeader}>
               <button
                 className={styles.navButton}
