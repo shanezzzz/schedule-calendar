@@ -18,3 +18,16 @@
   min-width: 180px;
   min-height: 40px;
 }
+
+.eventLayer {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.eventLayer > * {
+  pointer-events: auto;
+  min-width: 0;
+}

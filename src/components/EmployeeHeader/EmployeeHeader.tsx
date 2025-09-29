@@ -9,7 +9,7 @@ const EmployeeHeader: React.FC<EmployeeHeaderProps> = ({ employees }) => {
     <div
       className={styles.employeeHeader}
       style={{
-        gridTemplateColumns: `repeat(${employees.length}, minmax(180px, 1fr))`,
+        gridTemplateColumns: `repeat(${employees.length}, minmax(210px, 1fr))`,
       }}
     >
       {employees.map((emp) => (

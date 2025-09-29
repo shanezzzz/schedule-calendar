@@ -5,6 +5,7 @@
 
 // ======================== Constants ========================
 export const DEFAULT_TIME_LABEL_INTERVAL = 30; // Default time label interval (minutes)
+export const MINUTES_PER_DAY = 24 * 60;
 const DEFAULT_HEIGHT = 52; // Default minimum height
 const TIME_REGEX_24H = /^(\d{1,2}):(\d{2})$/;
 const TIME_REGEX_12H = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i;
@@ -223,6 +224,52 @@ const timeFormattingService = new TimeFormattingService();
  */
 export function parseTimeSlot(timeSlot: string): ParseResult {
   return timeParsingService.parse(timeSlot);
+}
+
+/**
+ * Convert time slot string to absolute minutes from 00:00
+ */
+export function slotToMinutes(timeSlot: string): number | null {
+  const result = parseTimeSlot(timeSlot);
+  if (!result.success || !result.data) {
+    return null;
+  }
+
+  return result.data.hours * 60 + result.data.minutes;
+}
+
+/**
+ * Add minutes to a given time slot
+ */
+export function addMinutesToSlot(timeSlot: string, minutes: number): string {
+  const baseMinutes = slotToMinutes(timeSlot);
+  if (baseMinutes === null) {
+    return timeSlot;
+  }
+
+  const normalized = (baseMinutes + minutes + MINUTES_PER_DAY) % MINUTES_PER_DAY;
+  const hours = Math.floor(normalized / 60);
+  const mins = normalized % 60;
+  return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+}
+
+/**
+ * Calculate the difference (in minutes) between two time slots
+ */
+export function differenceInMinutes(startSlot: string, endSlot: string): number {
+  const start = slotToMinutes(startSlot);
+  const end = slotToMinutes(endSlot);
+
+  if (start === null || end === null) {
+    return 0;
+  }
+
+  let diff = end - start;
+  if (diff <= 0) {
+    diff += MINUTES_PER_DAY;
+  }
+
+  return diff;
 }
 
 /**

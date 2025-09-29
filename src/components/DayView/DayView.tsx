@@ -5,6 +5,7 @@ import CurrentTimeLine from '../CurrentTimeLine/CurrentTimeLine';
 import styles from './DayView.module.scss';
 import EmployeeHeader from '../EmployeeHeader/EmployeeHeader';
 import { generateTimeSlots, calculateSlotHeight } from '../../utils/util';
+import { CalendarEventData } from '../CalendarEvent/CalendarEvent';
 
 interface DayViewProps {
   startHour?: number;
@@ -14,8 +15,16 @@ interface DayViewProps {
   use24HourFormat?: boolean; // true: 24-hour format, false: 12-hour format (AM/PM)
   displayIntervalMinutes?: number; // Time label display interval, default 30 minutes, independent of stepMinutes
   employeeIds?: string[];
-  events?: any[];
+  events?: CalendarEventData[];
   showCurrentTimeLine?: boolean; // Whether to show current time line
+  onEventClick?: (event: CalendarEventData) => void;
+  onEventDrag?: (event: CalendarEventData, deltaX: number, deltaY: number) => void;
+  onEventDragEnd?: (event: CalendarEventData, newEmployeeId: string, newStart: string) => void;
+  onEventDrop?: (
+    event: CalendarEventData,
+    next: { employeeId: string; start: string; end: string }
+  ) => void;
+  renderEvent?: (params: { event: CalendarEventData; isDragging: boolean }) => React.ReactNode;
 }
 
 const DayView: React.FC<DayViewProps> = ({
@@ -27,7 +36,12 @@ const DayView: React.FC<DayViewProps> = ({
   displayIntervalMinutes = 30, // Default 30-minute interval for time label display
   employeeIds = ['1', '2', '3', '4', '5', '6', '7'],
   events = [],
-  showCurrentTimeLine = true // Default to show current time line
+  showCurrentTimeLine = true, // Default to show current time line
+  onEventClick,
+  onEventDrag,
+  onEventDragEnd,
+  onEventDrop,
+  renderEvent
 }) => {
   // Generate time slots, ensure consistency with TimeColumn
   const timeSlots = useMemo(() => {
@@ -52,12 +66,17 @@ const DayView: React.FC<DayViewProps> = ({
         </div>
         <div className={styles.calendarContainer}>
           <CalendarGrid
+            events={events}
             timeSlots={timeSlots}
             employeeIds={employeeIds}
-            events={events}
             cellHeight={slotsHeight}
             stepMinutes={stepMinutes}
             use24HourFormat={use24HourFormat}
+            onEventClick={onEventClick}
+            onEventDrag={onEventDrag}
+            onEventDragEnd={onEventDragEnd}
+            onEventDrop={onEventDrop}
+            renderEvent={renderEvent}
           />
           {showCurrentTimeLine && (
             <CurrentTimeLine

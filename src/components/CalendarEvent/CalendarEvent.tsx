@@ -1,139 +1,258 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import styles from './CalendarEvent.module.scss';
+import { formatTime, parseTimeSlot, timeValueToDate } from '../../utils/util';
 
 export interface CalendarEventData {
   id: string;
-  title: string;
-  start: string; // 格式: "09:00"
-  end: string;   // 格式: "10:30"
+  title?: string;
+  start: string;
+  end: string;
   employeeId: string;
   color?: string;
   description?: string;
 }
 
+export interface CalendarEventDragMeta {
+  delta: { x: number; y: number };
+  pointer: { clientX: number; clientY: number };
+  bounds: DOMRect | null;
+}
+
+export interface CalendarEventRenderContext {
+  event: CalendarEventData;
+  isDragging: boolean;
+}
+
+type CalendarEventChildren =
+  | React.ReactNode
+  | ((context: CalendarEventRenderContext) => React.ReactNode);
+
 interface CalendarEventProps {
   event: CalendarEventData;
-  timeSlots?: string[]; // 时间槽数组，如 ["09:00", "09:30", "10:00", ...]
-  isDragging?: boolean;
-  onEventClick?: (event: CalendarEventData) => void;
-  onEventDragStart?: (event: CalendarEventData, mouseEvent: React.MouseEvent) => void;
-  onEventDrag?: (event: CalendarEventData, deltaX: number, deltaY: number) => void;
-  onEventDragEnd?: (event: CalendarEventData, newEmployeeId: string, newStart: string) => void;
+  style?: React.CSSProperties;
+  className?: string;
+  draggable?: boolean;
+  isActive?: boolean;
+  use24HourFormat?: boolean;
+  children?: CalendarEventChildren;
+  onClick?: (event: CalendarEventData) => void;
+  onDragStart?: (event: CalendarEventData, meta: CalendarEventDragMeta) => void;
+  onDrag?: (event: CalendarEventData, meta: CalendarEventDragMeta) => void;
+  onDragEnd?: (event: CalendarEventData, meta: CalendarEventDragMeta) => void;
+  snapToGrid?: {
+    columnWidth: number;
+    rowHeight: number;
+  };
 }
+
+const DRAG_ACTIVATION_THRESHOLD = 2;
 
 const CalendarEvent: React.FC<CalendarEventProps> = ({
   event,
-  timeSlots = [],
-  isDragging = false,
-  onEventClick,
-  onEventDragStart,
-  onEventDrag,
-  onEventDragEnd
+  style,
+  className,
+  draggable = false,
+  isActive = false,
+  use24HourFormat = false,
+  children,
+  onClick,
+  onDragStart,
+  onDrag,
+  onDragEnd,
+  snapToGrid
 }) => {
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const eventRef = useRef<HTMLDivElement>(null);
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
+  const dragDeltaRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const hasMovedRef = useRef(false);
 
-  // 计算事件在网格中的位置
-  const calculateGridPosition = useCallback(() => {
-    const startIndex = timeSlots.indexOf(event.start);
-    const endIndex = timeSlots.indexOf(event.end);
-    const employeeIndex = parseInt(event.employeeId);
-    
-    if (startIndex === -1 || endIndex === -1) {
-      return {
-        gridColumn: employeeIndex,
-        gridRowStart: 1,
-        gridRowEnd: 2
-      };
-    }
-    
-    return {
-      gridColumn: employeeIndex,
-      gridRowStart: startIndex + 1,
-      gridRowEnd: endIndex + 1
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragDelta, setDragDelta] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  const buildDragMeta = useCallback(
+    (pointer: { clientX: number; clientY: number }): CalendarEventDragMeta => ({
+      delta: dragDeltaRef.current,
+      pointer,
+      bounds: eventRef.current ? eventRef.current.getBoundingClientRect() : null
+    }),
+    []
+  );
+
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!draggable || e.button !== 0) {
+        return;
+      }
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      pointerStartRef.current = { x: e.clientX, y: e.clientY };
+      dragDeltaRef.current = { x: 0, y: 0 };
+      hasMovedRef.current = false;
+
+      setIsDragging(true);
+      setDragDelta({ x: 0, y: 0 });
+
+      eventRef.current?.setPointerCapture(e.pointerId);
+
+      onDragStart?.(event, buildDragMeta({ clientX: e.clientX, clientY: e.clientY }));
+    },
+    [buildDragMeta, draggable, event, onDragStart]
+  );
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!draggable || !pointerStartRef.current || !eventRef.current?.hasPointerCapture(e.pointerId)) {
+        return;
+      }
+
+      e.preventDefault();
+
+      const deltaX = e.clientX - pointerStartRef.current.x;
+      const deltaY = e.clientY - pointerStartRef.current.y;
+      let adjustedDelta = { x: deltaX, y: deltaY };
+
+      if (snapToGrid) {
+        const { columnWidth, rowHeight } = snapToGrid;
+        const snappedX = columnWidth > 0 ? Math.round(deltaX / columnWidth) * columnWidth : deltaX;
+        const snappedY = rowHeight > 0 ? Math.round(deltaY / rowHeight) * rowHeight : deltaY;
+        adjustedDelta = { x: snappedX, y: snappedY };
+      }
+
+      dragDeltaRef.current = adjustedDelta;
+      setDragDelta(adjustedDelta);
+
+      if (!hasMovedRef.current) {
+        hasMovedRef.current =
+          Math.abs(deltaX) > DRAG_ACTIVATION_THRESHOLD || Math.abs(deltaY) > DRAG_ACTIVATION_THRESHOLD;
+      }
+
+      onDrag?.(event, buildDragMeta({ clientX: e.clientX, clientY: e.clientY }));
+    },
+    [buildDragMeta, draggable, event, onDrag, snapToGrid]
+  );
+
+  const finishDrag = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!draggable || !pointerStartRef.current) {
+        return;
+      }
+
+      const meta = buildDragMeta({ clientX: e.clientX, clientY: e.clientY });
+
+      pointerStartRef.current = null;
+
+      eventRef.current?.releasePointerCapture(e.pointerId);
+
+      const moved = hasMovedRef.current;
+      hasMovedRef.current = false;
+
+      onDragEnd?.(event, meta);
+      if (!moved) {
+        onClick?.(event);
+      }
+
+      dragDeltaRef.current = { x: 0, y: 0 };
+      setIsDragging(false);
+      setDragDelta({ x: 0, y: 0 });
+    },
+    [buildDragMeta, draggable, event, onClick, onDragEnd]
+  );
+
+  const handlePointerUp = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      finishDrag(e);
+    },
+    [finishDrag]
+  );
+
+  const handlePointerCancel = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      finishDrag(e);
+    },
+    [finishDrag]
+  );
+
+  const finalClassName = useMemo(() => {
+    const classNames = [styles.calendarEvent];
+    if (className) classNames.push(className);
+    if (isDragging || isActive) classNames.push(styles.active);
+    return classNames.join(' ');
+  }, [className, isActive, isDragging]);
+
+  const finalStyle = useMemo(() => {
+    const baseStyle: React.CSSProperties = {
+      ...style,
+      cursor: draggable ? 'grab' : style?.cursor,
+      willChange: 'transform'
     };
-  }, [event, timeSlots]);
 
-  // 处理鼠标按下事件（开始拖动）
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (e.button !== 0) return; // 只处理左键
-    
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const rect = eventRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    
-    setDragStart({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    });
-    
-    onEventDragStart?.(event, e);
-  }, [event, onEventDragStart]);
-
-  // 处理拖动
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging) return;
-    
-    const deltaX = e.clientX - dragStart.x;
-    const deltaY = e.clientY - dragStart.y;
-    
-    onEventDrag?.(event, deltaX, deltaY);
-  }, [isDragging, dragStart, event, onEventDrag]);
-
-  // 处理拖动结束
-  const handleMouseUp = useCallback(() => {
     if (isDragging) {
-      // 这里应该根据拖动位置计算新的 employeeId 和 start
-      // 简化处理，实际应该根据网格位置计算
-      onEventDragEnd?.(event, event.employeeId, event.start);
+      const translate = `translate3d(${dragDelta.x}px, ${dragDelta.y}px, 0)`;
+      baseStyle.transform = style?.transform ? `${style.transform} ${translate}`.trim() : translate;
+      baseStyle.zIndex = Math.max(typeof style?.zIndex === 'number' ? style.zIndex : 10, 100);
+      baseStyle.transition = 'none';
     }
-  }, [isDragging, event, onEventDragEnd]);
 
-  // 处理点击事件
-  const handleClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    onEventClick?.(event);
-  }, [event, onEventClick]);
-
-  // 添加全局鼠标事件监听
-  React.useEffect(() => {
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      
-      return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-      };
+    if (event.color) {
+      baseStyle.backgroundColor = event.color;
     }
-  }, [isDragging, handleMouseMove, handleMouseUp]);
 
-  const gridPosition = calculateGridPosition();
+    return baseStyle;
+  }, [dragDelta.x, dragDelta.y, draggable, event.color, isDragging, style]);
 
-  return (
-    <div
-      ref={eventRef}
-      className={`${styles.calendarEvent} ${isDragging ? styles.dragging : ''}`}
-      style={{
-        gridColumn: gridPosition.gridColumn,
-        gridRowStart: gridPosition.gridRowStart,
-        gridRowEnd: gridPosition.gridRowEnd,
-        backgroundColor: event.color || '#3b82f6'
-      }}
-      onMouseDown={handleMouseDown}
-      onClick={handleClick}
-    >
+  const defaultContent = useMemo(() => {
+    const startParsed = parseTimeSlot(event.start);
+    const endParsed = parseTimeSlot(event.end);
+
+    const startLabel = startParsed.success && startParsed.data
+      ? formatTime(timeValueToDate(startParsed.data), use24HourFormat)
+      : event.start;
+
+    const endLabel = endParsed.success && endParsed.data
+      ? formatTime(timeValueToDate(endParsed.data), use24HourFormat)
+      : event.end;
+
+    return (
       <div className={styles.eventContent}>
-        <div className={styles.eventTitle}>{event.title}</div>
+        {event.title && <div className={styles.eventTitle}>{event.title}</div>}
         <div className={styles.eventTime}>
-          {event.start} - {event.end}
+          {startLabel} - {endLabel}
         </div>
         {event.description && (
           <div className={styles.eventDescription}>{event.description}</div>
         )}
       </div>
+    );
+  }, [event.description, event.end, event.start, event.title, use24HourFormat]);
+
+  const renderedChildren = useMemo(() => {
+    if (typeof children === 'function') {
+      return children({ event, isDragging });
+    }
+
+    if (children) {
+      return children;
+    }
+
+    return defaultContent;
+  }, [children, defaultContent, event, isDragging]);
+
+  return (
+    <div
+      ref={eventRef}
+      className={finalClassName}
+      style={finalStyle}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerCancel}
+      role="button"
+      tabIndex={0}
+      aria-label={event.title || `${event.start} - ${event.end}`}
+    >
+      {renderedChildren}
     </div>
   );
 };
