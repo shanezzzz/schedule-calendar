@@ -42,8 +42,11 @@ const initialEvents: CalendarEventData[] = [
 
 export const DayViews: Story = () => {
   const [events, setEvents] = useState<CalendarEventData[]>(initialEvents)
+  const [currentDate, setCurrentDate] = useState<Date>(new Date())
+  const [viewMode, setViewMode] = useState<'day' | 'week' | 'month'>('day')
 
   console.log('events', events)
+  console.log('currentDate', currentDate)
 
   const handleDrop = useCallback(
     (
@@ -66,8 +69,32 @@ export const DayViews: Story = () => {
     []
   )
 
+  const handleDateChange = useCallback((date: Date) => {
+    setCurrentDate(date)
+    console.log('Date changed to:', date)
+  }, [])
+
+  // 自定义头部操作区域
+  const headerActions = (
+    <>
+      <button
+        className="primaryButton"
+        onClick={() => console.log('Add event clicked')}
+      >
+        Add Event
+      </button>
+    </>
+  )
+
   return (
-    <div style={{ height: '800px', width: '1000px', padding: '10px' }}>
+    <div
+      style={{
+        height: '900px',
+        width: '1200px',
+        padding: '0',
+        background: '#f9fafb',
+      }}
+    >
       <DayView
         startHour={7}
         endHour={23}
@@ -75,6 +102,9 @@ export const DayViews: Story = () => {
         use24HourFormat
         employeeIds={['Carry', 'Lucy', 'John', 'Tom', 'Jerry', 'Alice', 'Bob']}
         events={events}
+        currentDate={currentDate}
+        onDateChange={handleDateChange}
+        headerActions={headerActions}
         onEventDrop={handleDrop}
         renderEvent={({ event }) => (
           <div style={{ padding: '6px 8px', color: '#ffffff' }}>

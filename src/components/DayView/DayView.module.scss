@@ -1,5 +1,6 @@
 .dayView {
   display: flex;
+  flex-direction: column;
   height: 100%;
   overflow: hidden;
   background-color: #fafafa;
@@ -40,8 +41,12 @@
 }
 
 // 响应式设计
-// @media (max-width: 768px) {
-//   .dayView {
-//     height: 100vh;
-//   }
-// }
+@media (max-width: 768px) {
+  .dayView {
+    height: 100vh;
+  }
+  
+  .dayViewContent {
+    grid-template-columns: 60px 1fr;
+  }
+}

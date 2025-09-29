@@ -1,30 +1,45 @@
-import React, { useMemo } from 'react';
-import TimeColumn from '../TimeColumn/TimeColumn';
-import CalendarGrid from '../CalendarGrid/CalendarGrid';
-import CurrentTimeLine from '../CurrentTimeLine/CurrentTimeLine';
-import styles from './DayView.module.scss';
-import EmployeeHeader from '../EmployeeHeader/EmployeeHeader';
-import { generateTimeSlots, calculateSlotHeight } from '../../utils/util';
-import { CalendarEventData } from '../CalendarEvent/CalendarEvent';
+import React, { useMemo, useCallback } from 'react'
+import TimeColumn from '../TimeColumn/TimeColumn'
+import CalendarGrid from '../CalendarGrid/CalendarGrid'
+import CurrentTimeLine from '../CurrentTimeLine/CurrentTimeLine'
+import styles from './DayView.module.scss'
+import EmployeeHeader from '../EmployeeHeader/EmployeeHeader'
+import { generateTimeSlots, calculateSlotHeight } from '../../utils/util'
+import { CalendarEventData } from '../CalendarEvent/CalendarEvent'
+import CalendarHeader from '../CalendarHeader/CalendarHeader'
 
 interface DayViewProps {
-  startHour?: number;
-  endHour?: number;
-  stepMinutes?: number;
-  cellHeight?: number;
-  use24HourFormat?: boolean; // true: 24-hour format, false: 12-hour format (AM/PM)
-  displayIntervalMinutes?: number; // Time label display interval, default 30 minutes, independent of stepMinutes
-  employeeIds?: string[];
-  events?: CalendarEventData[];
-  showCurrentTimeLine?: boolean; // Whether to show current time line
-  onEventClick?: (event: CalendarEventData) => void;
-  onEventDrag?: (event: CalendarEventData, deltaX: number, deltaY: number) => void;
-  onEventDragEnd?: (event: CalendarEventData, newEmployeeId: string, newStart: string) => void;
+  startHour?: number
+  endHour?: number
+  stepMinutes?: number
+  cellHeight?: number
+  use24HourFormat?: boolean // true: 24-hour format, false: 12-hour format (AM/PM)
+  displayIntervalMinutes?: number // Time label display interval, default 30 minutes, independent of stepMinutes
+  employeeIds?: string[]
+  events?: CalendarEventData[]
+  showCurrentTimeLine?: boolean // Whether to show current time line
+  currentDate?: Date // Current selected date
+  onDateChange?: (date: Date) => void // Callback when date changes
+  headerActions?: React.ReactNode // Custom actions for the header
+  onEventClick?: (event: CalendarEventData) => void
+  onEventDrag?: (
+    event: CalendarEventData,
+    deltaX: number,
+    deltaY: number
+  ) => void
+  onEventDragEnd?: (
+    event: CalendarEventData,
+    newEmployeeId: string,
+    newStart: string
+  ) => void
   onEventDrop?: (
     event: CalendarEventData,
     next: { employeeId: string; start: string; end: string }
-  ) => void;
-  renderEvent?: (params: { event: CalendarEventData; isDragging: boolean }) => React.ReactNode;
+  ) => void
+  renderEvent?: (params: {
+    event: CalendarEventData
+    isDragging: boolean
+  }) => React.ReactNode
 }
 
 const DayView: React.FC<DayViewProps> = ({
@@ -37,32 +52,51 @@ const DayView: React.FC<DayViewProps> = ({
   employeeIds = ['1', '2', '3', '4', '5', '6', '7'],
   events = [],
   showCurrentTimeLine = true, // Default to show current time line
+  currentDate = new Date(),
+  onDateChange,
+  headerActions,
   onEventClick,
   onEventDrag,
   onEventDragEnd,
   onEventDrop,
-  renderEvent
+  renderEvent,
 }) => {
   // Generate time slots, ensure consistency with TimeColumn
   const timeSlots = useMemo(() => {
-    return generateTimeSlots(startHour, endHour, displayIntervalMinutes, use24HourFormat);
-  }, [startHour, endHour, displayIntervalMinutes, use24HourFormat]);
+    return generateTimeSlots(
+      startHour,
+      endHour,
+      displayIntervalMinutes,
+      use24HourFormat
+    )
+  }, [startHour, endHour, displayIntervalMinutes, use24HourFormat])
 
   const slotsHeight = useMemo(() => {
-    return calculateSlotHeight(stepMinutes, cellHeight);
-  }, [stepMinutes, cellHeight]);
+    return calculateSlotHeight(stepMinutes, cellHeight)
+  }, [stepMinutes, cellHeight])
+
+  const handleDateChange = useCallback(
+    (date: Date) => {
+      onDateChange?.(date)
+    },
+    [onDateChange]
+  )
 
   return (
     <div className={styles.dayView}>
+      <CalendarHeader
+        currentDate={currentDate}
+        onDateChange={handleDateChange}
+        actionsSection={headerActions}
+      />
       <div className={styles.dayViewContent}>
         <div className={styles.timeColumnArea}>
-          <TimeColumn
-            cellHeight={slotsHeight}
-            timeSlots={timeSlots}
-          />
+          <TimeColumn cellHeight={slotsHeight} timeSlots={timeSlots} />
         </div>
         <div className={styles.employeeHeaderArea}>
-          <EmployeeHeader employees={employeeIds.map(id => ({ id, name: `${id}` }))} />
+          <EmployeeHeader
+            employees={employeeIds.map(id => ({ id, name: `${id}` }))}
+          />
         </div>
         <div className={styles.calendarContainer}>
           <CalendarGrid
@@ -89,7 +123,7 @@ const DayView: React.FC<DayViewProps> = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default DayView;
+export default DayView
