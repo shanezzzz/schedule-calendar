@@ -77,8 +77,10 @@ export const DayViews: Story = () => {
 
   const handleTimeLabelClick = useCallback((timeLabel: string, index: number, timeSlot: string, employee: { id: string; name: string }) => {
     console.log('Time label clicked:', { timeLabel, index, timeSlot, employee })
-    // 这里可以添加创建新事件的逻辑
-    alert(`Clicked time label: ${timeLabel} in slot: ${timeSlot} for employee: ${employee.name} (${employee.id})`)
+  }, [])
+
+  const handleEventClick = useCallback((event: CalendarEventData, employee: { id: string; name: string }) => {
+    console.log('Event clicked:', { event, employee })
   }, [])
 
   // 自定义头部操作区域
@@ -145,6 +147,7 @@ export const DayViews: Story = () => {
         currentDate={currentDate}
         onDateChange={handleDateChange}
         onTimeLabelClick={handleTimeLabelClick}
+        onEventClick={handleEventClick}
         headerActions={headerActions}
         onEventDrop={handleDrop}
         renderEvent={({ event }) => (
@@ -198,7 +201,10 @@ export const CustomEmployeeHeader: Story = () => {
 
   const handleTimeLabelClick = useCallback((timeLabel: string, index: number, timeSlot: string, employee: { id: string; name: string }) => {
     console.log('Time label clicked:', { timeLabel, index, timeSlot, employee })
-    alert(`Clicked time label: ${timeLabel} in slot: ${timeSlot} for employee: ${employee.name} (${employee.id})`)
+  }, [])
+
+  const handleEventClick = useCallback((event: CalendarEventData, employee: { id: string; name: string }) => {
+    console.log('Event clicked:', { event, employee })
   }, [])
 
   // 自定义员工头部渲染函数
@@ -273,6 +279,7 @@ export const CustomEmployeeHeader: Story = () => {
         currentDate={currentDate}
         onDateChange={handleDateChange}
         onTimeLabelClick={handleTimeLabelClick}
+        onEventClick={handleEventClick}
         onEventDrop={handleDrop}
         renderEmployee={renderEmployee}
         employeeHeaderProps={{
@@ -332,6 +339,10 @@ export const AdvancedEmployeeHeader: Story = () => {
 
   const handleTimeLabelClick = useCallback((timeLabel: string, index: number, timeSlot: string, employee: { id: string; name: string }) => {
     console.log('Time label clicked:', { timeLabel, index, timeSlot, employee })
+  }, [])
+
+  const handleEventClick = useCallback((event: CalendarEventData, employee: { id: string; name: string }) => {
+    console.log('Event clicked:', { event, employee })
   }, [])
 
   // 高级自定义员工头部渲染函数
@@ -539,6 +550,7 @@ export const AdvancedEmployeeHeader: Story = () => {
             )}
           </div>
         )}
+        onEventClick={handleEventClick}
         headerActions={<button>Quick Book</button>}
       />
     </div>

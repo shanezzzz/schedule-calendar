@@ -34,8 +34,9 @@ interface CalendarEventProps {
   draggable?: boolean;
   isActive?: boolean;
   use24HourFormat?: boolean;
+  employee?: { id: string; name: string }; // Employee data
   children?: CalendarEventChildren;
-  onClick?: (event: CalendarEventData) => void;
+  onClick?: (event: CalendarEventData, employee: { id: string; name: string }) => void;
   onDragStart?: (event: CalendarEventData, meta: CalendarEventDragMeta) => void;
   onDrag?: (event: CalendarEventData, meta: CalendarEventDragMeta) => void;
   onDragEnd?: (event: CalendarEventData, meta: CalendarEventDragMeta) => void;
@@ -54,6 +55,7 @@ const CalendarEvent: React.FC<CalendarEventProps> = ({
   draggable = false,
   isActive = false,
   use24HourFormat = false,
+  employee,
   children,
   onClick,
   onDragStart,
@@ -150,14 +152,16 @@ const CalendarEvent: React.FC<CalendarEventProps> = ({
 
       onDragEnd?.(event, meta);
       if (!moved) {
-        onClick?.(event);
+        // 构建 employee 数据，优先使用传入的 employee，否则根据 event.employeeId 构建
+        const employeeData = employee || { id: event.employeeId, name: event.employeeId };
+        onClick?.(event, employeeData);
       }
 
       dragDeltaRef.current = { x: 0, y: 0 };
       setIsDragging(false);
       setDragDelta({ x: 0, y: 0 });
     },
-    [buildDragMeta, draggable, event, onClick, onDragEnd]
+    [buildDragMeta, draggable, event, employee, onClick, onDragEnd]
   );
 
   const handlePointerUp = useCallback(

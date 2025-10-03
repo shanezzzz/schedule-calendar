@@ -21,7 +21,7 @@ interface DayViewProps {
   currentDate?: Date // Current selected date
   onDateChange?: (date: Date) => void // Callback when date changes
   headerActions?: React.ReactNode // Custom actions for the header
-  onEventClick?: (event: CalendarEventData) => void
+  onEventClick?: (event: CalendarEventData, employee: { id: string; name: string }) => void
   onEventDrag?: (
     event: CalendarEventData,
     deltaX: number,

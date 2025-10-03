@@ -15,7 +15,7 @@ interface CalendarGridProps {
   cellHeight?: number;
   stepMinutes?: number;
   use24HourFormat?: boolean; // true: 24小时制, false: 12小时制(AM/PM)
-  onEventClick?: (event: CalendarEventData) => void;
+  onEventClick?: (event: CalendarEventData, employee: { id: string; name: string }) => void;
   onEventDrag?: (event: CalendarEventData, deltaX: number, deltaY: number) => void;
   onEventDragEnd?: (event: CalendarEventData, newEmployeeId: string, newStart: string) => void;
   onEventDrop?: (
@@ -326,6 +326,9 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
           }
         : undefined;
 
+      // 获取当前事件的员工信息
+      const employeeData = { id: calendarEvent.employeeId, name: calendarEvent.employeeId };
+
       return (
         <CalendarEvent
           key={calendarEvent.id}
@@ -334,6 +337,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
           draggable={hasDragCapability}
           isActive={activeEventId === calendarEvent.id}
           use24HourFormat={use24HourFormat}
+          employee={employeeData}
           snapToGrid={snapToGrid}
           onClick={onEventClick}
           onDragStart={(evt, meta) => {
