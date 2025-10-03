@@ -318,14 +318,25 @@ export const AdvancedEmployeeHeader: Story = () => {
   }, [])
 
   // 高级自定义员工头部渲染函数
-  const renderAdvancedEmployee = (employee: Employee, index: number) => {
-    const statuses = ['Available', 'Busy', 'Away', 'Offline']
-    const status = statuses[index % statuses.length]
+  const renderAdvancedEmployee = (employee: Employee) => {
+    // 模拟当前服务数量和总服务数量
+    const currentServices = Math.floor(Math.random() * 8) + 1 // 1-8
+    const maxServices = 10
+    const servicePercentage = (currentServices / maxServices) * 100
+    
+    // 根据当前服务数量判断是否在服务中
+    const isServing = currentServices > 2
+    const status = isServing ? 'Serving' : 'Available'
     const statusColors = {
-      'Available': '#10b981',
-      'Busy': '#f59e0b', 
-      'Away': '#ef4444',
-      'Offline': '#6b7280'
+      'Serving': '#f59e0b', // 橙色 - 正在服务
+      'Available': '#10b981' // 绿色 - 空闲
+    }
+
+    // 根据服务量计算进度条颜色
+    const getProgressColor = (percentage: number) => {
+      if (percentage >= 90) return '#ef4444' // 红色 - 高负载
+      if (percentage >= 70) return '#f59e0b' // 橙色 - 中等负载
+      return '#10b981' // 绿色 - 低负载
     }
 
     return (
@@ -339,7 +350,7 @@ export const AdvancedEmployeeHeader: Story = () => {
           padding: '16px 12px',
           background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)',
           borderRight: '1px solid rgba(226, 232, 240, 0.6)',
-          minHeight: '80px',
+          minHeight: '100px',
           transition: 'all 0.3s ease-in-out',
           cursor: 'pointer',
           position: 'relative',
@@ -391,23 +402,17 @@ export const AdvancedEmployeeHeader: Story = () => {
         </div>
 
         {/* 员工信息 */}
-        <div style={{ textAlign: 'center', flex: 1 }}>
+        <div style={{ textAlign: 'center', flex: 1, width: '100%' }}>
           <div style={{ 
             fontWeight: 600, 
             fontSize: '13px', 
             color: '#1e293b',
-            marginBottom: '2px',
+            marginBottom: '4px',
             lineHeight: '1.2'
           }}>
             {employee.name}
           </div>
-          <div style={{ 
-            fontSize: '9px', 
-            color: '#64748b',
-            marginBottom: '4px'
-          }}>
-            ID: {employee.id}
-          </div>
+          
           <div style={{ 
             fontSize: '8px', 
             color: statusColors[status as keyof typeof statusColors],
@@ -415,9 +420,61 @@ export const AdvancedEmployeeHeader: Story = () => {
             padding: '2px 6px',
             backgroundColor: `${statusColors[status as keyof typeof statusColors]}20`,
             borderRadius: '4px',
-            display: 'inline-block'
+            display: 'inline-block',
+            marginBottom: '6px'
           }}>
             {status}
+          </div>
+
+          {/* 服务数量展示 */}
+          <div style={{ 
+            marginBottom: '4px',
+            fontSize: '9px',
+            color: '#64748b',
+            fontWeight: '500'
+          }}>
+            services: {currentServices}/{maxServices}
+          </div>
+
+          {/* 进度条 */}
+          <div style={{
+            width: '100%',
+            height: '4px',
+            backgroundColor: '#e2e8f0',
+            borderRadius: '2px',
+            overflow: 'hidden',
+            marginBottom: '2px',
+            position: 'relative'
+          }}>
+            <div style={{
+              width: `${servicePercentage}%`,
+              height: '100%',
+              backgroundColor: getProgressColor(servicePercentage),
+              borderRadius: '2px',
+              transition: 'all 0.3s ease-in-out',
+              position: 'relative'
+            }}>
+              {/* 进度条光泽效果 */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '50%',
+                background: 'linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 100%)',
+                borderRadius: '2px 2px 0 0'
+              }} />
+            </div>
+          </div>
+
+          {/* 百分比文字 */}
+          <div style={{
+            fontSize: '7px',
+            color: getProgressColor(servicePercentage),
+            fontWeight: '600',
+            textAlign: 'center'
+          }}>
+            {Math.round(servicePercentage)}%
           </div>
         </div>
       </div>
@@ -449,7 +506,6 @@ export const AdvancedEmployeeHeader: Story = () => {
           style: {
             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
             borderRadius: '8px',
-            margin: '0 4px',
           }
         }}
         renderEvent={({ event }) => (
@@ -465,6 +521,7 @@ export const AdvancedEmployeeHeader: Story = () => {
             )}
           </div>
         )}
+        headerActions={<button>Quick Book</button>}
       />
     </div>
   )

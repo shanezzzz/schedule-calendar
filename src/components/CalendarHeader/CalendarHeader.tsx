@@ -222,9 +222,7 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
         )}
       </div>
 
-      {actionsSection && (
-        <div className={styles.actionsSection}>{actionsSection}</div>
-      )}
+      <div className={styles.actionsSection}>{actionsSection}</div>
     </div>
   )
 }
