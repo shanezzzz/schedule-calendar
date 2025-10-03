@@ -75,6 +75,12 @@ export const DayViews: Story = () => {
     console.log('Date changed to:', date)
   }, [])
 
+  const handleTimeLabelClick = useCallback((timeLabel: string, index: number, timeSlot: string, employee: { id: string; name: string }) => {
+    console.log('Time label clicked:', { timeLabel, index, timeSlot, employee })
+    // 这里可以添加创建新事件的逻辑
+    alert(`Clicked time label: ${timeLabel} in slot: ${timeSlot} for employee: ${employee.name} (${employee.id})`)
+  }, [])
+
   // 自定义头部操作区域
   const headerActions = (
     <>
@@ -138,6 +144,7 @@ export const DayViews: Story = () => {
         events={events}
         currentDate={currentDate}
         onDateChange={handleDateChange}
+        onTimeLabelClick={handleTimeLabelClick}
         headerActions={headerActions}
         onEventDrop={handleDrop}
         renderEvent={({ event }) => (
@@ -187,6 +194,11 @@ export const CustomEmployeeHeader: Story = () => {
   const handleDateChange = useCallback((date: Date) => {
     setCurrentDate(date)
     console.log('Date changed to:', date)
+  }, [])
+
+  const handleTimeLabelClick = useCallback((timeLabel: string, index: number, timeSlot: string, employee: { id: string; name: string }) => {
+    console.log('Time label clicked:', { timeLabel, index, timeSlot, employee })
+    alert(`Clicked time label: ${timeLabel} in slot: ${timeSlot} for employee: ${employee.name} (${employee.id})`)
   }, [])
 
   // 自定义员工头部渲染函数
@@ -260,6 +272,7 @@ export const CustomEmployeeHeader: Story = () => {
         events={events}
         currentDate={currentDate}
         onDateChange={handleDateChange}
+        onTimeLabelClick={handleTimeLabelClick}
         onEventDrop={handleDrop}
         renderEmployee={renderEmployee}
         employeeHeaderProps={{
@@ -315,6 +328,10 @@ export const AdvancedEmployeeHeader: Story = () => {
   const handleDateChange = useCallback((date: Date) => {
     setCurrentDate(date)
     console.log('Date changed to:', date)
+  }, [])
+
+  const handleTimeLabelClick = useCallback((timeLabel: string, index: number, timeSlot: string, employee: { id: string; name: string }) => {
+    console.log('Time label clicked:', { timeLabel, index, timeSlot, employee })
   }, [])
 
   // 高级自定义员工头部渲染函数
@@ -499,6 +516,7 @@ export const AdvancedEmployeeHeader: Story = () => {
         events={events}
         currentDate={currentDate}
         onDateChange={handleDateChange}
+        onTimeLabelClick={handleTimeLabelClick}
         onEventDrop={handleDrop}
         renderEmployee={renderAdvancedEmployee}
         employeeHeaderProps={{

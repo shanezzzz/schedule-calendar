@@ -36,6 +36,7 @@ interface DayViewProps {
     event: CalendarEventData,
     next: { employeeId: string; start: string; end: string }
   ) => void
+  onTimeLabelClick?: (timeLabel: string, index: number, timeSlot: string, employee: { id: string; name: string }) => void // 时间标签点击回调
   renderEvent?: (params: {
     event: CalendarEventData
     isDragging: boolean
@@ -65,6 +66,7 @@ const DayView: React.FC<DayViewProps> = ({
   onEventDrag,
   onEventDragEnd,
   onEventDrop,
+  onTimeLabelClick,
   renderEvent,
   renderEmployee,
   employeeHeaderProps,
@@ -151,6 +153,7 @@ const DayView: React.FC<DayViewProps> = ({
             onEventDrag={onEventDrag}
             onEventDragEnd={onEventDragEnd}
             onEventDrop={onEventDrop}
+            onTimeLabelClick={onTimeLabelClick}
             renderEvent={renderEvent}
           />
           {showCurrentTimeLine && (

@@ -22,6 +22,7 @@ interface CalendarGridProps {
     event: CalendarEventData,
     next: { employeeId: string; start: string; end: string }
   ) => void;
+  onTimeLabelClick?: (timeLabel: string, index: number, timeSlot: string, employee: { id: string; name: string }) => void; // 时间标签点击回调
   renderEvent?: (params: { event: CalendarEventData; isDragging: boolean }) => React.ReactNode;
 }
 
@@ -36,6 +37,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   onEventDrag,
   onEventDragEnd,
   onEventDrop,
+  onTimeLabelClick,
   renderEvent
 }) => {
   const displayTimeSlots = timeSlots.length > 0 ? timeSlots : [];
@@ -373,12 +375,14 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
     <div className={styles.calendarGrid}>
       <div className={styles.gridContainer} style={gridStyle}>
         {displayTimeSlots.map((timeSlot, timeIndex) =>
-          displayEmployeeIds.map((_, empIndex) => (
+          displayEmployeeIds.map((employeeId, empIndex) => (
             <CalendarCell
               key={`${timeIndex}-${empIndex}`}
               timeSlot={timeSlot}
               stepMinutes={stepMinutes}
               use24HourFormat={use24HourFormat}
+              employeeId={employeeId}
+              onTimeLabelClick={onTimeLabelClick}
             />
           ))
         )}
