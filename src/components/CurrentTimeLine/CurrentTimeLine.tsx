@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import dayjs from 'dayjs';
 import styles from './CurrentTimeLine.module.scss';
 
 interface CurrentTimeLineProps {
@@ -7,6 +8,7 @@ interface CurrentTimeLineProps {
   cellHeight: number;
   displayIntervalMinutes: number;
   isVisible?: boolean;
+  currentDate?: Date; // 当前显示的日期
 }
 
 const CurrentTimeLine: React.FC<CurrentTimeLineProps> = ({
@@ -14,7 +16,8 @@ const CurrentTimeLine: React.FC<CurrentTimeLineProps> = ({
   endHour,
   cellHeight,
   displayIntervalMinutes,
-  isVisible = true
+  isVisible = true,
+  currentDate = new Date()
 }) => {
   const [, setCurrentTime] = useState(new Date());
 
@@ -60,7 +63,10 @@ const CurrentTimeLine: React.FC<CurrentTimeLineProps> = ({
 
   const position = calculatePosition();
 
-  if (!isVisible || !position.isInRange) {
+  // 检查当前显示的日期是否是今天
+  const isToday = dayjs(currentDate).isSame(dayjs(), 'day');
+
+  if (!isVisible || !position.isInRange || !isToday) {
     return null;
   }
 

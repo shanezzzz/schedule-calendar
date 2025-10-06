@@ -14,7 +14,8 @@ const TimeColumn: React.FC<TimeColumnProps> = ({
 }) => {
 
   return (
-    <div className={styles.timeColumn} style={{ paddingTop: `${headerHeight}px` }}>
+    <div className={styles.timeColumn}>
+      <div className={styles.header} style={{ height: `${headerHeight}px` }}></div>
       {timeSlots.map((time, idx) => (
         <div
           key={idx}

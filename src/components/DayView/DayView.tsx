@@ -166,6 +166,7 @@ const DayView: React.FC<DayViewProps> = ({
               endHour={endHour}
               cellHeight={slotsHeight}
               displayIntervalMinutes={displayIntervalMinutes}
+              currentDate={currentDate}
             />
           )}
         </div>

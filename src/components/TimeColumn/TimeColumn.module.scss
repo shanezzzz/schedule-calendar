@@ -12,6 +12,15 @@
   /* Minimal scrollbar for time column if needed */
   scrollbar-width: thin;
   scrollbar-color: rgba(148, 163, 184, 0.05) transparent;
+
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+    box-sizing: border-box;
+  }
   
   &::-webkit-scrollbar {
     width: 2px;
