@@ -7,6 +7,7 @@ import EmployeeHeader, { Employee } from '../EmployeeHeader/EmployeeHeader'
 import { generateTimeSlots, calculateSlotHeight } from '../../utils/util'
 import { CalendarEventData } from '../CalendarEvent/CalendarEvent'
 import CalendarHeader from '../CalendarHeader/CalendarHeader'
+import { EmployeeBlockTimes } from '../../types/blockTime'
 
 interface DayViewProps {
   startHour?: number
@@ -17,6 +18,7 @@ interface DayViewProps {
   displayIntervalMinutes?: number // Time label display interval, default 30 minutes, independent of stepMinutes
   employeeIds?: string[]
   events?: CalendarEventData[]
+  blockTimes?: EmployeeBlockTimes // 员工阻塞时间映射
   showCurrentTimeLine?: boolean // Whether to show current time line
   currentDate?: Date // Current selected date
   onDateChange?: (date: Date) => void // Callback when date changes
@@ -58,6 +60,7 @@ const DayView: React.FC<DayViewProps> = ({
   displayIntervalMinutes = 30, // Default 30-minute interval for time label display
   employeeIds = ['1', '2', '3', '4', '5', '6', '7'],
   events = [],
+  blockTimes = {},
   showCurrentTimeLine = true, // Default to show current time line
   currentDate = new Date(),
   onDateChange,
@@ -149,6 +152,7 @@ const DayView: React.FC<DayViewProps> = ({
             cellHeight={slotsHeight}
             stepMinutes={stepMinutes}
             use24HourFormat={use24HourFormat}
+            blockTimes={blockTimes}
             onEventClick={onEventClick}
             onEventDrag={onEventDrag}
             onEventDragEnd={onEventDragEnd}

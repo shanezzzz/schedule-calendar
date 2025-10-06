@@ -7,6 +7,7 @@ import CalendarEvent, {
 } from '../CalendarEvent/CalendarEvent';
 import styles from './CalendarGrid.module.scss';
 import { addMinutesToSlot, differenceInMinutes, slotToMinutes } from '../../utils/util';
+import { EmployeeBlockTimes, getEmployeeBlockTimes, isTimeRangeBlocked } from '../../types/blockTime';
 
 interface CalendarGridProps {
   events?: CalendarEventData[];
@@ -15,6 +16,7 @@ interface CalendarGridProps {
   cellHeight?: number;
   stepMinutes?: number;
   use24HourFormat?: boolean; // true: 24小时制, false: 12小时制(AM/PM)
+  blockTimes?: EmployeeBlockTimes; // 员工阻塞时间映射
   onEventClick?: (event: CalendarEventData, employee: { id: string; name: string }) => void;
   onEventDrag?: (event: CalendarEventData, deltaX: number, deltaY: number) => void;
   onEventDragEnd?: (event: CalendarEventData, newEmployeeId: string, newStart: string) => void;
@@ -33,6 +35,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   cellHeight = 80,
   stepMinutes = 30,
   use24HourFormat = false,
+  blockTimes = {},
   onEventClick,
   onEventDrag,
   onEventDragEnd,
@@ -233,13 +236,23 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
 
       const targetEnd = addMinutesToSlot(targetStart, durationMinutes);
 
-      onEventDrop?.(event, {
-        employeeId: targetEmployeeId,
-        start: targetStart,
-        end: targetEnd
-      });
+      // 检查目标时间范围是否与 Block Time 重叠
+      const employeeBlockTimes = getEmployeeBlockTimes(targetEmployeeId, blockTimes);
+      const isTargetBlocked = isTimeRangeBlocked(targetStart, targetEnd, employeeBlockTimes);
 
-      onEventDragEnd?.(event, targetEmployeeId, targetStart);
+      if (!isTargetBlocked) {
+        onEventDrop?.(event, {
+          employeeId: targetEmployeeId,
+          start: targetStart,
+          end: targetEnd
+        });
+
+        onEventDragEnd?.(event, targetEmployeeId, targetStart);
+      } else {
+        // 如果目标位置被阻塞，恢复到原始位置
+        console.warn('Cannot drop event on blocked time slot');
+        onEventDragEnd?.(event, event.employeeId, event.start);
+      }
       dragOriginRef.current = null;
     },
     [
@@ -247,6 +260,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
       clampIndex,
       displayEmployeeIds,
       displayTimeSlots,
+      blockTimes,
       onEventDragEnd,
       onEventDrop,
       slotIntervalMinutes,
@@ -379,16 +393,20 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
     <div className={styles.calendarGrid}>
       <div className={styles.gridContainer} style={gridStyle}>
         {displayTimeSlots.map((timeSlot, timeIndex) =>
-          displayEmployeeIds.map((employeeId, empIndex) => (
-            <CalendarCell
-              key={`${timeIndex}-${empIndex}`}
-              timeSlot={timeSlot}
-              stepMinutes={stepMinutes}
-              use24HourFormat={use24HourFormat}
-              employeeId={employeeId}
-              onTimeLabelClick={onTimeLabelClick}
-            />
-          ))
+          displayEmployeeIds.map((employeeId, empIndex) => {
+            const employeeBlockTimes = getEmployeeBlockTimes(employeeId, blockTimes);
+            return (
+              <CalendarCell
+                key={`${timeIndex}-${empIndex}`}
+                timeSlot={timeSlot}
+                stepMinutes={stepMinutes}
+                use24HourFormat={use24HourFormat}
+                employeeId={employeeId}
+                blockTimes={employeeBlockTimes}
+                onTimeLabelClick={onTimeLabelClick}
+              />
+            );
+          })
         )}
       </div>
 

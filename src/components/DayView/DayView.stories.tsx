@@ -3,6 +3,7 @@ import type { Story } from '@ladle/react'
 import DayView from './DayView'
 import { CalendarEventData } from '../CalendarEvent/CalendarEvent'
 import { Employee } from '../EmployeeHeader/EmployeeHeader'
+import { EmployeeBlockTimes } from '../../types/blockTime'
 
 const initialEvents: CalendarEventData[] = [
   {
@@ -40,6 +41,43 @@ const initialEvents: CalendarEventData[] = [
     employeeId: 'Tom',
   },
 ]
+
+// 示例 Block Time 数据
+const initialBlockTimes: EmployeeBlockTimes = {
+  'Carry': [
+    {
+      id: 'block-1',
+      employeeId: 'Carry',
+      start: '12:00',
+      end: '13:00',
+      title: 'Lunch Break',
+      color: '#fef3c7',
+      type: 'unavailable'
+    }
+  ],
+  'Lucy': [
+    {
+      id: 'block-2',
+      employeeId: 'Lucy',
+      start: '09:00',
+      end: '16:00',
+      // title: 'Maintenance',
+      color: '#fee2e2',
+      type: 'maintenance'
+    }
+  ],
+  'John': [
+    {
+      id: 'block-3',
+      employeeId: 'John',
+      start: '14:00',
+      end: '15:00',
+      title: 'Unavailable',
+      color: '#f3f4f6',
+      type: 'unavailable'
+    }
+  ]
+}
 
 export const DayViews: Story = () => {
   const [events, setEvents] = useState<CalendarEventData[]>(initialEvents)
@@ -144,6 +182,7 @@ export const DayViews: Story = () => {
           }
         }}
         events={events}
+        blockTimes={initialBlockTimes}
         currentDate={currentDate}
         onDateChange={handleDateChange}
         onTimeLabelClick={handleTimeLabelClick}
@@ -276,6 +315,7 @@ export const CustomEmployeeHeader: Story = () => {
         use24HourFormat
         employeeIds={['Carry', 'Lucy', 'John', 'Tom', 'Jerry', 'Alice', 'Bob']}
         events={events}
+        blockTimes={initialBlockTimes}
         currentDate={currentDate}
         onDateChange={handleDateChange}
         onTimeLabelClick={handleTimeLabelClick}
@@ -525,6 +565,7 @@ export const AdvancedEmployeeHeader: Story = () => {
         use24HourFormat
         employeeIds={['Carry', 'Lucy', 'John', 'Tom', 'Jerry', 'Alice', 'Bob']}
         events={events}
+        blockTimes={initialBlockTimes}
         currentDate={currentDate}
         onDateChange={handleDateChange}
         onTimeLabelClick={handleTimeLabelClick}
