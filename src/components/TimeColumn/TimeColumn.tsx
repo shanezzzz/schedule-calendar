@@ -1,11 +1,6 @@
 import React from 'react';
 import styles from './TimeColumn.module.scss';
-
-interface TimeColumnProps {
-  timeSlots?: string[];
-  cellHeight?: number;
-  headerHeight?: number; // 用于匹配EmployeeHeader的高度
-}
+import type { TimeColumnProps } from './types';
 
 const TimeColumn: React.FC<TimeColumnProps> = ({
   timeSlots = [],

@@ -1,50 +1,10 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import styles from './CalendarEvent.module.scss';
 import { formatTime, parseTimeSlot, timeValueToDate } from '../../utils/util';
-
-export interface CalendarEventData {
-  id: string;
-  title?: string;
-  start: string;
-  end: string;
-  employeeId: string;
-  color?: string;
-  description?: string;
-}
-
-export interface CalendarEventDragMeta {
-  delta: { x: number; y: number };
-  pointer: { clientX: number; clientY: number };
-  bounds: DOMRect | null;
-}
-
-export interface CalendarEventRenderContext {
-  event: CalendarEventData;
-  isDragging: boolean;
-}
-
-type CalendarEventChildren =
-  | React.ReactNode
-  | ((context: CalendarEventRenderContext) => React.ReactNode);
-
-interface CalendarEventProps {
-  event: CalendarEventData;
-  style?: React.CSSProperties;
-  className?: string;
-  draggable?: boolean;
-  isActive?: boolean;
-  use24HourFormat?: boolean;
-  employee?: { id: string; name: string }; // Employee data
-  children?: CalendarEventChildren;
-  onClick?: (event: CalendarEventData, employee: { id: string; name: string }) => void;
-  onDragStart?: (event: CalendarEventData, meta: CalendarEventDragMeta) => void;
-  onDrag?: (event: CalendarEventData, meta: CalendarEventDragMeta) => void;
-  onDragEnd?: (event: CalendarEventData, meta: CalendarEventDragMeta) => void;
-  snapToGrid?: {
-    columnWidth: number;
-    rowHeight: number;
-  };
-}
+import type {
+  CalendarEventDragMeta,
+  CalendarEventProps
+} from './types';
 
 const DRAG_ACTIVATION_THRESHOLD = 2;
 

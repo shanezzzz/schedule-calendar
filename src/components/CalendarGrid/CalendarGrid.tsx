@@ -1,32 +1,16 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import CalendarCell from '../CalendarCell/CalendarCell';
-import CalendarEvent, {
+import CalendarCell from '../CalendarCell';
+import type { CalendarCellEmployee } from '../CalendarCell';
+import CalendarEvent from '../CalendarEvent';
+import styles from './CalendarGrid.module.scss';
+import { addMinutesToSlot, differenceInMinutes, slotToMinutes } from '../../utils/util';
+import { getEmployeeBlockTimes, isTimeRangeBlocked } from '../../types/blockTime';
+import type {
   CalendarEventData,
   CalendarEventDragMeta,
   CalendarEventRenderContext
-} from '../CalendarEvent/CalendarEvent';
-import styles from './CalendarGrid.module.scss';
-import { addMinutesToSlot, differenceInMinutes, slotToMinutes } from '../../utils/util';
-import { EmployeeBlockTimes, getEmployeeBlockTimes, isTimeRangeBlocked } from '../../types/blockTime';
-
-interface CalendarGridProps {
-  events?: CalendarEventData[];
-  timeSlots?: string[];
-  employeeIds?: string[];
-  cellHeight?: number;
-  stepMinutes?: number;
-  use24HourFormat?: boolean; // true: 24小时制, false: 12小时制(AM/PM)
-  blockTimes?: EmployeeBlockTimes; // 员工阻塞时间映射
-  onEventClick?: (event: CalendarEventData, employee: { id: string; name: string }) => void;
-  onEventDrag?: (event: CalendarEventData, deltaX: number, deltaY: number) => void;
-  onEventDragEnd?: (event: CalendarEventData, newEmployeeId: string, newStart: string) => void;
-  onEventDrop?: (
-    event: CalendarEventData,
-    next: { employeeId: string; start: string; end: string }
-  ) => void;
-  onTimeLabelClick?: (timeLabel: string, index: number, timeSlot: string, employee: { id: string; name: string }) => void; // 时间标签点击回调
-  renderEvent?: (params: { event: CalendarEventData; isDragging: boolean }) => React.ReactNode;
-}
+} from '../CalendarEvent';
+import type { CalendarGridProps } from './types';
 
 const CalendarGrid: React.FC<CalendarGridProps> = ({
   events = [],
@@ -36,6 +20,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   stepMinutes = 30,
   use24HourFormat = false,
   blockTimes = {},
+  employees,
   onEventClick,
   onEventDrag,
   onEventDragEnd,
@@ -44,7 +29,15 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   renderEvent
 }) => {
   const displayTimeSlots = timeSlots.length > 0 ? timeSlots : [];
-  const displayEmployeeIds = employeeIds.length > 0 ? employeeIds : [];
+  const displayEmployeeIds = useMemo(() => {
+    if (employeeIds.length > 0) {
+      return employeeIds;
+    }
+    if (employees && employees.length > 0) {
+      return employees.map(employee => employee.id);
+    }
+    return [];
+  }, [employeeIds, employees]);
   const eventLayerRef = useRef<HTMLDivElement>(null);
   const [activeEventId, setActiveEventId] = useState<string | null>(null);
   const dragOriginRef = useRef<{
@@ -55,6 +48,22 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   } | null>(null);
 
   const hasDragCapability = Boolean(onEventDrop || onEventDrag || onEventDragEnd);
+
+  const employeeMap = useMemo(() => {
+    const map = new Map<string, CalendarCellEmployee>();
+    employees?.forEach(employee => {
+      map.set(employee.id, employee);
+    });
+    return map;
+  }, [employees]);
+
+  const getEmployeeData = useCallback(
+    (employeeId: string): CalendarCellEmployee => {
+      const matched = employeeMap.get(employeeId);
+      return matched ?? { id: employeeId, name: employeeId };
+    },
+    [employeeMap]
+  );
 
   const gridStyle = useMemo(
     () => ({
@@ -341,7 +350,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
         : undefined;
 
       // 获取当前事件的员工信息
-      const employeeData = { id: calendarEvent.employeeId, name: calendarEvent.employeeId };
+      const employeeData = getEmployeeData(calendarEvent.employeeId);
 
       return (
         <CalendarEvent
@@ -385,7 +394,8 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
       slotIntervalMinutes,
       cellHeight,
       stepMinutes,
-      use24HourFormat
+      use24HourFormat,
+      getEmployeeData
     ]
   );
 
@@ -402,6 +412,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
                 stepMinutes={stepMinutes}
                 use24HourFormat={use24HourFormat}
                 employeeId={employeeId}
+                employee={employeeMap.get(employeeId)}
                 blockTimes={employeeBlockTimes}
                 onTimeLabelClick={onTimeLabelClick}
               />

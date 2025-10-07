@@ -1,27 +1,43 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react'
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react'
 import dayjs from 'dayjs'
+import type { Dayjs } from 'dayjs'
 import styles from './CalendarHeader.module.scss'
-
-interface CalendarHeaderProps {
-  currentDate?: Date
-  onDateChange?: (date: Date) => void
-  className?: string
-  actionsSection?: React.ReactNode // 自定义操作区域内容
-}
+import type { CalendarHeaderProps } from './types'
 
 const CalendarHeader: React.FC<CalendarHeaderProps> = ({
   currentDate = new Date(),
   onDateChange,
   className,
   actionsSection,
+  formatDateLabel,
+  onMonthChange,
+  onToggleDatePicker,
 }) => {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
-  const [selectedDate, setSelectedDate] = useState(currentDate)
+  const [selectedDate, setSelectedDate] = useState<Date>(currentDate)
+  const [monthCursor, setMonthCursor] = useState<Dayjs>(() =>
+    dayjs(currentDate).startOf('month')
+  )
   const datePickerRef = useRef<HTMLDivElement>(null)
 
-  const formatDate = useCallback((date: Date) => {
-    return dayjs(date).format('dddd, MMM D, YYYY')
-  }, [])
+  const rootClassName = useMemo(() => {
+    return [styles.calendarHeader, className].filter(Boolean).join(' ')
+  }, [className])
+
+  useEffect(() => {
+    setSelectedDate(prev =>
+      dayjs(prev).isSame(currentDate, 'day') ? prev : currentDate
+    )
+    const nextMonthCursor = dayjs(currentDate).startOf('month')
+    setMonthCursor(nextMonthCursor)
+    onMonthChange?.(nextMonthCursor.toDate())
+  }, [currentDate, onMonthChange])
+
+  const formattedDateLabelValue = useMemo(() => {
+    return formatDateLabel
+      ? formatDateLabel(selectedDate)
+      : dayjs(selectedDate).format('dddd, MMM D, YYYY')
+  }, [formatDateLabel, selectedDate])
 
   // 处理点击外部关闭日期选择器
   useEffect(() => {
@@ -32,6 +48,7 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
         !datePickerRef.current.contains(event.target as Node)
       ) {
         setIsDatePickerOpen(false)
+        onToggleDatePicker?.(false)
       }
     }
 
@@ -42,19 +59,31 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isDatePickerOpen])
+  }, [isDatePickerOpen, onToggleDatePicker])
 
   const handleDateClick = useCallback(() => {
-    setIsDatePickerOpen(!isDatePickerOpen)
-  }, [isDatePickerOpen])
+    setIsDatePickerOpen(prev => {
+      const nextState = !prev
+      onToggleDatePicker?.(nextState)
+      return nextState
+    })
+  }, [onToggleDatePicker])
 
   const handleDateSelect = useCallback(
     (date: Date) => {
+      const nextMonthStart = dayjs(date).startOf('month')
       setSelectedDate(date)
-      setIsDatePickerOpen(false)
+      setMonthCursor(nextMonthStart)
+      onMonthChange?.(nextMonthStart.toDate())
+      setIsDatePickerOpen(prev => {
+        if (prev) {
+          onToggleDatePicker?.(false)
+        }
+        return false
+      })
       onDateChange?.(date)
     },
-    [onDateChange]
+    [onDateChange, onMonthChange, onToggleDatePicker]
   )
 
   const handlePreviousDay = useCallback(() => {
@@ -72,11 +101,23 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
     handleDateSelect(today)
   }, [handleDateSelect])
 
+  const handleMonthNavigate = useCallback(
+    (direction: 'prev' | 'next') => {
+      setMonthCursor(prev => {
+        const nextMonth =
+          direction === 'next' ? prev.add(1, 'month') : prev.subtract(1, 'month')
+        onMonthChange?.(nextMonth.toDate())
+        return nextMonth
+      })
+    },
+    [onMonthChange]
+  )
+
   const isToday = dayjs(selectedDate).isSame(dayjs(), 'day')
   const todayButtonText = isToday ? 'Today' : 'Go to Today'
 
   return (
-    <div className={`${styles.calendarHeader} ${className || ''}`}>
+    <div className={rootClassName}>
       <div className={styles.navigationSection}>
         <button
           className={styles.navButton}
@@ -129,7 +170,7 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
           onClick={handleDateClick}
           type="button"
         >
-          <span className={styles.dateText}>{formatDate(selectedDate)}</span>
+          <span className={styles.dateText}>{formattedDateLabelValue}</span>
           <svg
             className={`${styles.chevronIcon} ${isDatePickerOpen ? styles.chevronUp : ''}`}
             width="16"
@@ -148,12 +189,7 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
             <div className={styles.datePickerHeader}>
               <button
                 className={styles.navButton}
-                onClick={() => {
-                  const newDate = dayjs(selectedDate)
-                    .subtract(1, 'month')
-                    .toDate()
-                  setSelectedDate(newDate)
-                }}
+                onClick={() => handleMonthNavigate('prev')}
                 type="button"
               >
                 <svg
@@ -168,14 +204,11 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
                 </svg>
               </button>
               <span className={styles.monthYear}>
-                {dayjs(selectedDate).format('MMMM YYYY')}
+                {monthCursor.format('MMMM YYYY')}
               </span>
               <button
                 className={styles.navButton}
-                onClick={() => {
-                  const newDate = dayjs(selectedDate).add(1, 'month').toDate()
-                  setSelectedDate(newDate)
-                }}
+                onClick={() => handleMonthNavigate('next')}
                 type="button"
               >
                 <svg
@@ -196,27 +229,23 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
                   {day}
                 </div>
               ))}
-              {Array.from(
-                { length: dayjs(selectedDate).daysInMonth() },
-                (_, i) => {
-                  const date = dayjs(selectedDate).date(i + 1)
-                  const isCurrentMonth =
-                    date.month() === dayjs(selectedDate).month()
-                  const isSelected = date.isSame(dayjs(selectedDate), 'day')
-                  const isTodayDate = date.isSame(dayjs(), 'day')
+              {Array.from({ length: monthCursor.daysInMonth() }, (_, i) => {
+                const date = monthCursor.date(i + 1)
+                const isCurrentMonth = date.month() === monthCursor.month()
+                const isSelected = date.isSame(dayjs(selectedDate), 'day')
+                const isTodayDate = date.isSame(dayjs(), 'day')
 
-                  return (
-                    <button
-                      key={i}
-                      className={`${styles.dateCell} ${isCurrentMonth ? '' : styles.otherMonth} ${isSelected ? styles.selected : ''} ${isTodayDate ? styles.today : ''}`}
-                      onClick={() => handleDateSelect(date.toDate())}
-                      type="button"
-                    >
-                      {date.date()}
-                    </button>
-                  )
-                }
-              )}
+                return (
+                  <button
+                    key={date.format('YYYY-MM-DD')}
+                    className={`${styles.dateCell} ${isCurrentMonth ? '' : styles.otherMonth} ${isSelected ? styles.selected : ''} ${isTodayDate ? styles.today : ''}`}
+                    onClick={() => handleDateSelect(date.toDate())}
+                    type="button"
+                  >
+                    {date.date()}
+                  </button>
+                )
+              })}
             </div>
           </div>
         )}

@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import styles from './CurrentTimeLine.module.scss';
-
-interface CurrentTimeLineProps {
-  startHour: number;
-  endHour: number;
-  cellHeight: number;
-  displayIntervalMinutes: number;
-  isVisible?: boolean;
-  currentDate?: Date; // 当前显示的日期
-}
+import type { CurrentTimeLineProps, CurrentTimeLinePosition } from './types';
 
 const CurrentTimeLine: React.FC<CurrentTimeLineProps> = ({
   startHour,
@@ -37,7 +29,7 @@ const CurrentTimeLine: React.FC<CurrentTimeLineProps> = ({
   }, []);
 
   // 计算当前时间在日历中的位置
-  const calculatePosition = () => {
+  const calculatePosition = (): CurrentTimeLinePosition => {
     const now = new Date();
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();

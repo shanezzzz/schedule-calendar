@@ -1,19 +1,6 @@
 import React from 'react';
 import styles from './EmployeeHeader.module.scss';
-
-export interface Employee {
-  id: string;
-  name: string;
-  [key: string]: any;
-}
-
-export interface EmployeeHeaderProps {
-  employees: Employee[];
-  renderEmployee?: (employee: Employee, index: number) => React.ReactNode;
-  className?: string;
-  style?: React.CSSProperties;
-  minColumnWidth?: number;
-}
+import type { EmployeeHeaderProps, EmployeeRenderer } from './types';
 
 const EmployeeHeader: React.FC<EmployeeHeaderProps> = ({ 
   employees, 
@@ -22,7 +9,7 @@ const EmployeeHeader: React.FC<EmployeeHeaderProps> = ({
   style = {},
   minColumnWidth = 210
 }) => {
-  const defaultRenderEmployee = (employee: Employee) => (
+  const defaultRenderEmployee: EmployeeRenderer = (employee) => (
     <div className={styles.employeeHeaderItem}>
       {employee.name}
     </div>

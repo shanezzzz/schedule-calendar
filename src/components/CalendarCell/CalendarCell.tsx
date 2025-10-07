@@ -1,22 +1,8 @@
 import React from 'react'
 import { generateTimeLabels } from '../../utils/util'
-import { BlockTime, isTimeBlocked } from '../../types/blockTime'
+import { isTimeBlocked } from '../../types/blockTime'
 import styles from './CalendarCell.module.scss'
-
-interface CalendarCellProps {
-  timeSlot?: string // Time slot, e.g., "07:00"
-  stepMinutes?: number // Time interval, e.g., 30
-  use24HourFormat?: boolean // true: 24-hour format, false: 12-hour format (AM/PM)
-  employeeId?: string // Employee ID for this cell
-  employee?: { id: string; name: string } // Employee data
-  blockTimes?: BlockTime[] // Block times for this employee
-  onTimeLabelClick?: (
-    timeLabel: string,
-    index: number,
-    timeSlot: string,
-    employee: { id: string; name: string }
-  ) => void // 时间标签点击回调
-}
+import type { CalendarCellProps, CalendarCellEmployee } from './types'
 
 const CalendarCell: React.FC<CalendarCellProps> = ({
   timeSlot,
@@ -32,7 +18,7 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
     : []
 
   // 构建 employee 数据，优先使用传入的 employee，否则根据 employeeId 构建
-  const employeeData =
+  const employeeData: CalendarCellEmployee =
     employee ||
     (employeeId ? { id: employeeId, name: employeeId } : { id: '', name: '' })
 
