@@ -1,37 +1,27 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* Component library base styles */
-@layer base {
-  * {
-    box-sizing: border-box;
-  }
-
-  /* Improve font rendering */
-  html {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-  }
+.schedule-calendar * {
+  box-sizing: border-box;
 }
 
-@layer components {
-  .schedule-calendar {
-    @apply font-sans text-gray-800;
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-    border: 1px solid rgba(226, 232, 240, 0.8);
-  }
+/* Improve font rendering for calendar components */
+.schedule-calendar {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
 
-  .schedule-calendar * {
-    @apply box-border;
-  }
+.schedule-calendar {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  color: #1f2937;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
 
-  /* Ultra-minimal scroll bars - track completely hidden */
-  .schedule-calendar ::-webkit-scrollbar {
+/* Ultra-minimal scroll bars - track completely hidden */
+.schedule-calendar ::-webkit-scrollbar {
     width: 4px;
     height: 4px;
   }
@@ -113,8 +103,7 @@
     outline-offset: 2px;
   }
 
-  /* Modern transitions */
-  .schedule-calendar * {
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  }
+/* Modern transitions */
+.schedule-calendar * {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }

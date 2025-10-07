@@ -45,7 +45,6 @@ export default defineConfig({
     },
     preprocessorOptions: {
       scss: {
-        additionalData: `@use "tailwindcss/base"; @use "tailwindcss/components"; @use "tailwindcss/utilities";`,
         silenceDeprecations: ['legacy-js-api', 'import']
       }
     }
