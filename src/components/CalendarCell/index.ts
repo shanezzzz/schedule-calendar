@@ -1,2 +1,2 @@
-export { default } from './CalendarCell';
-export type { CalendarCellProps, CalendarCellEmployee } from './types';
+export { default } from './CalendarCell'
+export type { CalendarCellProps, CalendarCellEmployee } from './types'

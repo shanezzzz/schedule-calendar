@@ -1,9 +1,9 @@
-export { default } from './CalendarEvent';
+export { default } from './CalendarEvent'
 export type {
   CalendarEventProps,
   CalendarEventData,
   CalendarEventDragMeta,
   CalendarEventRenderContext,
   CalendarEventChildren,
-  CalendarEventSnapGrid
-} from './types';
+  CalendarEventSnapGrid,
+} from './types'

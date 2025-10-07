@@ -10,43 +10,43 @@ export default defineConfig({
     dts({
       insertTypesEntry: true,
       include: ['src/**/*'],
-      exclude: ['src/**/*.stories.*', 'src/**/*.test.*']
+      exclude: ['src/**/*.stories.*', 'src/**/*.test.*'],
     }),
-    cssInjectedByJsPlugin()
+    cssInjectedByJsPlugin(),
   ],
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'ScheduleCalendar',
       formats: ['es'],
-      fileName: 'index'
+      fileName: 'index',
     },
     rollupOptions: {
       external: ['react', 'react-dom'],
       output: {
         globals: {
           react: 'React',
-          'react-dom': 'ReactDOM'
-        }
-      }
+          'react-dom': 'ReactDOM',
+        },
+      },
     },
     cssCodeSplit: false,
     sourcemap: true,
-    minify: 'terser'
+    minify: 'terser',
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src')
-    }
+      '@': resolve(__dirname, 'src'),
+    },
   },
   css: {
     modules: {
-      localsConvention: 'camelCase'
+      localsConvention: 'camelCase',
     },
     preprocessorOptions: {
       scss: {
-        silenceDeprecations: ['legacy-js-api', 'import']
-      }
-    }
-  }
+        silenceDeprecations: ['legacy-js-api', 'import'],
+      },
+    },
+  },
 })

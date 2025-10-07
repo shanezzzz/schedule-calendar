@@ -1,21 +1,19 @@
-import React from 'react';
-import styles from './EmployeeHeader.module.scss';
-import type { EmployeeHeaderProps, EmployeeRenderer } from './types';
+import React from 'react'
+import styles from './EmployeeHeader.module.scss'
+import type { EmployeeHeaderProps, EmployeeRenderer } from './types'
 
-const EmployeeHeader: React.FC<EmployeeHeaderProps> = ({ 
-  employees, 
+const EmployeeHeader: React.FC<EmployeeHeaderProps> = ({
+  employees,
   renderEmployee,
   className = '',
   style = {},
-  minColumnWidth = 210
+  minColumnWidth = 210,
 }) => {
-  const defaultRenderEmployee: EmployeeRenderer = (employee) => (
-    <div className={styles.employeeHeaderItem}>
-      {employee.name}
-    </div>
-  );
+  const defaultRenderEmployee: EmployeeRenderer = employee => (
+    <div className={styles.employeeHeaderItem}>{employee.name}</div>
+  )
 
-  const renderEmployeeContent = renderEmployee || defaultRenderEmployee;
+  const renderEmployeeContent = renderEmployee || defaultRenderEmployee
 
   return (
     <div
@@ -31,7 +29,7 @@ const EmployeeHeader: React.FC<EmployeeHeaderProps> = ({
         </React.Fragment>
       ))}
     </div>
-  );
-};
+  )
+}
 
-export default EmployeeHeader;
+export default EmployeeHeader

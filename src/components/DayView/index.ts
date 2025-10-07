@@ -8,5 +8,5 @@ export type {
   DayViewEventDropHandler,
   DayViewTimeLabelClickHandler,
   DayViewEventRenderer,
-  DayViewEmployeeHeaderProps
+  DayViewEmployeeHeaderProps,
 } from './types'

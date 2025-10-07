@@ -7,7 +7,7 @@ import type { EmployeeBlockTimes } from '../../types/blockTime'
 import type {
   DayViewEventDropHandler,
   DayViewEventClickHandler,
-  DayViewTimeLabelClickHandler
+  DayViewTimeLabelClickHandler,
 } from './types'
 
 const initialEvents: CalendarEventData[] = [
@@ -59,7 +59,7 @@ const employees: Employee[] = [
 
 // 示例 Block Time 数据
 const initialBlockTimes: EmployeeBlockTimes = {
-  'Carry': [
+  Carry: [
     {
       id: 'block-1',
       employeeId: 'Carry',
@@ -67,10 +67,10 @@ const initialBlockTimes: EmployeeBlockTimes = {
       end: '13:00',
       title: 'Lunch Break',
       color: '#fef3c7',
-      type: 'unavailable'
-    }
+      type: 'unavailable',
+    },
   ],
-  'Lucy': [
+  Lucy: [
     {
       id: 'block-2',
       employeeId: 'Lucy',
@@ -78,10 +78,10 @@ const initialBlockTimes: EmployeeBlockTimes = {
       end: '16:00',
       // title: 'Maintenance',
       color: '#fee2e2',
-      type: 'maintenance'
-    }
+      type: 'maintenance',
+    },
   ],
-  'John': [
+  John: [
     {
       id: 'block-3',
       employeeId: 'John',
@@ -89,9 +89,9 @@ const initialBlockTimes: EmployeeBlockTimes = {
       end: '15:00',
       title: 'Unavailable',
       color: '#f3f4f6',
-      type: 'unavailable'
-    }
-  ]
+      type: 'unavailable',
+    },
+  ],
 }
 
 export const DayViews: Story = () => {
@@ -102,36 +102,44 @@ export const DayViews: Story = () => {
   console.log('events', events)
   console.log('currentDate', currentDate)
 
-  const handleDrop = useCallback<DayViewEventDropHandler>(
-    (event, next) => {
-      setEvents(prev =>
-        prev.map(item =>
-          item.id === event.id
-            ? {
-                ...item,
-                employeeId: next.employeeId,
-                start: next.start,
-                end: next.end,
-              }
-            : item
-        )
+  const handleDrop = useCallback<DayViewEventDropHandler>((event, next) => {
+    setEvents(prev =>
+      prev.map(item =>
+        item.id === event.id
+          ? {
+              ...item,
+              employeeId: next.employeeId,
+              start: next.start,
+              end: next.end,
+            }
+          : item
       )
-    },
-    []
-  )
+    )
+  }, [])
 
   const handleDateChange = useCallback((date: Date) => {
     setCurrentDate(date)
     console.log('Date changed to:', date)
   }, [])
 
-  const handleTimeLabelClick = useCallback<DayViewTimeLabelClickHandler>((timeLabel, index, timeSlot, employee) => {
-    console.log('Time label clicked:', { timeLabel, index, timeSlot, employee })
-  }, [])
+  const handleTimeLabelClick = useCallback<DayViewTimeLabelClickHandler>(
+    (timeLabel, index, timeSlot, employee) => {
+      console.log('Time label clicked:', {
+        timeLabel,
+        index,
+        timeSlot,
+        employee,
+      })
+    },
+    []
+  )
 
-  const handleEventClick = useCallback<DayViewEventClickHandler>((event, employee) => {
-    console.log('Event clicked:', { event, employee })
-  }, [])
+  const handleEventClick = useCallback<DayViewEventClickHandler>(
+    (event, employee) => {
+      console.log('Event clicked:', { event, employee })
+    },
+    []
+  )
 
   // 自定义头部操作区域
   const headerActions = (
@@ -161,24 +169,27 @@ export const DayViews: Story = () => {
         use24HourFormat
         employees={employees}
         renderEmployee={(employee, index) => (
-          <div 
-            style={{ 
-              height: '80px', 
-              background: index % 2 === 0 
-                ? 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)' 
-                : 'linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%)',
-              color: '#1e293b', 
-              borderRadius: '8px', 
+          <div
+            style={{
+              height: '80px',
+              background:
+                index % 2 === 0
+                  ? 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)'
+                  : 'linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%)',
+              color: '#1e293b',
+              borderRadius: '8px',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
               transition: 'all 0.2s ease-in-out',
               cursor: 'pointer',
-              boxSizing: 'border-box'
+              boxSizing: 'border-box',
             }}
           >
-            <div style={{ fontWeight: 600, fontSize: '14px', marginBottom: '4px' }}>
+            <div
+              style={{ fontWeight: 600, fontSize: '14px', marginBottom: '4px' }}
+            >
               {employee.name}
             </div>
             <div style={{ fontSize: '10px', color: '#64748b' }}>
@@ -191,7 +202,7 @@ export const DayViews: Story = () => {
           style: {
             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
             borderRadius: '8px',
-          }
+          },
         }}
         events={events}
         blockTimes={initialBlockTimes}
@@ -203,7 +214,9 @@ export const DayViews: Story = () => {
         onEventDrop={handleDrop}
         renderEvent={({ event }) => (
           <div style={{ padding: '12px', color: '#ffffff' }}>
-            <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 4 }}>{event.title}</div>
+            <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 4 }}>
+              {event.title}
+            </div>
             <div
               style={{ fontSize: 10, marginBottom: 4 }}
             >{`${event.start} - ${event.end}`}</div>
@@ -250,13 +263,29 @@ export const CustomEmployeeHeader: Story = () => {
     console.log('Date changed to:', date)
   }, [])
 
-  const handleTimeLabelClick = useCallback((timeLabel: string, index: number, timeSlot: string, employee: { id: string; name: string }) => {
-    console.log('Time label clicked:', { timeLabel, index, timeSlot, employee })
-  }, [])
+  const handleTimeLabelClick = useCallback(
+    (
+      timeLabel: string,
+      index: number,
+      timeSlot: string,
+      employee: { id: string; name: string }
+    ) => {
+      console.log('Time label clicked:', {
+        timeLabel,
+        index,
+        timeSlot,
+        employee,
+      })
+    },
+    []
+  )
 
-  const handleEventClick = useCallback((event: CalendarEventData, employee: { id: string; name: string }) => {
-    console.log('Event clicked:', { event, employee })
-  }, [])
+  const handleEventClick = useCallback(
+    (event: CalendarEventData, employee: { id: string; name: string }) => {
+      console.log('Event clicked:', { event, employee })
+    },
+    []
+  )
 
   // 自定义员工头部渲染函数
   const renderEmployee = (employee: Employee, index: number) => (
@@ -268,44 +297,53 @@ export const CustomEmployeeHeader: Story = () => {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '12px 8px',
-        background: index % 2 === 0 
-          ? 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)' 
-          : 'linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%)',
+        background:
+          index % 2 === 0
+            ? 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)'
+            : 'linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%)',
         borderRight: '1px solid rgba(226, 232, 240, 0.6)',
         minHeight: '60px',
         transition: 'all 0.2s ease-in-out',
         cursor: 'pointer',
       }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.background = 'linear-gradient(145deg, #dbeafe 0%, #bfdbfe 100%)'
+      onMouseEnter={e => {
+        e.currentTarget.style.background =
+          'linear-gradient(145deg, #dbeafe 0%, #bfdbfe 100%)'
       }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.background = index % 2 === 0 
-          ? 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)' 
-          : 'linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%)'
+      onMouseLeave={e => {
+        e.currentTarget.style.background =
+          index % 2 === 0
+            ? 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)'
+            : 'linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%)'
       }}
     >
-      <div style={{ 
-        fontWeight: 600, 
-        fontSize: '14px', 
-        color: '#1e293b',
-        marginBottom: '4px'
-      }}>
+      <div
+        style={{
+          fontWeight: 600,
+          fontSize: '14px',
+          color: '#1e293b',
+          marginBottom: '4px',
+        }}
+      >
         {employee.name}
       </div>
-      <div style={{ 
-        fontSize: '10px', 
-        color: '#64748b',
-        textAlign: 'center',
-        lineHeight: '1.2'
-      }}>
+      <div
+        style={{
+          fontSize: '10px',
+          color: '#64748b',
+          textAlign: 'center',
+          lineHeight: '1.2',
+        }}
+      >
         Employee #{index + 1}
       </div>
-      <div style={{ 
-        fontSize: '8px', 
-        color: '#94a3b8',
-        marginTop: '2px'
-      }}>
+      <div
+        style={{
+          fontSize: '8px',
+          color: '#94a3b8',
+          marginTop: '2px',
+        }}
+      >
         Available
       </div>
     </div>
@@ -338,11 +376,13 @@ export const CustomEmployeeHeader: Story = () => {
           minColumnWidth: 150,
           style: {
             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-          }
+          },
         }}
         renderEvent={({ event }) => (
           <div style={{ padding: '12px', color: '#ffffff' }}>
-            <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 4 }}>{event.title}</div>
+            <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 4 }}>
+              {event.title}
+            </div>
             <div
               style={{ fontSize: 10, marginBottom: 4 }}
             >{`${event.start} - ${event.end}`}</div>
@@ -389,13 +429,29 @@ export const AdvancedEmployeeHeader: Story = () => {
     console.log('Date changed to:', date)
   }, [])
 
-  const handleTimeLabelClick = useCallback((timeLabel: string, index: number, timeSlot: string, employee: { id: string; name: string }) => {
-    console.log('Time label clicked:', { timeLabel, index, timeSlot, employee })
-  }, [])
+  const handleTimeLabelClick = useCallback(
+    (
+      timeLabel: string,
+      index: number,
+      timeSlot: string,
+      employee: { id: string; name: string }
+    ) => {
+      console.log('Time label clicked:', {
+        timeLabel,
+        index,
+        timeSlot,
+        employee,
+      })
+    },
+    []
+  )
 
-  const handleEventClick = useCallback((event: CalendarEventData, employee: { id: string; name: string }) => {
-    console.log('Event clicked:', { event, employee })
-  }, [])
+  const handleEventClick = useCallback(
+    (event: CalendarEventData, employee: { id: string; name: string }) => {
+      console.log('Event clicked:', { event, employee })
+    },
+    []
+  )
 
   // 高级自定义员工头部渲染函数
   const renderAdvancedEmployee = (employee: Employee) => {
@@ -403,13 +459,13 @@ export const AdvancedEmployeeHeader: Story = () => {
     const currentServices = Math.floor(Math.random() * 8) + 1 // 1-8
     const maxServices = 10
     const servicePercentage = (currentServices / maxServices) * 100
-    
+
     // 根据当前服务数量判断是否在服务中
     const isServing = currentServices > 2
     const status = isServing ? 'Serving' : 'Available'
     const statusColors = {
-      'Serving': '#f59e0b', // 橙色 - 正在服务
-      'Available': '#10b981' // 绿色 - 空闲
+      Serving: '#f59e0b', // 橙色 - 正在服务
+      Available: '#10b981', // 绿色 - 空闲
     }
 
     // 根据服务量计算进度条颜色
@@ -435,13 +491,15 @@ export const AdvancedEmployeeHeader: Story = () => {
           cursor: 'pointer',
           position: 'relative',
         }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = 'linear-gradient(145deg, #dbeafe 0%, #bfdbfe 100%)'
+        onMouseEnter={e => {
+          e.currentTarget.style.background =
+            'linear-gradient(145deg, #dbeafe 0%, #bfdbfe 100%)'
           e.currentTarget.style.transform = 'translateY(-2px)'
           e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)'
         }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)'
+        onMouseLeave={e => {
+          e.currentTarget.style.background =
+            'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)'
           e.currentTarget.style.transform = 'translateY(0)'
           e.currentTarget.style.boxShadow = 'none'
         }}
@@ -460,7 +518,7 @@ export const AdvancedEmployeeHeader: Story = () => {
             boxShadow: '0 0 0 1px rgba(0, 0, 0, 0.1)',
           }}
         />
-        
+
         {/* 员工头像区域 */}
         <div
           style={{
@@ -483,77 +541,92 @@ export const AdvancedEmployeeHeader: Story = () => {
 
         {/* 员工信息 */}
         <div style={{ textAlign: 'center', flex: 1, width: '100%' }}>
-          <div style={{ 
-            fontWeight: 600, 
-            fontSize: '13px', 
-            color: '#1e293b',
-            marginBottom: '4px',
-            lineHeight: '1.2'
-          }}>
+          <div
+            style={{
+              fontWeight: 600,
+              fontSize: '13px',
+              color: '#1e293b',
+              marginBottom: '4px',
+              lineHeight: '1.2',
+            }}
+          >
             {employee.name}
           </div>
-          
-          <div style={{ 
-            fontSize: '8px', 
-            color: statusColors[status as keyof typeof statusColors],
-            fontWeight: '500',
-            padding: '2px 6px',
-            backgroundColor: `${statusColors[status as keyof typeof statusColors]}20`,
-            borderRadius: '4px',
-            display: 'inline-block',
-            marginBottom: '6px'
-          }}>
+
+          <div
+            style={{
+              fontSize: '8px',
+              color: statusColors[status as keyof typeof statusColors],
+              fontWeight: '500',
+              padding: '2px 6px',
+              backgroundColor: `${statusColors[status as keyof typeof statusColors]}20`,
+              borderRadius: '4px',
+              display: 'inline-block',
+              marginBottom: '6px',
+            }}
+          >
             {status}
           </div>
 
           {/* 服务数量展示 */}
-          <div style={{ 
-            marginBottom: '4px',
-            fontSize: '9px',
-            color: '#64748b',
-            fontWeight: '500'
-          }}>
+          <div
+            style={{
+              marginBottom: '4px',
+              fontSize: '9px',
+              color: '#64748b',
+              fontWeight: '500',
+            }}
+          >
             services: {currentServices}/{maxServices}
           </div>
 
           {/* 进度条 */}
-          <div style={{
-            width: '100%',
-            height: '4px',
-            backgroundColor: '#e2e8f0',
-            borderRadius: '2px',
-            overflow: 'hidden',
-            marginBottom: '2px',
-            position: 'relative'
-          }}>
-            <div style={{
-              width: `${servicePercentage}%`,
-              height: '100%',
-              backgroundColor: getProgressColor(servicePercentage),
+          <div
+            style={{
+              width: '100%',
+              height: '4px',
+              backgroundColor: '#e2e8f0',
               borderRadius: '2px',
-              transition: 'all 0.3s ease-in-out',
-              position: 'relative'
-            }}>
+              overflow: 'hidden',
+              marginBottom: '2px',
+              position: 'relative',
+            }}
+          >
+            <div
+              style={{
+                width: `${servicePercentage}%`,
+                height: '100%',
+                backgroundColor: getProgressColor(servicePercentage),
+                borderRadius: '2px',
+                transition: 'all 0.3s ease-in-out',
+                position: 'relative',
+              }}
+            >
               {/* 进度条光泽效果 */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: '50%',
-                background: 'linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 100%)',
-                borderRadius: '2px 2px 0 0'
-              }} />
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '50%',
+                  background:
+                    'linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 100%)',
+                  borderRadius: '2px 2px 0 0',
+                }}
+              />
             </div>
           </div>
 
           {/* 百分比文字 */}
-          <div style={{
-            fontSize: '7px',
-            color: getProgressColor(servicePercentage),
-            fontWeight: '600',
-            textAlign: 'center'
-          }}>
+          <div
+            style={{
+              fontSize: '7px',
+              color: getProgressColor(servicePercentage),
+              fontWeight: '600',
+              textAlign: 'center',
+            }}
+          >
             {Math.round(servicePercentage)}%
           </div>
         </div>
@@ -588,11 +661,13 @@ export const AdvancedEmployeeHeader: Story = () => {
           style: {
             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
             borderRadius: '8px',
-          }
+          },
         }}
         renderEvent={({ event }) => (
           <div style={{ padding: '12px', color: '#ffffff' }}>
-            <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 4 }}>{event.title}</div>
+            <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 4 }}>
+              {event.title}
+            </div>
             <div
               style={{ fontSize: 10, marginBottom: 4 }}
             >{`${event.start} - ${event.end}`}</div>

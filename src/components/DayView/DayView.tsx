@@ -45,9 +45,7 @@ const DayView: React.FC<DayViewProps> = ({
       return employees
     }
     const sourceIds =
-      employeeIds && employeeIds.length > 0
-        ? employeeIds
-        : DEFAULT_EMPLOYEE_IDS
+      employeeIds && employeeIds.length > 0 ? employeeIds : DEFAULT_EMPLOYEE_IDS
     return sourceIds.map<DayViewEmployee>(id => ({ id, name: `${id}` }))
   }, [employees, employeeIds])
 
@@ -113,9 +111,9 @@ const DayView: React.FC<DayViewProps> = ({
       />
       <div className={styles.dayViewContent}>
         <div className={styles.timeColumnArea}>
-          <TimeColumn 
-            cellHeight={slotsHeight} 
-            timeSlots={timeSlots} 
+          <TimeColumn
+            cellHeight={slotsHeight}
+            timeSlots={timeSlots}
             headerHeight={headerHeight}
           />
         </div>

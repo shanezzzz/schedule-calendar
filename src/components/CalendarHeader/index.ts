@@ -1,2 +1,2 @@
-export { default } from './CalendarHeader';
-export type { CalendarHeaderProps } from './types';
+export { default } from './CalendarHeader'
+export type { CalendarHeaderProps } from './types'

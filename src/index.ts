@@ -23,7 +23,11 @@ export { default as CalendarHeader } from './components/CalendarHeader'
 export type * from './components/CalendarHeader'
 
 export type { BlockTime, EmployeeBlockTimes } from './types/blockTime'
-export { isTimeBlocked, isTimeRangeBlocked, getEmployeeBlockTimes } from './types/blockTime'
+export {
+  isTimeBlocked,
+  isTimeRangeBlocked,
+  getEmployeeBlockTimes,
+} from './types/blockTime'
 
 // Auto-import styles - out of the box
 import './styles/index.css'

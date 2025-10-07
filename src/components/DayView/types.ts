@@ -1,10 +1,15 @@
 import type { CSSProperties, ReactNode } from 'react'
 import type { CalendarEventData } from '../CalendarEvent'
 import type { CalendarGridDropResult } from '../CalendarGrid'
-import type { Employee, EmployeeHeaderProps, EmployeeRenderer } from '../EmployeeHeader'
+import type {
+  Employee,
+  EmployeeHeaderProps,
+  EmployeeRenderer,
+} from '../EmployeeHeader'
 import type { EmployeeBlockTimes } from '../../types/blockTime'
 
-export type DayViewEmployee = Pick<Employee, 'id' | 'name'> & Record<string, unknown>
+export type DayViewEmployee = Pick<Employee, 'id' | 'name'> &
+  Record<string, unknown>
 
 export type DayViewEventClickHandler = (
   event: CalendarEventData,

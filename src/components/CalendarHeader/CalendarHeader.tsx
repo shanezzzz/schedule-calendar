@@ -105,7 +105,9 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
     (direction: 'prev' | 'next') => {
       setMonthCursor(prev => {
         const nextMonth =
-          direction === 'next' ? prev.add(1, 'month') : prev.subtract(1, 'month')
+          direction === 'next'
+            ? prev.add(1, 'month')
+            : prev.subtract(1, 'month')
         onMonthChange?.(nextMonth.toDate())
         return nextMonth
       })

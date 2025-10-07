@@ -1,2 +1,2 @@
-export { default } from './TimeColumn';
-export type { TimeColumnProps } from './types';
+export { default } from './TimeColumn'
+export type { TimeColumnProps } from './types'

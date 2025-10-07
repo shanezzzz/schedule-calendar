@@ -20,13 +20,13 @@ export default defineConfig({
         '**/*.config.*',
         'dist/',
         'coverage/',
-        'storybook-static/'
-      ]
-    }
+        'storybook-static/',
+      ],
+    },
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src')
-    }
-  }
+      '@': resolve(__dirname, 'src'),
+    },
+  },
 })

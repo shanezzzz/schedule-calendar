@@ -1,16 +1,23 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import CalendarCell from '../CalendarCell';
-import type { CalendarCellEmployee } from '../CalendarCell';
-import CalendarEvent from '../CalendarEvent';
-import styles from './CalendarGrid.module.scss';
-import { addMinutesToSlot, differenceInMinutes, slotToMinutes } from '../../utils/util';
-import { getEmployeeBlockTimes, isTimeRangeBlocked } from '../../types/blockTime';
+import React, { useCallback, useMemo, useRef, useState } from 'react'
+import CalendarCell from '../CalendarCell'
+import type { CalendarCellEmployee } from '../CalendarCell'
+import CalendarEvent from '../CalendarEvent'
+import styles from './CalendarGrid.module.scss'
+import {
+  addMinutesToSlot,
+  differenceInMinutes,
+  slotToMinutes,
+} from '../../utils/util'
+import {
+  getEmployeeBlockTimes,
+  isTimeRangeBlocked,
+} from '../../types/blockTime'
 import type {
   CalendarEventData,
   CalendarEventDragMeta,
-  CalendarEventRenderContext
-} from '../CalendarEvent';
-import type { CalendarGridProps } from './types';
+  CalendarEventRenderContext,
+} from '../CalendarEvent'
+import type { CalendarGridProps } from './types'
 
 const CalendarGrid: React.FC<CalendarGridProps> = ({
   events = [],
@@ -26,243 +33,285 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   onEventDragEnd,
   onEventDrop,
   onTimeLabelClick,
-  renderEvent
+  renderEvent,
 }) => {
-  const displayTimeSlots = timeSlots.length > 0 ? timeSlots : [];
+  const displayTimeSlots = useMemo(
+    () => (timeSlots.length > 0 ? timeSlots : []),
+    [timeSlots]
+  )
   const displayEmployeeIds = useMemo(() => {
     if (employeeIds.length > 0) {
-      return employeeIds;
+      return employeeIds
     }
     if (employees && employees.length > 0) {
-      return employees.map(employee => employee.id);
+      return employees.map(employee => employee.id)
     }
-    return [];
-  }, [employeeIds, employees]);
-  const eventLayerRef = useRef<HTMLDivElement>(null);
-  const [activeEventId, setActiveEventId] = useState<string | null>(null);
+    return []
+  }, [employeeIds, employees])
+  const eventLayerRef = useRef<HTMLDivElement>(null)
+  const [activeEventId, setActiveEventId] = useState<string | null>(null)
   const dragOriginRef = useRef<{
-    eventId: string;
-    columnIndex: number;
-    rowIndex: number;
-    startSlot: string;
-  } | null>(null);
+    eventId: string
+    columnIndex: number
+    rowIndex: number
+    startSlot: string
+  } | null>(null)
 
-  const hasDragCapability = Boolean(onEventDrop || onEventDrag || onEventDragEnd);
+  const hasDragCapability = Boolean(
+    onEventDrop || onEventDrag || onEventDragEnd
+  )
 
   const employeeMap = useMemo(() => {
-    const map = new Map<string, CalendarCellEmployee>();
+    const map = new Map<string, CalendarCellEmployee>()
     employees?.forEach(employee => {
-      map.set(employee.id, employee);
-    });
-    return map;
-  }, [employees]);
+      map.set(employee.id, employee)
+    })
+    return map
+  }, [employees])
 
   const getEmployeeData = useCallback(
     (employeeId: string): CalendarCellEmployee => {
-      const matched = employeeMap.get(employeeId);
-      return matched ?? { id: employeeId, name: employeeId };
+      const matched = employeeMap.get(employeeId)
+      return matched ?? { id: employeeId, name: employeeId }
     },
     [employeeMap]
-  );
+  )
 
   const gridStyle = useMemo(
     () => ({
       gridTemplateColumns: `repeat(${displayEmployeeIds.length}, 1fr)`,
-      gridTemplateRows: `repeat(${displayTimeSlots.length}, ${cellHeight}px)`
+      gridTemplateRows: `repeat(${displayTimeSlots.length}, ${cellHeight}px)`,
     }),
     [cellHeight, displayEmployeeIds.length, displayTimeSlots.length]
-  );
+  )
 
   const slotIntervalMinutes = useMemo(() => {
     if (displayTimeSlots.length < 2) {
-      return stepMinutes > 0 ? stepMinutes : 30;
+      return stepMinutes > 0 ? stepMinutes : 30
     }
 
     for (let i = 1; i < displayTimeSlots.length; i += 1) {
-      const diff = differenceInMinutes(displayTimeSlots[0], displayTimeSlots[i]);
+      const diff = differenceInMinutes(displayTimeSlots[0], displayTimeSlots[i])
       if (diff > 0) {
-        return diff;
+        return diff
       }
     }
 
-    return stepMinutes > 0 ? stepMinutes : 30;
-  }, [displayTimeSlots, stepMinutes]);
+    return stepMinutes > 0 ? stepMinutes : 30
+  }, [displayTimeSlots, stepMinutes])
 
   const minSlotMinutes = useMemo(() => {
     if (displayTimeSlots.length === 0) {
-      return 0;
+      return 0
     }
-    return slotToMinutes(displayTimeSlots[0]) ?? 0;
-  }, [displayTimeSlots]);
+    return slotToMinutes(displayTimeSlots[0]) ?? 0
+  }, [displayTimeSlots])
 
   const eventLayouts = useMemo(() => {
-    const layoutMap = new Map<string, { column: number; columns: number }>();
+    const layoutMap = new Map<string, { column: number; columns: number }>()
 
     displayEmployeeIds.forEach(employeeId => {
       const employeeEvents = events
         .filter(evt => evt.employeeId === employeeId)
         .map(evt => {
-          const start = slotToMinutes(evt.start);
+          const start = slotToMinutes(evt.start)
           if (start === null) {
-            return null;
+            return null
           }
-          const duration = differenceInMinutes(evt.start, evt.end);
+          const duration = differenceInMinutes(evt.start, evt.end)
           return {
             start,
             end: start + duration,
-            event: evt
-          };
+            event: evt,
+          }
         })
-        .filter((value): value is { start: number; end: number; event: CalendarEventData } => value !== null)
-        .sort((a, b) => a.start - b.start);
+        .filter(
+          (
+            value
+          ): value is {
+            start: number
+            end: number
+            event: CalendarEventData
+          } => value !== null
+        )
+        .sort((a, b) => a.start - b.start)
 
-      const active: Array<{ id: string; end: number; column: number }> = [];
+      const active: Array<{ id: string; end: number; column: number }> = []
 
       employeeEvents.forEach(item => {
         for (let idx = active.length - 1; idx >= 0; idx -= 1) {
           if (active[idx].end <= item.start) {
-            active.splice(idx, 1);
+            active.splice(idx, 1)
           }
         }
 
-        const usedColumns = new Set(active.map(entry => entry.column));
-        let column = 0;
+        const usedColumns = new Set(active.map(entry => entry.column))
+        let column = 0
         while (usedColumns.has(column)) {
-          column += 1;
+          column += 1
         }
 
-        active.push({ id: item.event.id, end: item.end, column });
-        const currentColumns = active.length;
+        active.push({ id: item.event.id, end: item.end, column })
+        const currentColumns = active.length
 
         active.forEach(entry => {
-          const existing = layoutMap.get(entry.id) ?? { column: entry.column, columns: 1 };
-          existing.column = entry.column;
-          existing.columns = Math.max(existing.columns, currentColumns);
-          layoutMap.set(entry.id, existing);
-        });
-      });
-    });
+          const existing = layoutMap.get(entry.id) ?? {
+            column: entry.column,
+            columns: 1,
+          }
+          existing.column = entry.column
+          existing.columns = Math.max(existing.columns, currentColumns)
+          layoutMap.set(entry.id, existing)
+        })
+      })
+    })
 
-    return layoutMap;
-  }, [displayEmployeeIds, events]);
+    return layoutMap
+  }, [displayEmployeeIds, events])
 
   const clampIndex = useCallback((value: number, max: number) => {
-    if (max <= 0) return 0;
-    if (value < 0) return 0;
-    if (value >= max) return max - 1;
-    return value;
-  }, []);
+    if (max <= 0) return 0
+    if (value < 0) return 0
+    if (value >= max) return max - 1
+    return value
+  }, [])
 
   const handleDragStart = useCallback(
     (event: CalendarEventData) => {
-      setActiveEventId(event.id);
+      setActiveEventId(event.id)
 
-      const columnIndex = displayEmployeeIds.indexOf(event.employeeId);
+      const columnIndex = displayEmployeeIds.indexOf(event.employeeId)
       const rowIndex = (() => {
-        const directIndex = displayTimeSlots.indexOf(event.start);
+        const directIndex = displayTimeSlots.indexOf(event.start)
         if (directIndex !== -1) {
-          return directIndex;
+          return directIndex
         }
-        const startMinutes = slotToMinutes(event.start);
+        const startMinutes = slotToMinutes(event.start)
         if (startMinutes === null || slotIntervalMinutes <= 0) {
-          return -1;
+          return -1
         }
-        const relative = startMinutes - minSlotMinutes;
-        const computed = Math.floor(relative / slotIntervalMinutes);
-        return Math.max(0, Math.min(displayTimeSlots.length - 1, computed));
-      })();
+        const relative = startMinutes - minSlotMinutes
+        const computed = Math.floor(relative / slotIntervalMinutes)
+        return Math.max(0, Math.min(displayTimeSlots.length - 1, computed))
+      })()
 
       if (columnIndex !== -1 && rowIndex !== -1) {
         dragOriginRef.current = {
           eventId: event.id,
           columnIndex,
           rowIndex,
-          startSlot: event.start
-        };
+          startSlot: event.start,
+        }
       } else {
-        dragOriginRef.current = null;
+        dragOriginRef.current = null
       }
     },
     [displayEmployeeIds, displayTimeSlots, minSlotMinutes, slotIntervalMinutes]
-  );
+  )
 
   const handleDrag = useCallback(
     (event: CalendarEventData, deltaX: number, deltaY: number) => {
-      onEventDrag?.(event, deltaX, deltaY);
+      onEventDrag?.(event, deltaX, deltaY)
     },
     [onEventDrag]
-  );
+  )
 
   const handleDragEnd = useCallback(
     (event: CalendarEventData, meta: CalendarEventDragMeta) => {
-      setActiveEventId(null);
+      setActiveEventId(null)
 
-      const moved = Math.abs(meta.delta.x) > 1 || Math.abs(meta.delta.y) > 1;
+      const moved = Math.abs(meta.delta.x) > 1 || Math.abs(meta.delta.y) > 1
       const origin =
         dragOriginRef.current && dragOriginRef.current.eventId === event.id
           ? dragOriginRef.current
-          : null;
+          : null
 
-      const container = eventLayerRef.current;
+      const container = eventLayerRef.current
 
-      if (!moved || !origin || !container || displayEmployeeIds.length === 0 || displayTimeSlots.length === 0) {
-        onEventDragEnd?.(event, event.employeeId, event.start);
-        dragOriginRef.current = null;
-        return;
+      if (
+        !moved ||
+        !origin ||
+        !container ||
+        displayEmployeeIds.length === 0 ||
+        displayTimeSlots.length === 0
+      ) {
+        onEventDragEnd?.(event, event.employeeId, event.start)
+        dragOriginRef.current = null
+        return
       }
 
-      const containerRect = container.getBoundingClientRect();
-      const columnWidth = containerRect.width / displayEmployeeIds.length;
-      const effectiveStepMinutes = stepMinutes > 0 ? stepMinutes : slotIntervalMinutes;
-      const pixelsPerStep = slotIntervalMinutes > 0 && effectiveStepMinutes > 0
-        ? (cellHeight * effectiveStepMinutes) / slotIntervalMinutes
-        : cellHeight;
+      const containerRect = container.getBoundingClientRect()
+      const columnWidth = containerRect.width / displayEmployeeIds.length
+      const effectiveStepMinutes =
+        stepMinutes > 0 ? stepMinutes : slotIntervalMinutes
+      const pixelsPerStep =
+        slotIntervalMinutes > 0 && effectiveStepMinutes > 0
+          ? (cellHeight * effectiveStepMinutes) / slotIntervalMinutes
+          : cellHeight
 
-      const columnOffset = columnWidth > 0 ? Math.round(meta.delta.x / columnWidth) : 0;
-      const stepOffset = pixelsPerStep > 0 ? Math.round(meta.delta.y / pixelsPerStep) : 0;
+      const columnOffset =
+        columnWidth > 0 ? Math.round(meta.delta.x / columnWidth) : 0
+      const stepOffset =
+        pixelsPerStep > 0 ? Math.round(meta.delta.y / pixelsPerStep) : 0
 
-      const targetColumn = clampIndex(origin.columnIndex + columnOffset, displayEmployeeIds.length);
+      const targetColumn = clampIndex(
+        origin.columnIndex + columnOffset,
+        displayEmployeeIds.length
+      )
 
-      const durationMinutes = differenceInMinutes(event.start, event.end);
-      const originStartMinutes = slotToMinutes(origin.startSlot) ?? minSlotMinutes;
-      const lastSlot = displayTimeSlots[displayTimeSlots.length - 1];
-      const lastSlotMinutes = slotToMinutes(lastSlot);
+      const durationMinutes = differenceInMinutes(event.start, event.end)
+      const originStartMinutes =
+        slotToMinutes(origin.startSlot) ?? minSlotMinutes
+      const lastSlot = displayTimeSlots[displayTimeSlots.length - 1]
+      const lastSlotMinutes = slotToMinutes(lastSlot)
 
-      const intervalMinutes = effectiveStepMinutes > 0 ? effectiveStepMinutes : 30;
-      const candidateMinutes = originStartMinutes + stepOffset * intervalMinutes;
+      const intervalMinutes =
+        effectiveStepMinutes > 0 ? effectiveStepMinutes : 30
+      const candidateMinutes = originStartMinutes + stepOffset * intervalMinutes
 
-      const scheduleEndMinutes = lastSlotMinutes !== null
-        ? lastSlotMinutes + slotIntervalMinutes
-        : originStartMinutes + durationMinutes;
+      const scheduleEndMinutes =
+        lastSlotMinutes !== null
+          ? lastSlotMinutes + slotIntervalMinutes
+          : originStartMinutes + durationMinutes
 
-      const maxStartMinutes = scheduleEndMinutes - durationMinutes;
+      const maxStartMinutes = scheduleEndMinutes - durationMinutes
 
-      const clampedStartMinutes = Math.max(minSlotMinutes, Math.min(candidateMinutes, maxStartMinutes));
-      const targetEmployeeId = displayEmployeeIds[targetColumn];
-      const offsetFromMin = clampedStartMinutes - minSlotMinutes;
-      const baseSlot = displayTimeSlots[0] ?? origin.startSlot;
-      const targetStart = addMinutesToSlot(baseSlot, offsetFromMin);
+      const clampedStartMinutes = Math.max(
+        minSlotMinutes,
+        Math.min(candidateMinutes, maxStartMinutes)
+      )
+      const targetEmployeeId = displayEmployeeIds[targetColumn]
+      const offsetFromMin = clampedStartMinutes - minSlotMinutes
+      const baseSlot = displayTimeSlots[0] ?? origin.startSlot
+      const targetStart = addMinutesToSlot(baseSlot, offsetFromMin)
 
-      const targetEnd = addMinutesToSlot(targetStart, durationMinutes);
+      const targetEnd = addMinutesToSlot(targetStart, durationMinutes)
 
       // 检查目标时间范围是否与 Block Time 重叠
-      const employeeBlockTimes = getEmployeeBlockTimes(targetEmployeeId, blockTimes);
-      const isTargetBlocked = isTimeRangeBlocked(targetStart, targetEnd, employeeBlockTimes);
+      const employeeBlockTimes = getEmployeeBlockTimes(
+        targetEmployeeId,
+        blockTimes
+      )
+      const isTargetBlocked = isTimeRangeBlocked(
+        targetStart,
+        targetEnd,
+        employeeBlockTimes
+      )
 
       if (!isTargetBlocked) {
         onEventDrop?.(event, {
           employeeId: targetEmployeeId,
           start: targetStart,
-          end: targetEnd
-        });
+          end: targetEnd,
+        })
 
-        onEventDragEnd?.(event, targetEmployeeId, targetStart);
+        onEventDragEnd?.(event, targetEmployeeId, targetStart)
       } else {
         // 如果目标位置被阻塞，恢复到原始位置
-        console.warn('Cannot drop event on blocked time slot');
-        onEventDragEnd?.(event, event.employeeId, event.start);
+        console.warn('Cannot drop event on blocked time slot')
+        onEventDragEnd?.(event, event.employeeId, event.start)
       }
-      dragOriginRef.current = null;
+      dragOriginRef.current = null
     },
     [
       cellHeight,
@@ -274,49 +323,66 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
       onEventDrop,
       slotIntervalMinutes,
       stepMinutes,
-      minSlotMinutes
+      minSlotMinutes,
     ]
-  );
+  )
 
   const renderCalendarEvent = useCallback(
     (calendarEvent: CalendarEventData) => {
-      const employeeIndex = displayEmployeeIds.indexOf(calendarEvent.employeeId);
+      const employeeIndex = displayEmployeeIds.indexOf(calendarEvent.employeeId)
 
       if (employeeIndex === -1 || displayTimeSlots.length === 0) {
-        return null;
+        return null
       }
 
-      const startMinutes = slotToMinutes(calendarEvent.start);
+      const startMinutes = slotToMinutes(calendarEvent.start)
       if (startMinutes === null) {
-        return null;
+        return null
       }
 
-      const eventDuration = differenceInMinutes(calendarEvent.start, calendarEvent.end);
-      const interval = slotIntervalMinutes > 0 ? slotIntervalMinutes : ((stepMinutes > 0 ? stepMinutes : 30));
-      const relativeStart = Math.max(0, startMinutes - minSlotMinutes);
-      const baseRowIndex = interval > 0 ? Math.floor(relativeStart / interval) : 0;
-      const clampedRowIndex = Math.min(Math.max(baseRowIndex, 0), displayTimeSlots.length - 1);
-      const rowStart = clampedRowIndex + 1;
-      const baseRowStartMinutes = minSlotMinutes + clampedRowIndex * interval;
-      const offsetMinutes = Math.max(0, startMinutes - baseRowStartMinutes);
-      const totalMinutes = offsetMinutes + eventDuration;
-      const rowSpan = interval > 0 ? Math.max(1, Math.ceil(totalMinutes / interval)) : 1;
-      const maxGridLine = displayTimeSlots.length + 1;
-      const rowEnd = Math.min(maxGridLine, rowStart + rowSpan);
+      const eventDuration = differenceInMinutes(
+        calendarEvent.start,
+        calendarEvent.end
+      )
+      const interval =
+        slotIntervalMinutes > 0
+          ? slotIntervalMinutes
+          : stepMinutes > 0
+            ? stepMinutes
+            : 30
+      const relativeStart = Math.max(0, startMinutes - minSlotMinutes)
+      const baseRowIndex =
+        interval > 0 ? Math.floor(relativeStart / interval) : 0
+      const clampedRowIndex = Math.min(
+        Math.max(baseRowIndex, 0),
+        displayTimeSlots.length - 1
+      )
+      const rowStart = clampedRowIndex + 1
+      const baseRowStartMinutes = minSlotMinutes + clampedRowIndex * interval
+      const offsetMinutes = Math.max(0, startMinutes - baseRowStartMinutes)
+      const totalMinutes = offsetMinutes + eventDuration
+      const rowSpan =
+        interval > 0 ? Math.max(1, Math.ceil(totalMinutes / interval)) : 1
+      const maxGridLine = displayTimeSlots.length + 1
+      const rowEnd = Math.min(maxGridLine, rowStart + rowSpan)
 
-      const marginTop = interval > 0 ? (offsetMinutes / interval) * cellHeight : 0;
-      const heightPx = interval > 0 ? (eventDuration / interval) * cellHeight : cellHeight;
+      const marginTop =
+        interval > 0 ? (offsetMinutes / interval) * cellHeight : 0
+      const heightPx =
+        interval > 0 ? (eventDuration / interval) * cellHeight : cellHeight
 
-      const layoutMeta = eventLayouts.get(calendarEvent.id);
-      const overlapGap = 4;
-      const CellWidth = 94;
-      const widthPercent = layoutMeta ? CellWidth / layoutMeta.columns : 100;
-      const widthStyle = layoutMeta && layoutMeta.columns > 1
-        ? `calc(${widthPercent}% - ${overlapGap}px)`
-        : '100%';
-      const marginLeftStyle = layoutMeta && layoutMeta.columns > 1
-        ? `calc(${widthPercent * layoutMeta.column}% + ${layoutMeta.column * overlapGap}px)`
-        : undefined;
+      const layoutMeta = eventLayouts.get(calendarEvent.id)
+      const overlapGap = 4
+      const CellWidth = 94
+      const widthPercent = layoutMeta ? CellWidth / layoutMeta.columns : 100
+      const widthStyle =
+        layoutMeta && layoutMeta.columns > 1
+          ? `calc(${widthPercent}% - ${overlapGap}px)`
+          : '100%'
+      const marginLeftStyle =
+        layoutMeta && layoutMeta.columns > 1
+          ? `calc(${widthPercent * layoutMeta.column}% + ${layoutMeta.column * overlapGap}px)`
+          : undefined
 
       const style: React.CSSProperties = {
         gridColumn: employeeIndex + 1,
@@ -325,32 +391,36 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
         marginTop,
         height: `${Math.max(heightPx, 6)}px`,
         alignSelf: 'start',
-        width: widthStyle
-      };
-
-      if (marginLeftStyle) {
-        style.marginLeft = marginLeftStyle;
+        width: widthStyle,
       }
 
-      const container = eventLayerRef.current;
-      const columnWidth = container && displayEmployeeIds.length > 0
-        ? container.getBoundingClientRect().width / displayEmployeeIds.length
-        : 0;
+      if (marginLeftStyle) {
+        style.marginLeft = marginLeftStyle
+      }
 
-      const effectiveStepMinutes = stepMinutes > 0 ? stepMinutes : slotIntervalMinutes;
-      const pixelsPerStep = slotIntervalMinutes > 0 && effectiveStepMinutes > 0
-        ? (cellHeight * effectiveStepMinutes) / slotIntervalMinutes
-        : cellHeight;
+      const container = eventLayerRef.current
+      const columnWidth =
+        container && displayEmployeeIds.length > 0
+          ? container.getBoundingClientRect().width / displayEmployeeIds.length
+          : 0
 
-      const snapToGrid = columnWidth > 0 && pixelsPerStep > 0
-        ? {
-            columnWidth,
-            rowHeight: pixelsPerStep
-          }
-        : undefined;
+      const effectiveStepMinutes =
+        stepMinutes > 0 ? stepMinutes : slotIntervalMinutes
+      const pixelsPerStep =
+        slotIntervalMinutes > 0 && effectiveStepMinutes > 0
+          ? (cellHeight * effectiveStepMinutes) / slotIntervalMinutes
+          : cellHeight
+
+      const snapToGrid =
+        columnWidth > 0 && pixelsPerStep > 0
+          ? {
+              columnWidth,
+              rowHeight: pixelsPerStep,
+            }
+          : undefined
 
       // 获取当前事件的员工信息
-      const employeeData = getEmployeeData(calendarEvent.employeeId);
+      const employeeData = getEmployeeData(calendarEvent.employeeId)
 
       return (
         <CalendarEvent
@@ -364,20 +434,23 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
           snapToGrid={snapToGrid}
           onClick={onEventClick}
           onDragStart={(evt, meta) => {
-            handleDragStart(evt);
-            handleDrag(evt, meta.delta.x, meta.delta.y);
+            handleDragStart(evt)
+            handleDrag(evt, meta.delta.x, meta.delta.y)
           }}
           onDrag={(evt, meta) => {
-            handleDrag(evt, meta.delta.x, meta.delta.y);
+            handleDrag(evt, meta.delta.x, meta.delta.y)
           }}
           onDragEnd={(evt, meta) => handleDragEnd(evt, meta)}
         >
           {renderEvent
-            ? ((context: CalendarEventRenderContext) =>
-                renderEvent({ event: context.event, isDragging: context.isDragging }))
+            ? (context: CalendarEventRenderContext) =>
+                renderEvent({
+                  event: context.event,
+                  isDragging: context.isDragging,
+                })
             : undefined}
         </CalendarEvent>
-      );
+      )
     },
     [
       activeEventId,
@@ -395,16 +468,19 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
       cellHeight,
       stepMinutes,
       use24HourFormat,
-      getEmployeeData
+      getEmployeeData,
     ]
-  );
+  )
 
   return (
     <div className={styles.calendarGrid}>
       <div className={styles.gridContainer} style={gridStyle}>
         {displayTimeSlots.map((timeSlot, timeIndex) =>
           displayEmployeeIds.map((employeeId, empIndex) => {
-            const employeeBlockTimes = getEmployeeBlockTimes(employeeId, blockTimes);
+            const employeeBlockTimes = getEmployeeBlockTimes(
+              employeeId,
+              blockTimes
+            )
             return (
               <CalendarCell
                 key={`${timeIndex}-${empIndex}`}
@@ -416,7 +492,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
                 blockTimes={employeeBlockTimes}
                 onTimeLabelClick={onTimeLabelClick}
               />
-            );
+            )
           })
         )}
       </div>
@@ -425,7 +501,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
         {events.map(renderCalendarEvent)}
       </div>
     </div>
-  );
-};
+  )
+}
 
 export default CalendarGrid
