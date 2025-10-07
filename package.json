@@ -82,12 +82,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/schedule-calendar.git"
+    "url": "https://github.com/shanezzzz/schedule-calendar.git"
   },
   "bugs": {
-    "url": "https://github.com/your-username/schedule-calendar/issues"
+    "url": "https://github.com/shanezzzz/schedule-calendar/issues"
   },
-  "homepage": "https://github.com/your-username/schedule-calendar#readme",
+  "homepage": "https://github.com/shanezzzz/schedule-calendar#readme",
   "dependencies": {
     "dayjs": "^1.11.18"
   }
