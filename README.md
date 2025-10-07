@@ -130,6 +130,23 @@ const blockTimes = {
 />
 ```
 
+## 🎨 Styling
+
+Component styles are encapsulated via CSS Modules so importing `schedule-calendar` does not modify host application globals. If you want the pre-built theme (rounded corners, subtle gradients, minimal scrollbars), opt in explicitly:
+
+```ts
+import 'schedule-calendar/styles'
+```
+
+You can always wrap `DayView` with your own classes for a fully bespoke look.
+
+## 🚢 Release & Automation
+
+1. Run `npm version <patch|minor|major>` to bump the semver and create a git tag (e.g. `v0.1.0`).
+2. Push the commit and tag: `git push origin HEAD --tags`.
+3. The **Publish to npm** workflow builds, verifies, and publishes the package automatically. Add an `NPM_TOKEN` secret with publish rights before triggering the workflow.
+4. For a manual publish, execute `npm run release:dry-run` locally, then `npm run release` once the artifacts look correct.
+
 ## 📚 Documentation
 
 - **[API Documentation](./API.md)** - Detailed API reference for all components and props

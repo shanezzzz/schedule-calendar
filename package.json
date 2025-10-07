@@ -17,11 +17,16 @@
     "dist",
     "README.md"
   ],
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "dev": "vite",
+    "clean": "node -e \"fs.rmSync('dist',{recursive:true,force:true})\"",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "vitest",
+    "test": "vitest run",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
     "storybook": "ladle serve",
@@ -31,7 +36,11 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "type-check": "tsc --noEmit",
-    "prepare": "npm run build"
+    "verify": "npm run lint && npm run type-check && npm test",
+    "release:dry-run": "npm run clean && npm run build && npm publish --dry-run",
+    "release": "npm run verify && npm run clean && npm run build && npm publish --provenance --access public",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "react",
