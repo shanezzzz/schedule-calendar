@@ -1,9 +1,14 @@
 import { useCallback, useState } from 'react'
 import type { Story } from '@ladle/react'
 import DayView from './DayView'
-import { CalendarEventData } from '../CalendarEvent/CalendarEvent'
-import { Employee } from '../EmployeeHeader/EmployeeHeader'
-import { EmployeeBlockTimes } from '../../types/blockTime'
+import type { CalendarEventData } from '../CalendarEvent'
+import type { Employee } from '../EmployeeHeader'
+import type { EmployeeBlockTimes } from '../../types/blockTime'
+import type {
+  DayViewEventDropHandler,
+  DayViewEventClickHandler,
+  DayViewTimeLabelClickHandler
+} from './types'
 
 const initialEvents: CalendarEventData[] = [
   {
@@ -40,6 +45,16 @@ const initialEvents: CalendarEventData[] = [
     end: '12:00',
     employeeId: 'Tom',
   },
+]
+
+const employees: Employee[] = [
+  { id: 'Carry', name: 'Carry Johnson' },
+  { id: 'Lucy', name: 'Lucy Tran' },
+  { id: 'John', name: 'John Ikeda' },
+  { id: 'Tom', name: 'Tomas Garcia' },
+  { id: 'Jerry', name: 'Jerry Liu' },
+  { id: 'Alice', name: 'Alice Muller' },
+  { id: 'Bob', name: 'Bob Singh' },
 ]
 
 // 示例 Block Time 数据
@@ -87,11 +102,8 @@ export const DayViews: Story = () => {
   console.log('events', events)
   console.log('currentDate', currentDate)
 
-  const handleDrop = useCallback(
-    (
-      event: CalendarEventData,
-      next: { employeeId: string; start: string; end: string }
-    ) => {
+  const handleDrop = useCallback<DayViewEventDropHandler>(
+    (event, next) => {
       setEvents(prev =>
         prev.map(item =>
           item.id === event.id
@@ -113,11 +125,11 @@ export const DayViews: Story = () => {
     console.log('Date changed to:', date)
   }, [])
 
-  const handleTimeLabelClick = useCallback((timeLabel: string, index: number, timeSlot: string, employee: { id: string; name: string }) => {
+  const handleTimeLabelClick = useCallback<DayViewTimeLabelClickHandler>((timeLabel, index, timeSlot, employee) => {
     console.log('Time label clicked:', { timeLabel, index, timeSlot, employee })
   }, [])
 
-  const handleEventClick = useCallback((event: CalendarEventData, employee: { id: string; name: string }) => {
+  const handleEventClick = useCallback<DayViewEventClickHandler>((event, employee) => {
     console.log('Event clicked:', { event, employee })
   }, [])
 
@@ -147,7 +159,7 @@ export const DayViews: Story = () => {
         endHour={23}
         stepMinutes={15}
         use24HourFormat
-        employeeIds={['Carry', 'Lucy', 'John', 'Tom', 'Jerry', 'Alice', 'Bob']}
+        employees={employees}
         renderEmployee={(employee, index) => (
           <div 
             style={{ 
