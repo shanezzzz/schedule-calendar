@@ -1,0 +1,83 @@
+.dayView {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+.dayViewContent {
+  display: grid;
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  grid-template-areas: 
+    "time-column employee-header"
+    "time-column calendar-grid";
+  grid-template-columns: 80px 1fr;
+  grid-template-rows: auto 1fr;
+  
+  /* Ultra-minimal scrollbar for main content area */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.1) transparent;
+  
+  &::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    border: none;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.1);
+    border-radius: 1px;
+    transition: opacity 0.2s ease;
+    opacity: 0;
+  }
+  
+  &:hover::-webkit-scrollbar-thumb {
+    opacity: 0.4;
+  }
+  
+  &::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
+
+.timeColumnArea {
+  grid-area: time-column;
+  position: sticky;
+  left: 0;
+  z-index: 50;
+  overflow: visible; // 确保时间线可以显示
+}
+
+.employeeHeaderArea {
+  grid-area: employee-header;
+  position: sticky;
+  top: 0;
+  z-index: 15;
+}
+
+.calendarContainer {
+  grid-area: calendar-grid;
+  overflow: visible;
+  position: relative;
+  max-height: fit-content;
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .dayView {
+    height: 100vh;
+  }
+  
+  .dayViewContent {
+    grid-template-columns: 60px 1fr;
+  }
+}

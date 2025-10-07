@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自适应布局测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .demo-container {
+            height: 100vh;
+            overflow: hidden;
+        }
+        .demo-info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-width: 400px;
+        }
+        .demo-info h3 {
+            margin: 0 0 10px 0;
+            color: #1976d2;
+        }
+        .demo-info ul {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 14px;
+        }
+        .demo-info li {
+            margin-bottom: 5px;
+        }
+        .highlight {
+            background-color: #d4edda;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #155724;
+        }
+        .feature {
+            background-color: #e7f3ff;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #0066cc;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-info">
+            <h3>自适应布局功能测试</h3>
+            <ul>
+                <li><span class="highlight">✅ 高度自适应</span>：CalendarGrid 根据 TimeColumn 高度设定</li>
+                <li><span class="feature">🔧 移除固定设定</span>：不再使用 repeat(7, 1fr)</li>
+                <li><span class="feature">📐 动态列宽</span>：使用 minmax(180px, 1fr)</li>
+                <li><span class="feature">📏 动态行高</span>：根据时间槽数量自动计算</li>
+                <li><span class="highlight">✅ 完美对齐</span>：时间列与日历网格高度一致</li>
+            </ul>
+        </div>
+        
+        <div id="adaptive-layout-root"></div>
+    </div>
+
+    <script type="module">
+        console.log('自适应布局测试页面已加载');
+        console.log('CalendarGrid 高度根据 TimeColumn 自动设定');
+        console.log('移除了固定的 repeat 设定，使用动态布局');
+    </script>
+</body>
+</html>

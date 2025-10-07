@@ -1,0 +1,31 @@
+.employeeHeader {
+  display: grid;
+  position: relative;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+  min-height: 48px;
+  height: auto;
+  width: 100%;
+  backdrop-filter: blur(8px);
+  align-items: stretch;
+  border: 0;
+}
+
+.employeeHeaderItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #334155;
+  border-right: 1px solid rgba(226, 232, 240, 0.6);
+  min-width: 180px;
+  box-sizing: border-box;
+  font-size: 14px;
+  letter-spacing: 0.025em;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+    color: #1e293b;
+  }
+} 

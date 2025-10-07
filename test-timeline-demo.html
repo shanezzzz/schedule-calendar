@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>当前时间线演示</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #1976d2;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .demo-info {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .current-time {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ea4335;
+            margin: 10px 0;
+            text-align: center;
+        }
+        
+        .calendar-container {
+            height: 700px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        label {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        select, input {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .status {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>当前时间线演示</h1>
+            <p>类似 Google Calendar 的红色时间线效果</p>
+        </div>
+        
+        <div class="content">
+            <div class="demo-info">
+                <h3>🎯 当前时间线功能：</h3>
+                <ul>
+                    <li>✅ <strong>红色横线</strong>：精确显示当前时间位置</li>
+                    <li>✅ <strong>红色圆点</strong>：左侧指示器，类似 Google Calendar</li>
+                    <li>✅ <strong>自动更新</strong>：每分钟自动更新位置</li>
+                    <li>✅ <strong>范围检测</strong>：只在显示时间范围内显示</li>
+                    <li>✅ <strong>日历网格显示</strong>：只在日历网格区域显示时间线</li>
+                </ul>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label for="startHour">开始时间:</label>
+                    <select id="startHour">
+                        <option value="6">06:00</option>
+                        <option value="7" selected>07:00</option>
+                        <option value="8">08:00</option>
+                        <option value="9">09:00</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="endHour">结束时间:</label>
+                    <select id="endHour">
+                        <option value="20">20:00</option>
+                        <option value="21">21:00</option>
+                        <option value="22">22:00</option>
+                        <option value="23" selected>23:00</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="displayInterval">时间间隔:</label>
+                    <select id="displayInterval">
+                        <option value="15">15分钟</option>
+                        <option value="30" selected>30分钟</option>
+                        <option value="60">60分钟</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="showTimeline">
+                        <input type="checkbox" id="showTimeline" checked> 显示时间线
+                    </label>
+                </div>
+            </div>
+            
+            <div class="current-time" id="currentTime">
+                当前时间: <span id="timeDisplay"></span>
+            </div>
+            
+            <div class="calendar-container">
+                <div id="dayView"></div>
+            </div>
+            
+            <div class="status" id="status">
+                <strong>状态：</strong>正在加载日历组件...
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // 更新当前时间显示
+        function updateTimeDisplay() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('zh-CN', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('timeDisplay').textContent = timeString;
+        }
+        
+        // 每秒更新一次时间显示
+        updateTimeDisplay();
+        setInterval(updateTimeDisplay, 1000);
+        
+        // 模拟日历显示
+        function updateCalendarDisplay() {
+            const startHour = parseInt(document.getElementById('startHour').value);
+            const endHour = parseInt(document.getElementById('endHour').value);
+            const interval = parseInt(document.getElementById('displayInterval').value);
+            const showTimeline = document.getElementById('showTimeline').checked;
+            
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            
+            let statusText = '';
+            let statusClass = '';
+            
+            if (currentHour >= startHour && currentHour < endHour) {
+                statusText = `✅ 当前时间在显示范围内 (${startHour}:00 - ${endHour}:00)，时间线将显示在正确位置`;
+                statusClass = 'success';
+            } else {
+                statusText = `⚠️ 当前时间超出显示范围 (${startHour}:00 - ${endHour}:00)，时间线将隐藏`;
+                statusClass = 'error';
+            }
+            
+            if (!showTimeline) {
+                statusText = `🔧 时间线已手动隐藏`;
+                statusClass = 'error';
+            }
+            
+            document.getElementById('status').innerHTML = `<strong>状态：</strong>${statusText}`;
+            document.getElementById('status').className = `status ${statusClass}`;
+            
+            // 计算时间线位置（模拟）
+            const totalMinutes = (currentHour - startHour) * 60 + currentMinute;
+            const slotHeight = 60; // 假设每个时间槽60px
+            const positionInPixels = (totalMinutes / interval) * slotHeight + 40; // +40 for header
+            
+            document.getElementById('dayView').innerHTML = `
+                <div style="padding: 20px; text-align: center; color: #666; position: relative;">
+                    <div style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; padding: 20px; margin-bottom: 20px;">
+                        <h3>📅 日历视图模拟</h3>
+                        <p>时间范围: ${startHour}:00 - ${endHour}:00</p>
+                        <p>时间间隔: ${interval}分钟</p>
+                        <p>当前时间: ${currentHour}:${String(currentMinute).padStart(2, '0')}</p>
+                    </div>
+                    
+                    ${showTimeline && currentHour >= startHour && currentHour < endHour ? `
+                        <div style="position: absolute; left: 0; right: 0; height: 2px; background-color: #ea4335; top: ${positionInPixels}px; z-index: 30;">
+                            <div style="position: absolute; left: -6px; top: -4px; width: 10px; height: 10px; background-color: #ea4335; border-radius: 50%; box-shadow: 0 0 0 2px white, 0 0 0 3px #ea4335;"></div>
+                        </div>
+                        <div style="color: #ea4335; font-weight: bold; margin-top: 10px;">
+                            🎯 红色时间线显示在当前时间位置 (${Math.round(positionInPixels)}px)
+                        </div>
+                    ` : `
+                        <div style="color: #666; margin-top: 10px;">
+                            ${!showTimeline ? '🔧 时间线已隐藏' : '⏰ 当前时间超出显示范围，时间线隐藏'}
+                        </div>
+                    `}
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 4px; text-align: left; font-size: 14px;">
+                        <strong>实现说明：</strong><br>
+                        • 时间线每分钟自动更新位置<br>
+                        • 使用红色 (#ea4335) 颜色，与 Google Calendar 一致<br>
+                        • 左侧圆点指示器增强视觉效果<br>
+                        • 只在显示时间范围内显示<br>
+                        • 只在日历网格区域显示
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 监听控制变化
+        document.getElementById('startHour').addEventListener('change', updateCalendarDisplay);
+        document.getElementById('endHour').addEventListener('change', updateCalendarDisplay);
+        document.getElementById('displayInterval').addEventListener('change', updateCalendarDisplay);
+        document.getElementById('showTimeline').addEventListener('change', updateCalendarDisplay);
+        
+        // 初始加载
+        updateCalendarDisplay();
+        
+        // 每分钟更新一次（模拟时间线更新）
+        setInterval(updateCalendarDisplay, 60000);
+    </script>
+</body>
+</html>

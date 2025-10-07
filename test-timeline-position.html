@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时间线位置测试</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #1976d2;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .test-info {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .current-time {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ea4335;
+            margin: 10px 0;
+            text-align: center;
+        }
+        
+        .calculation {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .timeline-preview {
+            position: relative;
+            height: 400px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #fafafa;
+            margin: 20px 0;
+        }
+        
+        .time-slot {
+            height: 60px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .time-slot:last-child {
+            border-bottom: none;
+        }
+        
+        .current-timeline {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #ea4335;
+            z-index: 10;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: -6px;
+            top: -4px;
+            width: 10px;
+            height: 10px;
+            background-color: #ea4335;
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px white, 0 0 0 3px #ea4335;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>时间线位置计算测试</h1>
+            <p>验证当前时间线位置计算是否正确</p>
+        </div>
+        
+        <div class="content">
+            <div class="test-info">
+                <h3>🧪 测试场景：</h3>
+                <p>当前时间: <span id="currentTime"></span></p>
+                <p>测试参数: 开始时间 7:00，结束时间 23:00，时间间隔 30分钟，单元格高度 60px</p>
+            </div>
+            
+            <div class="current-time" id="timeDisplay">
+                实时时间: <span id="timeDisplayValue"></span>
+            </div>
+            
+            <div class="calculation" id="calculation">
+                <strong>位置计算过程：</strong><br>
+                <span id="calcDetails"></span>
+            </div>
+            
+            <div class="timeline-preview" id="timelinePreview">
+                <!-- 时间槽将在这里生成 -->
+            </div>
+            
+            <div class="calculation" id="result">
+                <strong>计算结果：</strong><br>
+                <span id="resultDetails"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateDisplay() {
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            
+            // 显示当前时间
+            document.getElementById('currentTime').textContent = `${currentHour}:${String(currentMinute).padStart(2, '0')}`;
+            document.getElementById('timeDisplayValue').textContent = `${currentHour}:${String(currentMinute).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+            
+            // 测试参数
+            const startHour = 7;
+            const endHour = 23;
+            const displayIntervalMinutes = 30;
+            const cellHeight = 60;
+            
+            // 计算位置
+            const totalMinutesFromStart = (currentHour - startHour) * 60 + currentMinute;
+            const positionInPixels = (totalMinutesFromStart / displayIntervalMinutes) * cellHeight;
+            const finalPosition = positionInPixels; // CalendarGrid 容器无额外偏移
+            
+            // 显示计算过程
+            document.getElementById('calcDetails').innerHTML = `
+                当前时间: ${currentHour}:${String(currentMinute).padStart(2, '0')}<br>
+                开始时间: ${startHour}:00<br>
+                总分钟数: (${currentHour} - ${startHour}) × 60 + ${currentMinute} = ${totalMinutesFromStart} 分钟<br>
+                像素位置: (${totalMinutesFromStart} ÷ ${displayIntervalMinutes}) × ${cellHeight} = ${Math.round(positionInPixels)}px<br>
+                最终位置: ${Math.round(positionInPixels)}px (CalendarGrid 容器无额外偏移)
+            `;
+            
+            // 显示结果
+            document.getElementById('resultDetails').innerHTML = `
+                时间线应该显示在第 ${Math.round(positionInPixels / cellHeight)} 个时间槽内<br>
+                距离时间槽顶部的偏移: ${Math.round(positionInPixels % cellHeight)}px<br>
+                最终 top 值: ${Math.round(finalPosition)}px
+            `;
+            
+            // 生成时间槽预览
+            generateTimeSlots(currentHour, currentMinute, finalPosition);
+        }
+        
+        function generateTimeSlots(currentHour, currentMinute, timelinePosition) {
+            const startHour = 7;
+            const endHour = 23;
+            const displayIntervalMinutes = 30;
+            const cellHeight = 60;
+            
+            let html = '';
+            let current = new Date();
+            current.setHours(startHour, 0, 0, 0);
+            
+            while (current.getHours() < endHour) {
+                const timeString = current.toTimeString().slice(0, 5);
+                const isCurrentSlot = current.getHours() === currentHour && 
+                                    Math.floor(current.getMinutes() / displayIntervalMinutes) === 
+                                    Math.floor(currentMinute / displayIntervalMinutes);
+                
+                html += `
+                    <div class="time-slot" style="height: ${cellHeight}px;">
+                        <span style="font-weight: ${isCurrentSlot ? 'bold' : 'normal'}; color: ${isCurrentSlot ? '#ea4335' : '#666'};">
+                            ${timeString} ${isCurrentSlot ? '(当前时间槽)' : ''}
+                        </span>
+                    </div>
+                `;
+                
+                current = new Date(current.getTime() + displayIntervalMinutes * 60000);
+            }
+            
+            // 添加时间线
+            html += `
+                <div class="current-timeline" style="top: ${timelinePosition}px;">
+                    <div class="timeline-dot"></div>
+                </div>
+            `;
+            
+            document.getElementById('timelinePreview').innerHTML = html;
+        }
+        
+        // 初始加载
+        updateDisplay();
+        
+        // 每秒更新
+        setInterval(updateDisplay, 1000);
+    </script>
+</body>
+</html>
