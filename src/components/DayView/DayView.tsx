@@ -48,6 +48,11 @@ const DayView: React.FC<DayViewProps> = ({
   // 用于滚动控制的引用
   const calendarContainerRef = useRef<HTMLDivElement>(null)
 
+  // 跟踪是否应该执行自动滚动
+  const shouldAutoScrollRef = useRef<boolean>(true)
+  const previousDateRef = useRef<Date>(currentDate)
+  const previousEventsRef = useRef<typeof events>(events)
+
   const resolvedEmployees = useMemo<DayViewEmployee[]>(() => {
     if (employees && employees.length > 0) {
       return employees
@@ -99,6 +104,25 @@ const DayView: React.FC<DayViewProps> = ({
     return calculateSlotHeight(stepMinutes, cellHeight)
   }, [stepMinutes, cellHeight])
 
+  // 检测新事件
+  const detectNewEvents = useCallback(() => {
+    const previousEvents = previousEventsRef.current
+    const currentEvents = events
+
+    // 如果之前没有事件或现在没有事件，返回空数组
+    if (!previousEvents.length || !currentEvents.length) {
+      return []
+    }
+
+    // 找出新添加的事件（通过ID比较）
+    const previousEventIds = new Set(previousEvents.map(event => event.id))
+    const newEvents = currentEvents.filter(
+      event => !previousEventIds.has(event.id)
+    )
+
+    return newEvents
+  }, [events])
+
   // 滚动配置
   const scrollConfig = useMemo<CalendarScrollConfig>(
     () => ({
@@ -112,29 +136,70 @@ const DayView: React.FC<DayViewProps> = ({
     [startHour, endHour, displayIntervalMinutes, slotsHeight, headerHeight]
   )
 
-  // 自动滚动逻辑
-  const handleAutoScroll = useCallback(() => {
-    if (!calendarContainerRef.current) {
-      return
-    }
+  // 自动滚动逻辑 - 只在应该滚动时执行
+  const handleAutoScroll = useCallback(
+    (newEvents?: typeof events) => {
+      if (!calendarContainerRef.current || !shouldAutoScrollRef.current) {
+        return
+      }
 
-    performCalendarAutoScroll(
-      calendarContainerRef.current,
-      events,
-      scrollConfig,
-      currentDate
-    )
-  }, [events, scrollConfig, currentDate])
+      performCalendarAutoScroll(
+        calendarContainerRef.current,
+        events,
+        scrollConfig,
+        currentDate,
+        newEvents
+      )
 
-  // 当日历更新时触发自动滚动
+      // 执行后禁用自动滚动，直到日期变化或新事件
+      shouldAutoScrollRef.current = false
+    },
+    [events, scrollConfig, currentDate]
+  )
+
+  // 监听日期变化，重置自动滚动标志
   useEffect(() => {
-    // 延迟执行滚动，确保DOM已渲染完成
-    const timer = setTimeout(() => {
-      handleAutoScroll()
-    }, 100)
+    const currentDateStr = currentDate.toDateString()
+    const previousDateStr = previousDateRef.current.toDateString()
 
-    return () => clearTimeout(timer)
-  }, [events, currentDate, showCurrentTimeLine, handleAutoScroll])
+    // 如果日期发生变化，允许自动滚动
+    if (currentDateStr !== previousDateStr) {
+      shouldAutoScrollRef.current = true
+      previousDateRef.current = currentDate
+    }
+  }, [currentDate])
+
+  // 检测新事件并触发滚动
+  useEffect(() => {
+    const newEvents = detectNewEvents()
+
+    if (newEvents.length > 0) {
+      // 有新事件时，强制启用滚动并执行
+      shouldAutoScrollRef.current = true
+      const timer = setTimeout(() => {
+        handleAutoScroll(newEvents)
+      }, 100)
+
+      // 更新事件引用
+      previousEventsRef.current = events
+
+      return () => clearTimeout(timer)
+    } else {
+      // 更新事件引用
+      previousEventsRef.current = events
+    }
+  }, [events, detectNewEvents, handleAutoScroll])
+
+  // 只在特定条件下触发自动滚动（初始渲染或日期变化）
+  useEffect(() => {
+    if (shouldAutoScrollRef.current) {
+      const timer = setTimeout(() => {
+        handleAutoScroll()
+      }, 100)
+
+      return () => clearTimeout(timer)
+    }
+  }, [currentDate, showCurrentTimeLine, handleAutoScroll])
 
   const handleDateChange = useCallback(
     (date: Date) => {

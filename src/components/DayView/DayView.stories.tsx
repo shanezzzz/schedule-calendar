@@ -141,13 +141,24 @@ export const DayViews: Story = () => {
     []
   )
 
+  const handleAddEvent = useCallback(() => {
+    setEvents(prev => [
+      ...prev,
+      {
+        id: `evt-${prev.length + 1}`,
+        title: 'New Event',
+        start: '10:00',
+        end: '11:00',
+        employeeId: 'Carry',
+        color: '#2563eb',
+      },
+    ])
+  }, [])
+
   // 自定义头部操作区域
   const headerActions = (
     <>
-      <button
-        className="primaryButton"
-        onClick={() => console.log('Add event clicked')}
-      >
+      <button className="primaryButton" onClick={handleAddEvent}>
         Add Event
       </button>
     </>
