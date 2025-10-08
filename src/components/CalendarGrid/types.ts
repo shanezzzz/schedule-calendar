@@ -9,7 +9,9 @@ export interface CalendarGridDropResult {
   end: string
 }
 
-export type CalendarGridEmployee = CalendarCellEmployee
+export type CalendarGridEmployee = CalendarCellEmployee & {
+  columnWidth?: number | string
+}
 
 export interface CalendarGridProps {
   events?: CalendarEventData[]
@@ -20,6 +22,7 @@ export interface CalendarGridProps {
   use24HourFormat?: boolean
   blockTimes?: EmployeeBlockTimes
   employees?: CalendarGridEmployee[]
+  defaultColumnWidth?: number
   onEventClick?: (
     event: CalendarEventData,
     employee: CalendarCellEmployee

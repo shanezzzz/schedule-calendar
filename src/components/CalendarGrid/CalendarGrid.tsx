@@ -1,23 +1,24 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react'
-import CalendarCell from '../CalendarCell'
-import type { CalendarCellEmployee } from '../CalendarCell'
-import CalendarEvent from '../CalendarEvent'
+import CalendarCell from '@/components/CalendarCell'
+import type { CalendarCellEmployee } from '@/components/CalendarCell'
+import CalendarEvent from '@/components/CalendarEvent'
 import styles from './CalendarGrid.module.scss'
 import {
   addMinutesToSlot,
   differenceInMinutes,
   slotToMinutes,
-} from '../../utils/util'
+} from '@/utils/util'
+import { getEmployeeBlockTimes, isTimeRangeBlocked } from '@/types/blockTime'
 import {
-  getEmployeeBlockTimes,
-  isTimeRangeBlocked,
-} from '../../types/blockTime'
+  DEFAULT_EMPLOYEE_COLUMN_WIDTH,
+  resolveEmployeeColumnTemplate,
+} from '@/utils/employeeColumns'
 import type {
   CalendarEventData,
   CalendarEventDragMeta,
   CalendarEventRenderContext,
-} from '../CalendarEvent'
-import type { CalendarGridProps } from './types'
+} from '@/components/CalendarEvent'
+import type { CalendarGridEmployee, CalendarGridProps } from './types'
 
 const CalendarGrid: React.FC<CalendarGridProps> = ({
   events = [],
@@ -28,6 +29,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   use24HourFormat = false,
   blockTimes = {},
   employees,
+  defaultColumnWidth,
   onEventClick,
   onEventDrag,
   onEventDragEnd,
@@ -62,27 +64,52 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   )
 
   const employeeMap = useMemo(() => {
-    const map = new Map<string, CalendarCellEmployee>()
+    const map = new Map<string, CalendarGridEmployee>()
     employees?.forEach(employee => {
       map.set(employee.id, employee)
     })
     return map
   }, [employees])
 
+  const resolvedDefaultColumnWidth =
+    defaultColumnWidth ?? DEFAULT_EMPLOYEE_COLUMN_WIDTH
+
+  const gridTemplateColumns = useMemo(() => {
+    if (displayEmployeeIds.length === 0) {
+      return resolveEmployeeColumnTemplate(
+        undefined,
+        resolvedDefaultColumnWidth
+      )
+    }
+
+    return displayEmployeeIds
+      .map(employeeId => {
+        const employee = employeeMap.get(employeeId)
+        return resolveEmployeeColumnTemplate(
+          employee?.columnWidth,
+          resolvedDefaultColumnWidth
+        )
+      })
+      .join(' ')
+  }, [displayEmployeeIds, employeeMap, resolvedDefaultColumnWidth])
+
   const getEmployeeData = useCallback(
     (employeeId: string): CalendarCellEmployee => {
       const matched = employeeMap.get(employeeId)
-      return matched ?? { id: employeeId, name: employeeId }
+      if (matched) {
+        return { id: matched.id, name: matched.name }
+      }
+      return { id: employeeId, name: employeeId }
     },
     [employeeMap]
   )
 
   const gridStyle = useMemo(
     () => ({
-      gridTemplateColumns: `repeat(${displayEmployeeIds.length}, 1fr)`,
+      gridTemplateColumns,
       gridTemplateRows: `repeat(${displayTimeSlots.length}, ${cellHeight}px)`,
     }),
-    [cellHeight, displayEmployeeIds.length, displayTimeSlots.length]
+    [cellHeight, displayTimeSlots.length, gridTemplateColumns]
   )
 
   const slotIntervalMinutes = useMemo(() => {

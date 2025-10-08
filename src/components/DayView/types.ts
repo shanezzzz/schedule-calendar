@@ -8,7 +8,7 @@ import type {
 } from '../EmployeeHeader'
 import type { EmployeeBlockTimes } from '../../types/blockTime'
 
-export type DayViewEmployee = Pick<Employee, 'id' | 'name'> &
+export type DayViewEmployee = Pick<Employee, 'id' | 'name' | 'columnWidth'> &
   Record<string, unknown>
 
 export type DayViewEventClickHandler = (

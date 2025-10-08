@@ -1,6 +1,7 @@
 import React from 'react'
 import styles from './EmployeeHeader.module.scss'
 import type { EmployeeHeaderProps, EmployeeRenderer } from './types'
+import { resolveEmployeeColumnTemplate } from '@/utils/employeeColumns'
 
 const EmployeeHeader: React.FC<EmployeeHeaderProps> = ({
   employees,
@@ -15,11 +16,17 @@ const EmployeeHeader: React.FC<EmployeeHeaderProps> = ({
 
   const renderEmployeeContent = renderEmployee || defaultRenderEmployee
 
+  const columnTemplate = employees
+    .map(employee =>
+      resolveEmployeeColumnTemplate(employee.columnWidth, minColumnWidth)
+    )
+    .join(' ')
+
   return (
     <div
       className={`${styles.employeeHeader} ${className}`}
       style={{
-        gridTemplateColumns: `repeat(${employees.length}, minmax(${minColumnWidth}px, 1fr))`,
+        gridTemplateColumns: columnTemplate,
         ...style,
       }}
     >

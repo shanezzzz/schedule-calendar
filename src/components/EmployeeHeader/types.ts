@@ -5,6 +5,7 @@ export type Employee = {
   name: string
   avatarUrl?: string
   role?: string
+  columnWidth?: number | string
   metadata?: Record<string, unknown>
 } & Record<string, unknown>
 

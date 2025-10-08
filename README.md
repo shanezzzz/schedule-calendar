@@ -176,6 +176,26 @@ interface DayViewProps {
 }
 ```
 
+### Different Column Widths Per Employee
+
+```tsx
+const employees = [
+  { id: 'carry', name: 'Carry Johnson', columnWidth: 180 },
+  { id: 'lucy', name: 'Lucy Tran', columnWidth: 280 },
+  { id: 'john', name: 'John Ikeda', columnWidth: '18rem' },
+]
+
+<DayView
+  employees={employees}
+  employeeHeaderProps={{ minColumnWidth: 160 }}
+  events={events}
+  blockTimes={blockTimes}
+  onEventDrop={handleDrop}
+/>;
+```
+
+`columnWidth` 支持 number（像素）或字符串（任意 CSS 长度，如 `rem`），传入后既会控制 `EmployeeHeader` 列宽，也会让 `CalendarGrid` 中对应员工的时间列保持一致。`employeeHeaderProps.minColumnWidth` 仍然作为全局兜底宽度。
+
 ### CalendarEventData
 The event data structure:
 

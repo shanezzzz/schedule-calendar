@@ -57,6 +57,16 @@ const employees: Employee[] = [
   { id: 'Bob', name: 'Bob Singh' },
 ]
 
+const employeesWithWidths: Employee[] = [
+  { id: 'Carry', name: 'Carry Johnson', columnWidth: 180 },
+  { id: 'Lucy', name: 'Lucy Tran', columnWidth: 280 },
+  { id: 'John', name: 'John Ikeda', columnWidth: 220 },
+  { id: 'Tom', name: 'Tomas Garcia', columnWidth: '18rem' },
+  { id: 'Jerry', name: 'Jerry Liu', columnWidth: 240 },
+  { id: 'Alice', name: 'Alice Muller', columnWidth: 200 },
+  { id: 'Bob', name: 'Bob Singh', columnWidth: '14rem' },
+]
+
 // 示例 Block Time 数据
 const initialBlockTimes: EmployeeBlockTimes = {
   Carry: [
@@ -404,6 +414,66 @@ export const CustomEmployeeHeader: Story = () => {
             )}
           </div>
         )}
+      />
+    </div>
+  )
+}
+
+export const VariableColumnWidths: Story = () => {
+  const [events, setEvents] = useState<CalendarEventData[]>(initialEvents)
+  const [currentDate, setCurrentDate] = useState<Date>(new Date())
+
+  const handleDrop = useCallback<DayViewEventDropHandler>((event, next) => {
+    setEvents(prev =>
+      prev.map(item =>
+        item.id === event.id
+          ? {
+              ...item,
+              employeeId: next.employeeId,
+              start: next.start,
+              end: next.end,
+            }
+          : item
+      )
+    )
+  }, [])
+
+  return (
+    <div
+      style={{
+        height: '780px',
+        width: '1280px',
+        padding: '16px',
+        background: '#e2e8f0',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px',
+        borderRadius: '20px',
+      }}
+    >
+      <div>
+        <h2 style={{ margin: 0, fontSize: '18px', color: '#0f172a' }}>
+          Variable Column Width Demo
+        </h2>
+        <p style={{ margin: 0, fontSize: '13px', color: '#475569' }}>
+          每位员工的列宽都可以独立设置，CalendarGrid
+          将自动对齐对应的时间单元格。
+        </p>
+      </div>
+      <DayView
+        currentDate={currentDate}
+        onDateChange={setCurrentDate}
+        employees={employeesWithWidths}
+        events={events}
+        blockTimes={initialBlockTimes}
+        onEventDrop={handleDrop}
+        use24HourFormat
+        employeeHeaderProps={{ minColumnWidth: 180 }}
+        headerActions={
+          <button type="button" onClick={() => setCurrentDate(new Date())}>
+            返回今天
+          </button>
+        }
       />
     </div>
   )

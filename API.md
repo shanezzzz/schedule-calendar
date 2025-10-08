@@ -27,9 +27,9 @@ All public APIs are re-exported from `src/index.ts`.
 |--------|------|-------|
 | `DayView` | Component | Complete day scheduler view. |
 | `DayViewProps` | Type | Props contract for `DayView`. |
-| `DayViewEmployee`, `DayViewEvent*` handlers, `DayViewEmployeeHeaderProps` | Types | Helper aliases for callbacks and derived structures. |
+| `DayViewEmployee`, `DayViewEvent*` handlers, `DayViewEmployeeHeaderProps` | Types | Helper aliases for callbacks, employee metadata (with optional `columnWidth`), and derived structures. |
 | `CalendarGrid` | Component | Core time grid that powers `DayView`. |
-| `CalendarGridProps`, `CalendarGridDropResult`, `CalendarGridEmployee` | Types | Grid configuration, drag result payload, and employee descriptor. |
+| `CalendarGridProps`, `CalendarGridDropResult`, `CalendarGridEmployee` | Types | Grid configuration, drag result payload, and employee descriptor (with optional `columnWidth`). |
 | `CalendarEvent` | Component | Individual calendar event with optional drag-and-drop. |
 | `CalendarEventProps`, `CalendarEventData`, `CalendarEventDragMeta`, `CalendarEventRenderContext`, `CalendarEventChildren`, `CalendarEventSnapGrid` | Types | Event payloads and render contracts. |
 | `CalendarCell` | Component | Low-level time-slot cell. |
@@ -37,7 +37,7 @@ All public APIs are re-exported from `src/index.ts`.
 | `TimeColumn` | Component | Timeline labels column. |
 | `TimeColumnProps` | Type | Time column configuration. |
 | `EmployeeHeader` | Component | Header row for employees/resources. |
-| `EmployeeHeaderProps`, `Employee`, `EmployeeRenderer` | Types | Employee data model and renderer contract. |
+| `EmployeeHeaderProps`, `Employee`, `EmployeeRenderer` | Types | Employee data model (supports `columnWidth`), renderer contract. |
 | `CalendarHeader` | Component | Navigation header with inline date picker. |
 | `CalendarHeaderProps` | Type | Header configuration and callbacks. |
 | `CurrentTimeLine` | Component | Real-time indicator ribbon. |

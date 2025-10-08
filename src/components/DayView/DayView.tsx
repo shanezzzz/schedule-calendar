@@ -1,16 +1,17 @@
 import React, { useMemo, useCallback, useRef, useEffect, useState } from 'react'
-import TimeColumn from '../TimeColumn'
-import CalendarGrid from '../CalendarGrid'
-import CurrentTimeLine from '../CurrentTimeLine'
+import TimeColumn from '@/components/TimeColumn'
+import CalendarGrid from '@/components/CalendarGrid'
+import CurrentTimeLine from '@/components/CurrentTimeLine'
 import styles from './DayView.module.scss'
-import EmployeeHeader from '../EmployeeHeader'
+import EmployeeHeader from '@/components/EmployeeHeader'
 import {
   generateTimeSlots,
   calculateSlotHeight,
   performCalendarAutoScroll,
   type CalendarScrollConfig,
-} from '../../utils/util'
-import CalendarHeader from '../CalendarHeader'
+} from '@/utils/util'
+import CalendarHeader from '@/components/CalendarHeader'
+import { DEFAULT_EMPLOYEE_COLUMN_WIDTH } from '@/utils/employeeColumns'
 import type { DayViewProps, DayViewEmployee } from './types'
 
 const DEFAULT_EMPLOYEE_IDS = ['1', '2', '3', '4', '5', '6', '7']
@@ -66,6 +67,9 @@ const DayView: React.FC<DayViewProps> = ({
     () => resolvedEmployees.map(employee => employee.id),
     [resolvedEmployees]
   )
+
+  const defaultColumnWidth =
+    employeeHeaderProps?.minColumnWidth ?? DEFAULT_EMPLOYEE_COLUMN_WIDTH
 
   // 监听EmployeeHeader高度变化
   useEffect(() => {
@@ -239,6 +243,8 @@ const DayView: React.FC<DayViewProps> = ({
             events={events}
             timeSlots={timeSlots}
             employeeIds={employeeIdsForGrid}
+            employees={resolvedEmployees}
+            defaultColumnWidth={defaultColumnWidth}
             cellHeight={slotsHeight}
             stepMinutes={stepMinutes}
             use24HourFormat={use24HourFormat}
