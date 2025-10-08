@@ -4,7 +4,12 @@ import CalendarGrid from '../CalendarGrid'
 import CurrentTimeLine from '../CurrentTimeLine'
 import styles from './DayView.module.scss'
 import EmployeeHeader from '../EmployeeHeader'
-import { generateTimeSlots, calculateSlotHeight } from '../../utils/util'
+import {
+  generateTimeSlots,
+  calculateSlotHeight,
+  performCalendarAutoScroll,
+  type CalendarScrollConfig,
+} from '../../utils/util'
 import CalendarHeader from '../CalendarHeader'
 import type { DayViewProps, DayViewEmployee } from './types'
 
@@ -39,6 +44,9 @@ const DayView: React.FC<DayViewProps> = ({
   // 用于动态获取EmployeeHeader高度的状态和引用
   const [headerHeight, setHeaderHeight] = useState<number>(40) // 默认40px
   const employeeHeaderRef = useRef<HTMLDivElement>(null)
+
+  // 用于滚动控制的引用
+  const calendarContainerRef = useRef<HTMLDivElement>(null)
 
   const resolvedEmployees = useMemo<DayViewEmployee[]>(() => {
     if (employees && employees.length > 0) {
@@ -91,6 +99,43 @@ const DayView: React.FC<DayViewProps> = ({
     return calculateSlotHeight(stepMinutes, cellHeight)
   }, [stepMinutes, cellHeight])
 
+  // 滚动配置
+  const scrollConfig = useMemo<CalendarScrollConfig>(
+    () => ({
+      startHour,
+      endHour,
+      displayIntervalMinutes,
+      cellHeight: slotsHeight,
+      headerHeight,
+      scrollMargin: 200,
+    }),
+    [startHour, endHour, displayIntervalMinutes, slotsHeight, headerHeight]
+  )
+
+  // 自动滚动逻辑
+  const handleAutoScroll = useCallback(() => {
+    if (!calendarContainerRef.current) {
+      return
+    }
+
+    performCalendarAutoScroll(
+      calendarContainerRef.current,
+      events,
+      scrollConfig,
+      currentDate
+    )
+  }, [events, scrollConfig, currentDate])
+
+  // 当日历更新时触发自动滚动
+  useEffect(() => {
+    // 延迟执行滚动，确保DOM已渲染完成
+    const timer = setTimeout(() => {
+      handleAutoScroll()
+    }, 100)
+
+    return () => clearTimeout(timer)
+  }, [events, currentDate, showCurrentTimeLine, handleAutoScroll])
+
   const handleDateChange = useCallback(
     (date: Date) => {
       onDateChange?.(date)
@@ -109,7 +154,7 @@ const DayView: React.FC<DayViewProps> = ({
         onDateChange={handleDateChange}
         actionsSection={headerActions}
       />
-      <div className={styles.dayViewContent}>
+      <div className={styles.dayViewContent} ref={calendarContainerRef}>
         <div className={styles.timeColumnArea}>
           <TimeColumn
             cellHeight={slotsHeight}

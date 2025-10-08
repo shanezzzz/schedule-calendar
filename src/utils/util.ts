@@ -400,5 +400,189 @@ export function calculateSlotHeight(
   return height <= baseHeight ? DEFAULT_HEIGHT : height
 }
 
-// ======================== Backward Compatibility ========================
-// Already exported at the top, no need to duplicate
+/**
+ * Scroll configuration interface
+ */
+export interface CalendarScrollConfig {
+  startHour: number
+  endHour: number
+  displayIntervalMinutes: number
+  cellHeight: number
+  headerHeight?: number
+  scrollMargin?: number
+}
+
+/**
+ * Calendar event interface for scroll calculations
+ */
+export interface CalendarEventForScroll {
+  start: string
+  end: string
+}
+
+/**
+ * Scroll position result
+ */
+export interface ScrollPositionResult {
+  position: number
+  isInRange: boolean
+}
+
+/**
+ * Calculate the pixel position of current time line
+ * @param config Scroll configuration
+ * @param currentTime Optional current time, defaults to now
+ * @returns Position result
+ */
+export function calculateCurrentTimeLinePosition(
+  config: CalendarScrollConfig,
+  currentTime: Date = new Date()
+): ScrollPositionResult {
+  const currentHour = currentTime.getHours()
+  const currentMinute = currentTime.getMinutes()
+
+  // Check if current time is within display range
+  if (currentHour < config.startHour || currentHour >= config.endHour) {
+    return { position: -1, isInRange: false }
+  }
+
+  // Calculate total minutes from start time to current time
+  const totalMinutesFromStart =
+    (currentHour - config.startHour) * 60 + currentMinute
+
+  // Calculate precise pixel position
+  const positionInPixels =
+    (totalMinutesFromStart / config.displayIntervalMinutes) * config.cellHeight
+
+  return { position: positionInPixels, isInRange: true }
+}
+
+/**
+ * Find the latest event and calculate its position
+ * @param events Array of events
+ * @param config Scroll configuration
+ * @returns Position result
+ */
+export function findLatestEventPosition(
+  events: CalendarEventForScroll[],
+  config: CalendarScrollConfig
+): ScrollPositionResult {
+  if (!events || events.length === 0) {
+    return { position: -1, isInRange: false }
+  }
+
+  // Find the latest event by time
+  let latestEvent = events[0]
+  for (const event of events) {
+    const latestTime = new Date(`1970-01-01T${latestEvent.start}:00`)
+    const currentTime = new Date(`1970-01-01T${event.start}:00`)
+    if (currentTime > latestTime) {
+      latestEvent = event
+    }
+  }
+
+  // Calculate event start time position
+  const [startHourStr, startMinuteStr] = latestEvent.start.split(':')
+  const eventStartHour = parseInt(startHourStr, 10)
+  const eventStartMinute = parseInt(startMinuteStr, 10)
+
+  // Check if event time is within display range
+  if (eventStartHour < config.startHour || eventStartHour >= config.endHour) {
+    return { position: -1, isInRange: false }
+  }
+
+  // Calculate total minutes from start time to event time
+  const totalMinutesFromStart =
+    (eventStartHour - config.startHour) * 60 + eventStartMinute
+
+  // Calculate precise pixel position
+  const positionInPixels =
+    (totalMinutesFromStart / config.displayIntervalMinutes) * config.cellHeight
+
+  return { position: positionInPixels, isInRange: true }
+}
+
+/**
+ * Determine the optimal scroll target position
+ * @param currentTimeLinePosition Current time line position result
+ * @param latestEventPosition Latest event position result
+ * @returns Target position (-1 if no valid target)
+ */
+export function determineScrollTarget(
+  currentTimeLinePosition: ScrollPositionResult,
+  latestEventPosition: ScrollPositionResult
+): number {
+  // If both positions are valid, prioritize the later one
+  if (latestEventPosition.isInRange && currentTimeLinePosition.isInRange) {
+    if (latestEventPosition.position > currentTimeLinePosition.position) {
+      return latestEventPosition.position
+    } else {
+      return currentTimeLinePosition.position
+    }
+  } else if (currentTimeLinePosition.isInRange) {
+    // Only current time line is valid
+    return currentTimeLinePosition.position
+  } else if (latestEventPosition.isInRange) {
+    // Only event position is valid
+    return latestEventPosition.position
+  }
+
+  return -1 // No valid target
+}
+
+/**
+ * Calculate final scroll position with header height and margin
+ * @param targetPosition Target pixel position
+ * @param headerHeight Header height to offset
+ * @param scrollMargin Additional margin from top
+ * @returns Final scroll top position
+ */
+export function calculateScrollTop(
+  targetPosition: number,
+  headerHeight: number = 0,
+  scrollMargin: number = 200
+): number {
+  if (targetPosition === -1) {
+    return 0
+  }
+
+  return Math.max(0, targetPosition + headerHeight - scrollMargin)
+}
+
+/**
+ * Perform smooth scroll to calculated position
+ * @param element Target scroll element
+ * @param events Array of events
+ * @param config Scroll configuration
+ * @param currentTime Optional current time
+ */
+export function performCalendarAutoScroll(
+  element: HTMLElement,
+  events: CalendarEventForScroll[],
+  config: CalendarScrollConfig,
+  currentTime: Date = new Date()
+): void {
+  const currentTimeLinePosition = calculateCurrentTimeLinePosition(
+    config,
+    currentTime
+  )
+  const latestEventPosition = findLatestEventPosition(events, config)
+
+  const targetPosition = determineScrollTarget(
+    currentTimeLinePosition,
+    latestEventPosition
+  )
+
+  if (targetPosition !== -1) {
+    const scrollTop = calculateScrollTop(
+      targetPosition,
+      config.headerHeight || 0,
+      config.scrollMargin || 200
+    )
+
+    element.scrollTo({
+      top: scrollTop,
+      behavior: 'smooth',
+    })
+  }
+}
