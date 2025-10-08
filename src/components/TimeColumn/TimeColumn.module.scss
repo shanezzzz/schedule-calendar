@@ -66,6 +66,14 @@
   }
 }
 
+.timeSlotMinor {
+  font-size: 10px;
+  color: #94a3b8;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  padding-right: 12px;
+}
+
 // 响应式设计
 @media (max-width: 768px) {
   .timeColumn {

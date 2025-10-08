@@ -13,15 +13,25 @@ const TimeColumn: React.FC<TimeColumnProps> = ({
       <div className={styles.header} style={{ height: `${headerHeight}px` }}>
         {headerContent}
       </div>
-      {timeSlots.map((time, idx) => (
-        <div
-          key={idx}
-          className={styles.timeSlot}
-          style={{ height: `${cellHeight}px` }}
-        >
-          {time}
-        </div>
-      ))}
+      {timeSlots.map((time, idx) => {
+        const isWholeHour = /:00\b/.test(time)
+        const slotClassName = [
+          styles.timeSlot,
+          !isWholeHour ? styles.timeSlotMinor : undefined,
+        ]
+          .filter(Boolean)
+          .join(' ')
+
+        return (
+          <div
+            key={idx}
+            className={slotClassName}
+            style={{ height: `${cellHeight}px` }}
+          >
+            {time}
+          </div>
+        )
+      })}
     </div>
   )
 }
