@@ -5,4 +5,5 @@ export interface TimeColumnProps {
   cellHeight?: number
   headerHeight?: number
   headerContent?: ReactNode
+  renderSlotContent?: (time: string, index: number) => ReactNode
 }

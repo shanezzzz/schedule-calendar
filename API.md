@@ -84,33 +84,34 @@ interface DayViewProps {
 }
 ```
 
-| Prop                      | Type                           | Default                               | Description                                                                            |
-| ------------------------- | ------------------------------ | ------------------------------------- | -------------------------------------------------------------------------------------- |
-| `startHour`               | `number`                       | `7`                                   | Lower bound (inclusive) for the timetable (0–23).                                      |
-| `endHour`                 | `number`                       | `23`                                  | Upper bound (exclusive) for the timetable (0–23).                                      |
-| `stepMinutes`             | `number`                       | `30`                                  | Base time increment in minutes used for layout calculations and drag snapping.         |
-| `cellHeight`              | `number`                       | `40`                                  | Height in pixels for a single `stepMinutes` block.                                     |
-| `use24HourFormat`         | `boolean`                      | `false`                               | Enables 24-hour rendering when `true`; otherwise uses 12-hour clock.                   |
-| `displayIntervalMinutes`  | `number`                       | `30`                                  | Interval at which time labels are shown in the left column.                            |
-| `employeeIds`             | `string[]`                     | `['1', '2', '3', '4', '5', '6', '7']` | Legacy identifier list. Ignored when `employees` is provided.                          |
-| `employees`               | `DayViewEmployee[]`            | Derived from `employeeIds`            | Detailed employee/resource descriptors. Used for headers, events, and callbacks.       |
-| `events`                  | `CalendarEventData[]`          | `[]`                                  | Scheduled events to render.                                                            |
-| `blockTimes`              | `EmployeeBlockTimes`           | `{}`                                  | Map of blocked intervals per employee.                                                 |
-| `showCurrentTimeLine`     | `boolean`                      | `true`                                | Toggles the live “current time” ribbon.                                                |
-| `currentDate`             | `Date`                         | `new Date()`                          | Currently selected calendar date.                                                      |
-| `onDateChange`            | `(date: Date) => void`         | –                                     | Fired when the user navigates to a different date.                                     |
-| `headerActions`           | `React.ReactNode`              | –                                     | Custom content rendered in the header actions slot.                                    |
-| `onEventClick`            | `DayViewEventClickHandler`     | –                                     | Click handler that receives the event and resolved employee record.                    |
-| `onEventDrag`             | `DayViewEventDragHandler`      | –                                     | Called continuously during drag gestures with delta offsets.                           |
-| `onEventDragEnd`          | `DayViewEventDragEndHandler`   | –                                     | Fired after dragging ends; useful for optimistic UI updates.                           |
-| `onEventDrop`             | `DayViewEventDropHandler`      | –                                     | Invoked once an event is dropped on a new cell with normalized payload.                |
-| `onTimeLabelClick`        | `DayViewTimeLabelClickHandler` | –                                     | Called when the user taps a time label within a cell.                                  |
-| `renderEvent`             | `DayViewEventRenderer`         | –                                     | Custom renderer for events; receives `{ event, isDragging }`.                          |
-| `renderEmployee`          | `EmployeeRenderer`             | –                                     | Replaces the default employee header renderer.                                         |
-| `employeeHeaderProps`     | `DayViewEmployeeHeaderProps`   | –                                     | Props forwarded to `EmployeeHeader` (`className`, `style`, `minColumnWidth`).          |
-| `timeColumnHeaderContent` | `React.ReactNode`              | `undefined`                           | Custom content rendered at the top of the time column (aligned with employee headers). |
-| `className`               | `string`                       | –                                     | Optional wrapper class.                                                                |
-| `style`                   | `React.CSSProperties`          | –                                     | Inline styles for the root wrapper.                                                    |
+| Prop                            | Type                                               | Default                               | Description                                                                            |
+| ------------------------------- | -------------------------------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------- |
+| `startHour`                     | `number`                                           | `7`                                   | Lower bound (inclusive) for the timetable (0–23).                                      |
+| `endHour`                       | `number`                                           | `23`                                  | Upper bound (exclusive) for the timetable (0–23).                                      |
+| `stepMinutes`                   | `number`                                           | `30`                                  | Base time increment in minutes used for layout calculations and drag snapping.         |
+| `cellHeight`                    | `number`                                           | `40`                                  | Height in pixels for a single `stepMinutes` block.                                     |
+| `use24HourFormat`               | `boolean`                                          | `false`                               | Enables 24-hour rendering when `true`; otherwise uses 12-hour clock.                   |
+| `displayIntervalMinutes`        | `number`                                           | `30`                                  | Interval at which time labels are shown in the left column.                            |
+| `employeeIds`                   | `string[]`                                         | `['1', '2', '3', '4', '5', '6', '7']` | Legacy identifier list. Ignored when `employees` is provided.                          |
+| `employees`                     | `DayViewEmployee[]`                                | Derived from `employeeIds`            | Detailed employee/resource descriptors. Used for headers, events, and callbacks.       |
+| `events`                        | `CalendarEventData[]`                              | `[]`                                  | Scheduled events to render.                                                            |
+| `blockTimes`                    | `EmployeeBlockTimes`                               | `{}`                                  | Map of blocked intervals per employee.                                                 |
+| `showCurrentTimeLine`           | `boolean`                                          | `true`                                | Toggles the live “current time” ribbon.                                                |
+| `currentDate`                   | `Date`                                             | `new Date()`                          | Currently selected calendar date.                                                      |
+| `onDateChange`                  | `(date: Date) => void`                             | –                                     | Fired when the user navigates to a different date.                                     |
+| `headerActions`                 | `React.ReactNode`                                  | –                                     | Custom content rendered in the header actions slot.                                    |
+| `onEventClick`                  | `DayViewEventClickHandler`                         | –                                     | Click handler that receives the event and resolved employee record.                    |
+| `onEventDrag`                   | `DayViewEventDragHandler`                          | –                                     | Called continuously during drag gestures with delta offsets.                           |
+| `onEventDragEnd`                | `DayViewEventDragEndHandler`                       | –                                     | Fired after dragging ends; useful for optimistic UI updates.                           |
+| `onEventDrop`                   | `DayViewEventDropHandler`                          | –                                     | Invoked once an event is dropped on a new cell with normalized payload.                |
+| `onTimeLabelClick`              | `DayViewTimeLabelClickHandler`                     | –                                     | Called when the user taps a time label within a cell.                                  |
+| `renderEvent`                   | `DayViewEventRenderer`                             | –                                     | Custom renderer for events; receives `{ event, isDragging }`.                          |
+| `renderEmployee`                | `EmployeeRenderer`                                 | –                                     | Replaces the default employee header renderer.                                         |
+| `employeeHeaderProps`           | `DayViewEmployeeHeaderProps`                       | –                                     | Props forwarded to `EmployeeHeader` (`className`, `style`, `minColumnWidth`).          |
+| `timeColumnHeaderContent`       | `React.ReactNode`                                  | `undefined`                           | Custom content rendered at the top of the time column (aligned with employee headers). |
+| `timeColumnSlotContentRenderer` | `(time: string, index: number) => React.ReactNode` | `undefined`                           | Renderer invoked for each time slot to append additional context.                      |
+| `className`                     | `string`                                           | –                                     | Optional wrapper class.                                                                |
+| `style`                         | `React.CSSProperties`                              | –                                     | Inline styles for the root wrapper.                                                    |
 
 #### Usage Example
 

@@ -40,6 +40,7 @@ const DayView: React.FC<DayViewProps> = ({
   renderEmployee,
   employeeHeaderProps,
   timeColumnHeaderContent,
+  timeColumnSlotContentRenderer,
   className,
   style,
 }) => {
@@ -231,6 +232,7 @@ const DayView: React.FC<DayViewProps> = ({
             timeSlots={timeSlots}
             headerHeight={headerHeight}
             headerContent={timeColumnHeaderContent}
+            renderSlotContent={timeColumnSlotContentRenderer}
           />
         </div>
         <div className={styles.employeeHeaderArea} ref={employeeHeaderRef}>

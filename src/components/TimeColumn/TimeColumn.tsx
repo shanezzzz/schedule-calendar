@@ -7,6 +7,7 @@ const TimeColumn: React.FC<TimeColumnProps> = ({
   cellHeight = 80,
   headerHeight = 40, // 默认40px，与原始EmployeeHeader高度一致
   headerContent,
+  renderSlotContent,
 }) => {
   return (
     <div className={styles.timeColumn}>
@@ -29,6 +30,7 @@ const TimeColumn: React.FC<TimeColumnProps> = ({
             style={{ height: `${cellHeight}px` }}
           >
             {time}
+            {renderSlotContent?.(time, idx)}
           </div>
         )
       })}

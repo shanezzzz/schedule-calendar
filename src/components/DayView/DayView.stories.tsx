@@ -113,6 +113,7 @@ export const DayViews: Story = () => {
   console.log('currentDate', currentDate)
 
   const handleDrop = useCallback<DayViewEventDropHandler>((event, next) => {
+    console.log('event drop', event, next)
     setEvents(prev =>
       prev.map(item =>
         item.id === event.id
@@ -191,6 +192,20 @@ export const DayViews: Story = () => {
     </div>
   )
 
+  const renderSlotContent = useCallback((time: string) => {
+    return (
+      <span
+        style={{
+          fontSize: '10px',
+          color: '#94a3b8',
+          fontWeight: 500,
+        }}
+      >
+        {time}
+      </span>
+    )
+  }, [])
+
   return (
     <div
       style={{
@@ -250,6 +265,7 @@ export const DayViews: Story = () => {
         onEventClick={handleEventClick}
         headerActions={headerActions}
         timeColumnHeaderContent={timeColumnHeaderContent}
+        timeColumnSlotContentRenderer={renderSlotContent}
         onEventDrop={handleDrop}
         renderEvent={({ event }) => (
           <div style={{ padding: '12px', color: '#ffffff' }}>
@@ -401,7 +417,7 @@ export const CustomEmployeeHeader: Story = () => {
         startHour={7}
         endHour={23}
         stepMinutes={15}
-        use24HourFormat
+        // use24HourFormat
         employeeIds={['Carry', 'Lucy', 'John', 'Tom', 'Jerry', 'Alice', 'Bob']}
         events={events}
         blockTimes={initialBlockTimes}

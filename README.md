@@ -213,11 +213,17 @@ const employees = [
   timeColumnHeaderContent={
     <div style={{ textAlign: 'center', fontWeight: 600 }}>Local Time</div>
   }
+  timeColumnSlotContentRenderer={time =>
+    time.endsWith(':30') ? (
+      <span style={{ fontSize: '10px', color: '#94a3b8' }}>Half hour</span>
+    ) : null
+  }
   {...otherProps}
 />
 ```
 
 `timeColumnHeaderContent` 会直接渲染在时间列顶端（与员工头部对齐的区域），用于展示标题、图例或其他说明信息。
+`timeColumnSlotContentRenderer` 支持针对每个时间刻度追加自定义内容（如半点提示、图例标识等）。
 
 ### CalendarEventData
 

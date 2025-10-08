@@ -72,6 +72,7 @@ export interface DayViewProps {
   renderEmployee?: EmployeeRenderer
   employeeHeaderProps?: DayViewEmployeeHeaderProps
   timeColumnHeaderContent?: ReactNode
+  timeColumnSlotContentRenderer?: (time: string, index: number) => ReactNode
   className?: string
   style?: CSSProperties
 }
