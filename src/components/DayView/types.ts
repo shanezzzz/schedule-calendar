@@ -71,6 +71,7 @@ export interface DayViewProps {
   renderEvent?: DayViewEventRenderer
   renderEmployee?: EmployeeRenderer
   employeeHeaderProps?: DayViewEmployeeHeaderProps
+  timeColumnHeaderContent?: ReactNode
   className?: string
   style?: CSSProperties
 }

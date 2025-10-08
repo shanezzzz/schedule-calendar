@@ -38,7 +38,7 @@ function MyScheduler() {
       start: '09:00',
       end: '10:00',
       employeeId: 'john',
-      color: '#3b82f6'
+      color: '#3b82f6',
     },
     {
       id: '2',
@@ -46,8 +46,8 @@ function MyScheduler() {
       start: '14:30',
       end: '15:30',
       employeeId: 'jane',
-      color: '#10b981'
-    }
+      color: '#10b981',
+    },
   ])
 
   return (
@@ -60,11 +60,18 @@ function MyScheduler() {
         employeeIds={['john', 'jane', 'mike']}
         events={events}
         onEventDrop={(event, next) => {
-          setEvents(prev => prev.map(e =>
-            e.id === event.id
-              ? { ...e, employeeId: next.employeeId, start: next.start, end: next.end }
-              : e
-          ))
+          setEvents(prev =>
+            prev.map(e =>
+              e.id === event.id
+                ? {
+                    ...e,
+                    employeeId: next.employeeId,
+                    start: next.start,
+                    end: next.end,
+                  }
+                : e
+            )
+          )
         }}
       />
     </div>
@@ -79,13 +86,15 @@ function MyScheduler() {
   employeeIds={['emp1', 'emp2', 'emp3']}
   events={events}
   renderEmployee={(employee, index) => (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      padding: '16px',
-      background: index % 2 === 0 ? '#f8fafc' : '#f1f5f9'
-    }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: '16px',
+        background: index % 2 === 0 ? '#f8fafc' : '#f1f5f9',
+      }}
+    >
       <div style={{ fontWeight: 'bold' }}>{employee.name}</div>
       <div style={{ fontSize: '12px', color: '#666' }}>
         Employee #{index + 1}
@@ -156,22 +165,23 @@ You can always wrap `DayView` with your own classes for a fully bespoke look.
 ## 🧩 Main Components
 
 ### DayView
+
 The primary component for rendering a complete day-view scheduler.
 
 ```typescript
 interface DayViewProps {
-  startHour?: number                    // Start hour (0-23), default: 7
-  endHour?: number                      // End hour (0-23), default: 23
-  stepMinutes?: number                  // Time step for events, default: 30
-  cellHeight?: number                   // Height of time cells, default: 40
-  use24HourFormat?: boolean             // Time format, default: false (12-hour)
-  employeeIds?: string[]                // Employee/resource IDs
-  events?: CalendarEventData[]          // Events to display
-  blockTimes?: EmployeeBlockTimes       // Blocked time periods
-  showCurrentTimeLine?: boolean         // Show current time indicator
-  currentDate?: Date                    // Selected date
-  onDateChange?: (date: Date) => void   // Date change handler
-  onEventDrop?: (event, next) => void   // Event drop handler
+  startHour?: number // Start hour (0-23), default: 7
+  endHour?: number // End hour (0-23), default: 23
+  stepMinutes?: number // Time step for events, default: 30
+  cellHeight?: number // Height of time cells, default: 40
+  use24HourFormat?: boolean // Time format, default: false (12-hour)
+  employeeIds?: string[] // Employee/resource IDs
+  events?: CalendarEventData[] // Events to display
+  blockTimes?: EmployeeBlockTimes // Blocked time periods
+  showCurrentTimeLine?: boolean // Show current time indicator
+  currentDate?: Date // Selected date
+  onDateChange?: (date: Date) => void // Date change handler
+  onEventDrop?: (event, next) => void // Event drop handler
   // ... and many more customization options
 }
 ```
@@ -196,18 +206,32 @@ const employees = [
 
 `columnWidth` 支持 number（像素）或字符串（任意 CSS 长度，如 `rem`），传入后既会控制 `EmployeeHeader` 列宽，也会让 `CalendarGrid` 中对应员工的时间列保持一致。`employeeHeaderProps.minColumnWidth` 仍然作为全局兜底宽度。
 
+### Custom Time Column Header
+
+```tsx
+<DayView
+  timeColumnHeaderContent={
+    <div style={{ textAlign: 'center', fontWeight: 600 }}>Local Time</div>
+  }
+  {...otherProps}
+/>
+```
+
+`timeColumnHeaderContent` 会直接渲染在时间列顶端（与员工头部对齐的区域），用于展示标题、图例或其他说明信息。
+
 ### CalendarEventData
+
 The event data structure:
 
 ```typescript
 interface CalendarEventData {
-  id: string                    // Unique identifier
-  title?: string               // Event title
-  start: string                // Start time ("09:00" or "9:00 AM")
-  end: string                  // End time ("10:00" or "10:00 AM")
-  employeeId: string           // Assigned employee/resource
-  color?: string               // Background color
-  description?: string         // Optional description
+  id: string // Unique identifier
+  title?: string // Event title
+  start: string // Start time ("09:00" or "9:00 AM")
+  end: string // End time ("10:00" or "10:00 AM")
+  employeeId: string // Assigned employee/resource
+  color?: string // Background color
+  description?: string // Optional description
 }
 ```
 
@@ -219,16 +243,20 @@ interface CalendarEventData {
 <DayView
   events={events}
   renderEvent={({ event, isDragging }) => (
-    <div style={{
-      padding: '12px',
-      background: `linear-gradient(135deg, ${event.color} 0%, ${event.color}dd 100%)`,
-      color: 'white',
-      borderRadius: '8px',
-      opacity: isDragging ? 0.8 : 1,
-      transform: isDragging ? 'scale(1.02)' : 'scale(1)'
-    }}>
+    <div
+      style={{
+        padding: '12px',
+        background: `linear-gradient(135deg, ${event.color} 0%, ${event.color}dd 100%)`,
+        color: 'white',
+        borderRadius: '8px',
+        opacity: isDragging ? 0.8 : 1,
+        transform: isDragging ? 'scale(1.02)' : 'scale(1)',
+      }}
+    >
       <div style={{ fontWeight: 'bold' }}>{event.title}</div>
-      <div style={{ fontSize: '12px' }}>{event.start} - {event.end}</div>
+      <div style={{ fontSize: '12px' }}>
+        {event.start} - {event.end}
+      </div>
       {event.description && (
         <div style={{ fontSize: '10px', opacity: 0.9 }}>
           {event.description}
@@ -246,39 +274,45 @@ interface CalendarEventData {
   renderEmployee={(employee, index) => {
     const isAvailable = Math.random() > 0.3
     return (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: '16px',
-        background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)',
-        borderRadius: '8px',
-        position: 'relative'
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          padding: '16px',
+          background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)',
+          borderRadius: '8px',
+          position: 'relative',
+        }}
+      >
         {/* Status indicator */}
-        <div style={{
-          position: 'absolute',
-          top: '8px',
-          right: '8px',
-          width: '8px',
-          height: '8px',
-          borderRadius: '50%',
-          backgroundColor: isAvailable ? '#10b981' : '#ef4444'
-        }} />
+        <div
+          style={{
+            position: 'absolute',
+            top: '8px',
+            right: '8px',
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            backgroundColor: isAvailable ? '#10b981' : '#ef4444',
+          }}
+        />
 
         {/* Employee avatar */}
-        <div style={{
-          width: '40px',
-          height: '40px',
-          borderRadius: '50%',
-          background: '#3b82f6',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'white',
-          fontWeight: 'bold',
-          marginBottom: '8px'
-        }}>
+        <div
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '50%',
+            background: '#3b82f6',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            fontWeight: 'bold',
+            marginBottom: '8px',
+          }}
+        >
           {employee.name.charAt(0).toUpperCase()}
         </div>
 
@@ -299,12 +333,10 @@ interface CalendarEventData {
   onEventClick={(event, employee) => {
     console.log(`Clicked: ${event.title} (${employee.name})`)
   }}
-
   onEventDrop={(event, next) => {
     console.log(`Moved: ${event.title} to ${next.employeeId} at ${next.start}`)
     // Update your state here
   }}
-
   onTimeLabelClick={(timeLabel, index, timeSlot, employee) => {
     console.log(`Clicked time slot: ${timeSlot} for ${employee.name}`)
     // Create new event or show context menu
@@ -339,20 +371,20 @@ import {
   addMinutesToSlot,
   differenceInMinutes,
   formatTime,
-  generateTimeSlots
+  generateTimeSlots,
 } from 'schedule-calendar'
 
 // Parse time string
-const parsed = parseTimeSlot("2:30 PM")  // { hours: 14, minutes: 30 }
+const parsed = parseTimeSlot('2:30 PM') // { hours: 14, minutes: 30 }
 
 // Convert to minutes from midnight
-const minutes = slotToMinutes("14:30")   // 870
+const minutes = slotToMinutes('14:30') // 870
 
 // Add time
-const later = addMinutesToSlot("14:30", 45)  // "15:15"
+const later = addMinutesToSlot('14:30', 45) // "15:15"
 
 // Calculate duration
-const duration = differenceInMinutes("14:30", "16:00")  // 90 minutes
+const duration = differenceInMinutes('14:30', '16:00') // 90 minutes
 
 // Generate time slots
 const slots = generateTimeSlots(9, 17, 30, true)
@@ -427,7 +459,7 @@ import type {
   BlockTime,
   EmployeeBlockTimes,
   CalendarEventDragMeta,
-  CalendarEventRenderContext
+  CalendarEventRenderContext,
 } from 'schedule-calendar'
 ```
 

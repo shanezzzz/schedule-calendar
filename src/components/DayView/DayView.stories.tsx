@@ -174,6 +174,23 @@ export const DayViews: Story = () => {
     </>
   )
 
+  const timeColumnHeaderContent = (
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontWeight: 600,
+        fontSize: '12px',
+        color: '#0f172a',
+      }}
+    >
+      Local Time
+    </div>
+  )
+
   return (
     <div
       style={{
@@ -232,6 +249,7 @@ export const DayViews: Story = () => {
         onTimeLabelClick={handleTimeLabelClick}
         onEventClick={handleEventClick}
         headerActions={headerActions}
+        timeColumnHeaderContent={timeColumnHeaderContent}
         onEventDrop={handleDrop}
         renderEvent={({ event }) => (
           <div style={{ padding: '12px', color: '#ffffff' }}>
