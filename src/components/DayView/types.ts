@@ -48,6 +48,10 @@ export type DayViewEventRenderer = (params: {
 export interface DayViewEmployeeHeaderProps
   extends Pick<EmployeeHeaderProps, 'className' | 'style' | 'minColumnWidth'> {}
 
+export interface DayViewRef {
+  scrollToCurrentTimeLine: () => void
+}
+
 export interface DayViewProps {
   startHour?: number
   endHour?: number
