@@ -503,11 +503,6 @@ export const VariableColumnWidths: Story = () => {
         onEventDrop={handleDrop}
         use24HourFormat
         employeeHeaderProps={{ minColumnWidth: 180 }}
-        headerActions={
-          <button type="button" onClick={() => setCurrentDate(new Date())}>
-            返回今天
-          </button>
-        }
       />
     </div>
   )
