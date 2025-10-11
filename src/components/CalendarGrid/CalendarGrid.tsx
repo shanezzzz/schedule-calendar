@@ -623,10 +623,6 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
       <div className={styles.gridContainer} style={gridStyle}>
         {displayTimeSlots.map((timeSlot, timeIndex) =>
           displayEmployeeIds.map((employeeId, empIndex) => {
-            const employeeBlockTimes = getEmployeeBlockTimes(
-              employeeId,
-              blockTimes
-            )
             return (
               <CalendarCell
                 key={`${timeIndex}-${empIndex}`}
@@ -635,9 +631,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
                 use24HourFormat={use24HourFormat}
                 employeeId={employeeId}
                 employee={employeeMap.get(employeeId)}
-                blockTimes={employeeBlockTimes}
                 onTimeLabelClick={onTimeLabelClick}
-                onBlockTimeClick={onBlockTimeClick}
               />
             )
           })
