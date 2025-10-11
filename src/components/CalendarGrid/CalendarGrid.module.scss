@@ -34,11 +34,24 @@
   position: absolute;
   inset: 0;
   display: grid;
-  z-index: 2;
+  z-index: 3;
   pointer-events: none;
 }
 
 .eventLayer > * {
+  pointer-events: auto;
+  min-width: 0;
+}
+
+.blockLayer {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.blockLayer > * {
   pointer-events: auto;
   min-width: 0;
 }

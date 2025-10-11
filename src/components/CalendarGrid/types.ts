@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
 import type { CalendarEventData } from '../CalendarEvent'
 import type { CalendarCellEmployee } from '../CalendarCell'
-import type { EmployeeBlockTimes } from '../../types/blockTime'
+import type { CalendarBlockTimeRenderContext } from '../CalendarBlockTime'
+import type { EmployeeBlockTimes, BlockTime } from '../../types/blockTime'
 
 export interface CalendarGridDropResult {
   employeeId: string
@@ -44,8 +45,16 @@ export interface CalendarGridProps {
     timeSlot: string,
     employee: CalendarCellEmployee
   ) => void
+  onBlockTimeClick?: (
+    blockTime: BlockTime,
+    timeSlot: string,
+    employee: CalendarCellEmployee
+  ) => void
   renderEvent?: (context: {
     event: CalendarEventData
     isDragging: boolean
   }) => ReactNode
+  renderBlockTime?: (
+    context: CalendarBlockTimeRenderContext
+  ) => ReactNode
 }

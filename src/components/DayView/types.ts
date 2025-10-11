@@ -6,7 +6,8 @@ import type {
   EmployeeHeaderProps,
   EmployeeRenderer,
 } from '../EmployeeHeader'
-import type { EmployeeBlockTimes } from '../../types/blockTime'
+import type { CalendarBlockTimeRenderContext } from '../CalendarBlockTime'
+import type { EmployeeBlockTimes, BlockTime } from '../../types/blockTime'
 
 export type DayViewEmployee = Pick<Employee, 'id' | 'name' | 'columnWidth'> &
   Record<string, unknown>
@@ -40,10 +41,20 @@ export type DayViewTimeLabelClickHandler = (
   employee: DayViewEmployee
 ) => void
 
+export type DayViewBlockTimeClickHandler = (
+  blockTime: BlockTime,
+  timeSlot: string,
+  employee: DayViewEmployee
+) => void
+
 export type DayViewEventRenderer = (params: {
   event: CalendarEventData
   isDragging: boolean
 }) => ReactNode
+
+export type DayViewBlockTimeRenderer = (
+  context: CalendarBlockTimeRenderContext
+) => ReactNode
 
 export interface DayViewEmployeeHeaderProps
   extends Pick<EmployeeHeaderProps, 'className' | 'style' | 'minColumnWidth'> {}
@@ -72,7 +83,9 @@ export interface DayViewProps {
   onEventDragEnd?: DayViewEventDragEndHandler
   onEventDrop?: DayViewEventDropHandler
   onTimeLabelClick?: DayViewTimeLabelClickHandler
+  onBlockTimeClick?: DayViewBlockTimeClickHandler
   renderEvent?: DayViewEventRenderer
+  renderBlockTime?: DayViewBlockTimeRenderer
   renderEmployee?: EmployeeRenderer
   employeeHeaderProps?: DayViewEmployeeHeaderProps
   timeColumnHeaderContent?: ReactNode

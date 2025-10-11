@@ -12,6 +12,7 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
   employee,
   blockTimes = [],
   onTimeLabelClick,
+  onBlockTimeClick,
 }) => {
   const timeLabels = timeSlot
     ? generateTimeLabels(timeSlot, stepMinutes, use24HourFormat)
@@ -40,7 +41,34 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
       }}
     >
       {isBlocked ? (
-        <div className={styles.blockedLabel}>{timeSlot}</div>
+        <button
+          className={styles.blockedLabel}
+          type="button"
+          onClick={() => {
+            if (blockTime && timeSlot) {
+              onBlockTimeClick?.(blockTime, timeSlot, employeeData)
+            }
+          }}
+          onKeyDown={event => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault()
+              if (blockTime && timeSlot) {
+                onBlockTimeClick?.(blockTime, timeSlot, employeeData)
+              }
+            }
+          }}
+          style={{
+            cursor: onBlockTimeClick ? 'pointer' : 'default',
+            width: '100%',
+            height: '100%',
+            border: 'none',
+            background: 'transparent',
+            padding: 0,
+            textAlign: 'left',
+          }}
+        >
+          {timeSlot}
+        </button>
       ) : (
         timeLabels.map((timeLabel, index) => (
           <button
