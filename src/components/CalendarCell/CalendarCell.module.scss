@@ -58,7 +58,7 @@
   background: linear-gradient(145deg, #f3f4f6 0%, #e5e7eb 100%) !important;
   border: 2px dashed #d1d5db;
   position: relative;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -86,7 +86,7 @@
   color: #6b7280 !important;
   cursor: not-allowed !important;
   pointer-events: none !important;
-  
+
   &:hover {
     opacity: 0.8 !important;
     transform: none !important;
@@ -112,4 +112,3 @@
   white-space: nowrap;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-

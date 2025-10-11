@@ -54,7 +54,5 @@ export interface CalendarGridProps {
     event: CalendarEventData
     isDragging: boolean
   }) => ReactNode
-  renderBlockTime?: (
-    context: CalendarBlockTimeRenderContext
-  ) => ReactNode
+  renderBlockTime?: (context: CalendarBlockTimeRenderContext) => ReactNode
 }

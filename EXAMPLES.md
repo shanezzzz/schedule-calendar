@@ -31,7 +31,7 @@ function SimpleCalendar() {
       start: '09:00',
       end: '10:00',
       employeeId: 'john',
-      color: '#3b82f6'
+      color: '#3b82f6',
     },
     {
       id: '2',
@@ -39,8 +39,8 @@ function SimpleCalendar() {
       start: '14:30',
       end: '15:30',
       employeeId: 'jane',
-      color: '#10b981'
-    }
+      color: '#10b981',
+    },
   ]
 
   return (
@@ -69,7 +69,7 @@ function TwelveHourCalendar() {
       startHour={9}
       endHour={17}
       stepMinutes={15}
-      use24HourFormat={false}  // Shows times like "9:00 AM", "2:30 PM"
+      use24HourFormat={false} // Shows times like "9:00 AM", "2:30 PM"
       employeeIds={['emp1', 'emp2']}
       events={[
         {
@@ -78,8 +78,8 @@ function TwelveHourCalendar() {
           start: '12:00 PM',
           end: '1:00 PM',
           employeeId: 'emp1',
-          color: '#f59e0b'
-        }
+          color: '#f59e0b',
+        },
       ]}
     />
   )
@@ -102,8 +102,8 @@ function DynamicEvents() {
       start: '10:00',
       end: '11:00',
       employeeId: 'emp1',
-      color: '#3b82f6'
-    }
+      color: '#3b82f6',
+    },
   ])
 
   const addEvent = useCallback(() => {
@@ -114,28 +114,41 @@ function DynamicEvents() {
       end: '15:00',
       employeeId: 'emp2',
       color: '#10b981',
-      description: 'Dynamically added event'
+      description: 'Dynamically added event',
     }
     setEvents(prev => [...prev, newEvent])
   }, [])
 
-  const handleEventClick = useCallback((event: CalendarEventData, employee: { id: string; name: string }) => {
-    console.log(`Clicked event: ${event.title} assigned to ${employee.name}`)
+  const handleEventClick = useCallback(
+    (event: CalendarEventData, employee: { id: string; name: string }) => {
+      console.log(`Clicked event: ${event.title} assigned to ${employee.name}`)
 
-    // Example: Remove event on click
-    setEvents(prev => prev.filter(e => e.id !== event.id))
-  }, [])
+      // Example: Remove event on click
+      setEvents(prev => prev.filter(e => e.id !== event.id))
+    },
+    []
+  )
 
-  const handleEventDrop = useCallback((
-    event: CalendarEventData,
-    next: { employeeId: string; start: string; end: string }
-  ) => {
-    setEvents(prev => prev.map(e =>
-      e.id === event.id
-        ? { ...e, employeeId: next.employeeId, start: next.start, end: next.end }
-        : e
-    ))
-  }, [])
+  const handleEventDrop = useCallback(
+    (
+      event: CalendarEventData,
+      next: { employeeId: string; start: string; end: string }
+    ) => {
+      setEvents(prev =>
+        prev.map(e =>
+          e.id === event.id
+            ? {
+                ...e,
+                employeeId: next.employeeId,
+                start: next.start,
+                end: next.end,
+              }
+            : e
+        )
+      )
+    },
+    []
+  )
 
   return (
     <div>
@@ -177,7 +190,7 @@ function RichEvents() {
       description: 'Quarterly review and strategic planning',
       priority: 'high',
       attendees: ['CEO', 'CTO', 'CFO'],
-      location: 'Conference Room A'
+      location: 'Conference Room A',
     },
     {
       id: '2',
@@ -189,8 +202,8 @@ function RichEvents() {
       description: 'Daily sync meeting',
       priority: 'medium',
       attendees: ['Dev Team'],
-      location: 'Virtual'
-    }
+      location: 'Virtual',
+    },
   ]
 
   return (
@@ -200,18 +213,22 @@ function RichEvents() {
       renderEvent={({ event }) => {
         const extendedEvent = event as ExtendedEventData
         return (
-          <div style={{
-            padding: '8px',
-            background: event.color,
-            color: 'white',
-            borderRadius: '4px',
-            fontSize: '12px'
-          }}>
+          <div
+            style={{
+              padding: '8px',
+              background: event.color,
+              color: 'white',
+              borderRadius: '4px',
+              fontSize: '12px',
+            }}
+          >
             <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
               {event.title}
               {extendedEvent.priority === 'high' && ' 🔥'}
             </div>
-            <div>{event.start} - {event.end}</div>
+            <div>
+              {event.start} - {event.end}
+            </div>
             {extendedEvent.location && (
               <div style={{ fontSize: '10px', opacity: 0.9 }}>
                 📍 {extendedEvent.location}
@@ -237,7 +254,7 @@ import { EmployeeBlockTimes, BlockTime } from 'schedule-calendar'
 
 function CalendarWithBlockTimes() {
   const blockTimes: EmployeeBlockTimes = {
-    'emp1': [
+    emp1: [
       {
         id: 'lunch-1',
         employeeId: 'emp1',
@@ -245,7 +262,7 @@ function CalendarWithBlockTimes() {
         end: '13:00',
         title: 'Lunch Break',
         color: '#fef3c7',
-        type: 'unavailable'
+        type: 'unavailable',
       },
       {
         id: 'training-1',
@@ -254,10 +271,10 @@ function CalendarWithBlockTimes() {
         end: '16:00',
         title: 'Training Session',
         color: '#dbeafe',
-        type: 'blocked'
-      }
+        type: 'blocked',
+      },
     ],
-    'emp2': [
+    emp2: [
       {
         id: 'maintenance-2',
         employeeId: 'emp2',
@@ -265,9 +282,9 @@ function CalendarWithBlockTimes() {
         end: '17:00',
         title: 'System Maintenance',
         color: '#fee2e2',
-        type: 'maintenance'
-      }
-    ]
+        type: 'maintenance',
+      },
+    ],
   }
 
   const events: CalendarEventData[] = [
@@ -277,8 +294,8 @@ function CalendarWithBlockTimes() {
       start: '10:00',
       end: '11:00',
       employeeId: 'emp1',
-      color: '#10b981'
-    }
+      color: '#10b981',
+    },
   ]
 
   return (
@@ -301,22 +318,25 @@ function CalendarWithBlockTimes() {
 function DynamicBlockTimes() {
   const [blockTimes, setBlockTimes] = useState<EmployeeBlockTimes>({})
 
-  const addBlockTime = useCallback((employeeId: string, start: string, end: string, title: string) => {
-    const newBlock: BlockTime = {
-      id: `block-${Date.now()}`,
-      employeeId,
-      start,
-      end,
-      title,
-      color: '#f3f4f6',
-      type: 'blocked'
-    }
+  const addBlockTime = useCallback(
+    (employeeId: string, start: string, end: string, title: string) => {
+      const newBlock: BlockTime = {
+        id: `block-${Date.now()}`,
+        employeeId,
+        start,
+        end,
+        title,
+        color: '#f3f4f6',
+        type: 'blocked',
+      }
 
-    setBlockTimes(prev => ({
-      ...prev,
-      [employeeId]: [...(prev[employeeId] || []), newBlock]
-    }))
-  }, [])
+      setBlockTimes(prev => ({
+        ...prev,
+        [employeeId]: [...(prev[employeeId] || []), newBlock],
+      }))
+    },
+    []
+  )
 
   return (
     <div>
@@ -355,7 +375,7 @@ function CustomEventStyling() {
       end: '10:00',
       employeeId: 'emp1',
       color: '#ef4444',
-      description: 'Urgent task'
+      description: 'Urgent task',
     },
     {
       id: '2',
@@ -363,8 +383,8 @@ function CustomEventStyling() {
       start: '11:00',
       end: '12:00',
       employeeId: 'emp1',
-      color: '#3b82f6'
-    }
+      color: '#3b82f6',
+    },
   ]
 
   return (
@@ -372,75 +392,88 @@ function CustomEventStyling() {
       events={events}
       employeeIds={['emp1', 'emp2']}
       renderEvent={({ event, isDragging }) => (
-        <div style={{
-          padding: '12px',
-          background: `linear-gradient(135deg, ${event.color} 0%, ${event.color}dd 100%)`,
-          color: 'white',
-          borderRadius: '8px',
-          border: '2px solid white',
-          boxShadow: isDragging
-            ? '0 8px 25px rgba(0,0,0,0.3)'
-            : '0 2px 8px rgba(0,0,0,0.1)',
-          transform: isDragging ? 'scale(1.02)' : 'scale(1)',
-          transition: isDragging ? 'none' : 'all 0.2s ease-in-out',
-          cursor: 'pointer',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
+        <div
+          style={{
+            padding: '12px',
+            background: `linear-gradient(135deg, ${event.color} 0%, ${event.color}dd 100%)`,
+            color: 'white',
+            borderRadius: '8px',
+            border: '2px solid white',
+            boxShadow: isDragging
+              ? '0 8px 25px rgba(0,0,0,0.3)'
+              : '0 2px 8px rgba(0,0,0,0.1)',
+            transform: isDragging ? 'scale(1.02)' : 'scale(1)',
+            transition: isDragging ? 'none' : 'all 0.2s ease-in-out',
+            cursor: 'pointer',
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
           {/* Shine effect */}
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: '-100%',
-            width: '100%',
-            height: '100%',
-            background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%)',
-            animation: isDragging ? 'none' : 'shine 2s infinite'
-          }} />
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: '-100%',
+              width: '100%',
+              height: '100%',
+              background:
+                'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%)',
+              animation: isDragging ? 'none' : 'shine 2s infinite',
+            }}
+          />
 
-          <div style={{
-            fontWeight: 'bold',
-            fontSize: '14px',
-            marginBottom: '4px',
-            textShadow: '0 1px 2px rgba(0,0,0,0.3)'
-          }}>
+          <div
+            style={{
+              fontWeight: 'bold',
+              fontSize: '14px',
+              marginBottom: '4px',
+              textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+            }}
+          >
             {event.title}
           </div>
 
-          <div style={{
-            fontSize: '12px',
-            opacity: 0.9,
-            marginBottom: '4px'
-          }}>
+          <div
+            style={{
+              fontSize: '12px',
+              opacity: 0.9,
+              marginBottom: '4px',
+            }}
+          >
             🕐 {event.start} - {event.end}
           </div>
 
           {event.description && (
-            <div style={{
-              fontSize: '10px',
-              opacity: 0.8,
-              fontStyle: 'italic'
-            }}>
+            <div
+              style={{
+                fontSize: '10px',
+                opacity: 0.8,
+                fontStyle: 'italic',
+              }}
+            >
               {event.description}
             </div>
           )}
 
           {event.color === '#ef4444' && (
-            <div style={{
-              position: 'absolute',
-              top: '4px',
-              right: '4px',
-              background: '#ffffff',
-              color: '#ef4444',
-              borderRadius: '50%',
-              width: '20px',
-              height: '20px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '10px',
-              fontWeight: 'bold'
-            }}>
+            <div
+              style={{
+                position: 'absolute',
+                top: '4px',
+                right: '4px',
+                background: '#ffffff',
+                color: '#ef4444',
+                borderRadius: '50%',
+                width: '20px',
+                height: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '10px',
+                fontWeight: 'bold',
+              }}
+            >
               !
             </div>
           )}
@@ -456,17 +489,39 @@ function CustomEventStyling() {
 ```tsx
 function AdvancedEmployeeHeaders() {
   const employees = [
-    { id: 'emp1', name: 'Sarah Chen', role: 'Developer', avatar: '👩‍💻', status: 'available' },
-    { id: 'emp2', name: 'Mike Johnson', role: 'Designer', avatar: '👨‍🎨', status: 'busy' },
-    { id: 'emp3', name: 'Alex Rivera', role: 'Manager', avatar: '👨‍💼', status: 'in-meeting' }
+    {
+      id: 'emp1',
+      name: 'Sarah Chen',
+      role: 'Developer',
+      avatar: '👩‍💻',
+      status: 'available',
+    },
+    {
+      id: 'emp2',
+      name: 'Mike Johnson',
+      role: 'Designer',
+      avatar: '👨‍🎨',
+      status: 'busy',
+    },
+    {
+      id: 'emp3',
+      name: 'Alex Rivera',
+      role: 'Manager',
+      avatar: '👨‍💼',
+      status: 'in-meeting',
+    },
   ]
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'available': return '#10b981'
-      case 'busy': return '#f59e0b'
-      case 'in-meeting': return '#ef4444'
-      default: return '#6b7280'
+      case 'available':
+        return '#10b981'
+      case 'busy':
+        return '#f59e0b'
+      case 'in-meeting':
+        return '#ef4444'
+      default:
+        return '#6b7280'
     }
   }
 
@@ -476,81 +531,93 @@ function AdvancedEmployeeHeaders() {
       renderEmployee={(employee, index) => {
         const emp = employees.find(e => e.id === employee.id)!
         return (
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            padding: '16px 8px',
-            background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)',
-            borderRight: '1px solid #e2e8f0',
-            minHeight: '80px',
-            transition: 'all 0.3s ease',
-            cursor: 'pointer',
-            position: 'relative'
-          }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              padding: '16px 8px',
+              background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)',
+              borderRight: '1px solid #e2e8f0',
+              minHeight: '80px',
+              transition: 'all 0.3s ease',
+              cursor: 'pointer',
+              position: 'relative',
+            }}
+          >
             {/* Status indicator */}
-            <div style={{
-              position: 'absolute',
-              top: '8px',
-              right: '8px',
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              backgroundColor: getStatusColor(emp.status),
-              border: '2px solid white',
-              boxShadow: '0 0 0 1px rgba(0,0,0,0.1)'
-            }} />
+            <div
+              style={{
+                position: 'absolute',
+                top: '8px',
+                right: '8px',
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                backgroundColor: getStatusColor(emp.status),
+                border: '2px solid white',
+                boxShadow: '0 0 0 1px rgba(0,0,0,0.1)',
+              }}
+            />
 
             {/* Avatar */}
-            <div style={{
-              fontSize: '24px',
-              marginBottom: '8px',
-              background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-              borderRadius: '50%',
-              width: '40px',
-              height: '40px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 8px rgba(59, 130, 246, 0.3)'
-            }}>
+            <div
+              style={{
+                fontSize: '24px',
+                marginBottom: '8px',
+                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                borderRadius: '50%',
+                width: '40px',
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 8px rgba(59, 130, 246, 0.3)',
+              }}
+            >
               {emp.avatar}
             </div>
 
             {/* Name */}
-            <div style={{
-              fontWeight: 'bold',
-              fontSize: '14px',
-              color: '#1e293b',
-              textAlign: 'center',
-              marginBottom: '4px',
-              lineHeight: '1.2'
-            }}>
+            <div
+              style={{
+                fontWeight: 'bold',
+                fontSize: '14px',
+                color: '#1e293b',
+                textAlign: 'center',
+                marginBottom: '4px',
+                lineHeight: '1.2',
+              }}
+            >
               {emp.name}
             </div>
 
             {/* Role */}
-            <div style={{
-              fontSize: '11px',
-              color: '#64748b',
-              textAlign: 'center',
-              marginBottom: '6px',
-              fontWeight: '500'
-            }}>
+            <div
+              style={{
+                fontSize: '11px',
+                color: '#64748b',
+                textAlign: 'center',
+                marginBottom: '6px',
+                fontWeight: '500',
+              }}
+            >
               {emp.role}
             </div>
 
             {/* Status badge */}
-            <div style={{
-              fontSize: '9px',
-              color: getStatusColor(emp.status),
-              backgroundColor: `${getStatusColor(emp.status)}20`,
-              padding: '2px 8px',
-              borderRadius: '12px',
-              fontWeight: '600',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px'
-            }}>
+            <div
+              style={{
+                fontSize: '9px',
+                color: getStatusColor(emp.status),
+                backgroundColor: `${getStatusColor(emp.status)}20`,
+                padding: '2px 8px',
+                borderRadius: '12px',
+                fontWeight: '600',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+              }}
+            >
               {emp.status.replace('-', ' ')}
             </div>
           </div>
@@ -560,8 +627,8 @@ function AdvancedEmployeeHeaders() {
         minColumnWidth: 140,
         style: {
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-          borderRadius: '8px'
-        }
+          borderRadius: '8px',
+        },
       }}
     />
   )
@@ -579,27 +646,27 @@ function MixedTimeFormats() {
     {
       id: '1',
       title: '24-hour format',
-      start: '09:00',  // 24-hour format
+      start: '09:00', // 24-hour format
       end: '10:30',
       employeeId: 'emp1',
-      color: '#3b82f6'
+      color: '#3b82f6',
     },
     {
       id: '2',
       title: '12-hour format',
-      start: '2:00 PM',  // 12-hour format
+      start: '2:00 PM', // 12-hour format
       end: '3:30 PM',
       employeeId: 'emp2',
-      color: '#10b981'
-    }
+      color: '#10b981',
+    },
   ]
 
   return (
     <DayView
       events={events}
       employeeIds={['emp1', 'emp2']}
-      use24HourFormat={false}  // Display in 12-hour format
-      onEventClick={(event) => {
+      use24HourFormat={false} // Display in 12-hour format
+      onEventClick={event => {
         console.log(`Event: ${event.title}`)
         console.log(`Start: ${event.start}, End: ${event.end}`)
       }}
@@ -617,22 +684,22 @@ import {
   addMinutesToSlot,
   differenceInMinutes,
   formatTime,
-  generateTimeSlots
+  generateTimeSlots,
 } from 'schedule-calendar'
 
 function TimeUtilityExample() {
   // Parse different time formats
-  const parsed24 = parseTimeSlot("14:30")
-  const parsed12 = parseTimeSlot("2:30 PM")
+  const parsed24 = parseTimeSlot('14:30')
+  const parsed12 = parseTimeSlot('2:30 PM')
 
   // Convert to minutes from midnight
-  const minutes = slotToMinutes("14:30") // 870 minutes
+  const minutes = slotToMinutes('14:30') // 870 minutes
 
   // Add time
-  const laterTime = addMinutesToSlot("14:30", 45) // "15:15"
+  const laterTime = addMinutesToSlot('14:30', 45) // "15:15"
 
   // Calculate duration
-  const duration = differenceInMinutes("14:30", "16:00") // 90 minutes
+  const duration = differenceInMinutes('14:30', '16:00') // 90 minutes
 
   // Format time
   const formatted24 = formatTime(new Date(), true) // "14:30"
@@ -674,8 +741,8 @@ function AdvancedDragDrop() {
       start: '10:00',
       end: '11:00',
       employeeId: 'emp1',
-      color: '#3b82f6'
-    }
+      color: '#3b82f6',
+    },
   ])
 
   const [dragHistory, setDragHistory] = useState<string[]>([])
@@ -685,47 +752,69 @@ function AdvancedDragDrop() {
     setDragHistory(prev => [...prev, `Started dragging: ${event.title}`])
   }, [])
 
-  const handleDrag = useCallback((event: CalendarEventData, deltaX: number, deltaY: number) => {
-    // Optional: Live feedback during drag
-    console.log(`Dragging ${event.title}: x=${deltaX}, y=${deltaY}`)
-  }, [])
+  const handleDrag = useCallback(
+    (event: CalendarEventData, deltaX: number, deltaY: number) => {
+      // Optional: Live feedback during drag
+      console.log(`Dragging ${event.title}: x=${deltaX}, y=${deltaY}`)
+    },
+    []
+  )
 
-  const handleDragEnd = useCallback((
-    event: CalendarEventData,
-    newEmployeeId: string,
-    newStart: string
-  ) => {
-    console.log('Drag ended:', { event: event.title, newEmployeeId, newStart })
-    setDragHistory(prev => [...prev, `Drag ended: ${event.title} -> ${newEmployeeId} at ${newStart}`])
-  }, [])
+  const handleDragEnd = useCallback(
+    (event: CalendarEventData, newEmployeeId: string, newStart: string) => {
+      console.log('Drag ended:', {
+        event: event.title,
+        newEmployeeId,
+        newStart,
+      })
+      setDragHistory(prev => [
+        ...prev,
+        `Drag ended: ${event.title} -> ${newEmployeeId} at ${newStart}`,
+      ])
+    },
+    []
+  )
 
-  const handleDrop = useCallback((
-    event: CalendarEventData,
-    next: { employeeId: string; start: string; end: string }
-  ) => {
-    // Update event position
-    setEvents(prev => prev.map(e =>
-      e.id === event.id
-        ? { ...e, employeeId: next.employeeId, start: next.start, end: next.end }
-        : e
-    ))
+  const handleDrop = useCallback(
+    (
+      event: CalendarEventData,
+      next: { employeeId: string; start: string; end: string }
+    ) => {
+      // Update event position
+      setEvents(prev =>
+        prev.map(e =>
+          e.id === event.id
+            ? {
+                ...e,
+                employeeId: next.employeeId,
+                start: next.start,
+                end: next.end,
+              }
+            : e
+        )
+      )
 
-    setDragHistory(prev => [...prev,
-      `Dropped: ${event.title} at ${next.employeeId} (${next.start} - ${next.end})`
-    ])
-  }, [])
+      setDragHistory(prev => [
+        ...prev,
+        `Dropped: ${event.title} at ${next.employeeId} (${next.start} - ${next.end})`,
+      ])
+    },
+    []
+  )
 
   return (
     <div>
       <div style={{ marginBottom: '16px' }}>
         <h3>Drag History:</h3>
-        <div style={{
-          height: '100px',
-          overflow: 'auto',
-          background: '#f3f4f6',
-          padding: '8px',
-          fontSize: '12px'
-        }}>
+        <div
+          style={{
+            height: '100px',
+            overflow: 'auto',
+            background: '#f3f4f6',
+            padding: '8px',
+            fontSize: '12px',
+          }}
+        >
           {dragHistory.map((entry, index) => (
             <div key={index}>{entry}</div>
           ))}
@@ -756,7 +845,7 @@ function ConstrainedDragDrop() {
       start: '10:00',
       end: '11:00',
       employeeId: 'admin',
-      color: '#ef4444'
+      color: '#ef4444',
     },
     {
       id: '2',
@@ -764,37 +853,50 @@ function ConstrainedDragDrop() {
       start: '14:00',
       end: '15:00',
       employeeId: 'emp1',
-      color: '#10b981'
-    }
+      color: '#10b981',
+    },
   ])
 
-  const handleDrop = useCallback((
-    event: CalendarEventData,
-    next: { employeeId: string; start: string; end: string }
-  ) => {
-    // Example: Prevent moving admin events to other employees
-    if (event.employeeId === 'admin' && next.employeeId !== 'admin') {
-      alert('Admin events cannot be moved to other employees')
-      return
-    }
+  const handleDrop = useCallback(
+    (
+      event: CalendarEventData,
+      next: { employeeId: string; start: string; end: string }
+    ) => {
+      // Example: Prevent moving admin events to other employees
+      if (event.employeeId === 'admin' && next.employeeId !== 'admin') {
+        alert('Admin events cannot be moved to other employees')
+        return
+      }
 
-    // Example: Prevent scheduling outside business hours
-    const startMinutes = slotToMinutes(next.start)
-    const businessStart = 9 * 60 // 9:00 AM
-    const businessEnd = 17 * 60  // 5:00 PM
+      // Example: Prevent scheduling outside business hours
+      const startMinutes = slotToMinutes(next.start)
+      const businessStart = 9 * 60 // 9:00 AM
+      const businessEnd = 17 * 60 // 5:00 PM
 
-    if (startMinutes && (startMinutes < businessStart || startMinutes >= businessEnd)) {
-      alert('Events must be scheduled during business hours (9 AM - 5 PM)')
-      return
-    }
+      if (
+        startMinutes &&
+        (startMinutes < businessStart || startMinutes >= businessEnd)
+      ) {
+        alert('Events must be scheduled during business hours (9 AM - 5 PM)')
+        return
+      }
 
-    // Allow the move
-    setEvents(prev => prev.map(e =>
-      e.id === event.id
-        ? { ...e, employeeId: next.employeeId, start: next.start, end: next.end }
-        : e
-    ))
-  }, [])
+      // Allow the move
+      setEvents(prev =>
+        prev.map(e =>
+          e.id === event.id
+            ? {
+                ...e,
+                employeeId: next.employeeId,
+                start: next.start,
+                end: next.end,
+              }
+            : e
+        )
+      )
+    },
+    []
+  )
 
   return (
     <DayView
@@ -816,31 +918,55 @@ function ConstrainedDragDrop() {
 ```tsx
 function MultiDaySimulation() {
   const [currentDate, setCurrentDate] = useState(new Date())
-  const [allEvents, setAllEvents] = useState<{[key: string]: CalendarEventData[]}>({
+  const [allEvents, setAllEvents] = useState<{
+    [key: string]: CalendarEventData[]
+  }>({
     '2024-01-15': [
-      { id: '1', title: 'Monday Meeting', start: '09:00', end: '10:00', employeeId: 'emp1', color: '#3b82f6' }
+      {
+        id: '1',
+        title: 'Monday Meeting',
+        start: '09:00',
+        end: '10:00',
+        employeeId: 'emp1',
+        color: '#3b82f6',
+      },
     ],
     '2024-01-16': [
-      { id: '2', title: 'Tuesday Task', start: '14:00', end: '15:00', employeeId: 'emp2', color: '#10b981' }
-    ]
+      {
+        id: '2',
+        title: 'Tuesday Task',
+        start: '14:00',
+        end: '15:00',
+        employeeId: 'emp2',
+        color: '#10b981',
+      },
+    ],
   })
 
   const dateKey = currentDate.toISOString().split('T')[0]
   const todaysEvents = allEvents[dateKey] || []
 
-  const handleEventDrop = useCallback((
-    event: CalendarEventData,
-    next: { employeeId: string; start: string; end: string }
-  ) => {
-    setAllEvents(prev => ({
-      ...prev,
-      [dateKey]: (prev[dateKey] || []).map(e =>
-        e.id === event.id
-          ? { ...e, employeeId: next.employeeId, start: next.start, end: next.end }
-          : e
-      )
-    }))
-  }, [dateKey])
+  const handleEventDrop = useCallback(
+    (
+      event: CalendarEventData,
+      next: { employeeId: string; start: string; end: string }
+    ) => {
+      setAllEvents(prev => ({
+        ...prev,
+        [dateKey]: (prev[dateKey] || []).map(e =>
+          e.id === event.id
+            ? {
+                ...e,
+                employeeId: next.employeeId,
+                start: next.start,
+                end: next.end,
+              }
+            : e
+        ),
+      }))
+    },
+    [dateKey]
+  )
 
   return (
     <DayView
@@ -854,20 +980,22 @@ function MultiDaySimulation() {
           <span style={{ marginRight: '16px' }}>
             Events today: {todaysEvents.length}
           </span>
-          <button onClick={() => {
-            const newEvent: CalendarEventData = {
-              id: `event-${Date.now()}`,
-              title: 'New Event',
-              start: '11:00',
-              end: '12:00',
-              employeeId: 'emp1',
-              color: '#f59e0b'
-            }
-            setAllEvents(prev => ({
-              ...prev,
-              [dateKey]: [...(prev[dateKey] || []), newEvent]
-            }))
-          }}>
+          <button
+            onClick={() => {
+              const newEvent: CalendarEventData = {
+                id: `event-${Date.now()}`,
+                title: 'New Event',
+                start: '11:00',
+                end: '12:00',
+                employeeId: 'emp1',
+                color: '#f59e0b',
+              }
+              setAllEvents(prev => ({
+                ...prev,
+                [dateKey]: [...(prev[dateKey] || []), newEvent],
+              }))
+            }}
+          >
             Add Event
           </button>
         </div>
@@ -892,27 +1020,30 @@ function StateIntegratedCalendar() {
     updateEvent,
     setCurrentDate,
     addEvent,
-    removeEvent
+    removeEvent,
   } = useCalendarStore()
 
-  const handleTimeLabelClick = useCallback((
-    timeLabel: string,
-    index: number,
-    timeSlot: string,
-    employee: { id: string; name: string }
-  ) => {
-    // Quick event creation
-    const endTime = addMinutesToSlot(timeSlot, 60)
-    const newEvent: CalendarEventData = {
-      id: `quick-${Date.now()}`,
-      title: 'Quick Event',
-      start: timeSlot,
-      end: endTime,
-      employeeId: employee.id,
-      color: '#3b82f6'
-    }
-    addEvent(newEvent)
-  }, [addEvent])
+  const handleTimeLabelClick = useCallback(
+    (
+      timeLabel: string,
+      index: number,
+      timeSlot: string,
+      employee: { id: string; name: string }
+    ) => {
+      // Quick event creation
+      const endTime = addMinutesToSlot(timeSlot, 60)
+      const newEvent: CalendarEventData = {
+        id: `quick-${Date.now()}`,
+        title: 'Quick Event',
+        start: timeSlot,
+        end: endTime,
+        employeeId: employee.id,
+        color: '#3b82f6',
+      }
+      addEvent(newEvent)
+    },
+    [addEvent]
+  )
 
   return (
     <DayView
@@ -925,7 +1056,7 @@ function StateIntegratedCalendar() {
         updateEvent(event.id, {
           employeeId: next.employeeId,
           start: next.start,
-          end: next.end
+          end: next.end,
         })
       }}
       onTimeLabelClick={handleTimeLabelClick}
@@ -969,34 +1100,38 @@ function MedicalScheduler() {
       patientName: 'John Doe',
       appointmentType: 'consultation',
       duration: 30,
-      notes: 'First visit'
-    }
+      notes: 'First visit',
+    },
   ])
 
   const doctors = [
     { id: 'dr-smith', name: 'Dr. Smith', specialty: 'Cardiology' },
-    { id: 'dr-jones', name: 'Dr. Jones', specialty: 'Neurology' }
+    { id: 'dr-jones', name: 'Dr. Jones', specialty: 'Neurology' },
   ]
 
   const lunchBreaks: EmployeeBlockTimes = {
-    'dr-smith': [{
-      id: 'lunch-smith',
-      employeeId: 'dr-smith',
-      start: '12:00',
-      end: '13:00',
-      title: 'Lunch Break',
-      color: '#fef3c7',
-      type: 'unavailable'
-    }],
-    'dr-jones': [{
-      id: 'lunch-jones',
-      employeeId: 'dr-jones',
-      start: '12:30',
-      end: '13:30',
-      title: 'Lunch Break',
-      color: '#fef3c7',
-      type: 'unavailable'
-    }]
+    'dr-smith': [
+      {
+        id: 'lunch-smith',
+        employeeId: 'dr-smith',
+        start: '12:00',
+        end: '13:00',
+        title: 'Lunch Break',
+        color: '#fef3c7',
+        type: 'unavailable',
+      },
+    ],
+    'dr-jones': [
+      {
+        id: 'lunch-jones',
+        employeeId: 'dr-jones',
+        start: '12:30',
+        end: '13:30',
+        title: 'Lunch Break',
+        color: '#fef3c7',
+        type: 'unavailable',
+      },
+    ],
   }
 
   return (
@@ -1007,14 +1142,17 @@ function MedicalScheduler() {
       events={appointments}
       blockTimes={lunchBreaks}
       employeeIds={doctors.map(d => d.id)}
-      renderEmployee={(employee) => {
+      renderEmployee={employee => {
         const doctor = doctors.find(d => d.id === employee.id)
         return (
           <div style={{ textAlign: 'center', padding: '12px' }}>
             <div style={{ fontWeight: 'bold' }}>{doctor?.name}</div>
-            <div style={{ fontSize: '12px', color: '#666' }}>{doctor?.specialty}</div>
+            <div style={{ fontSize: '12px', color: '#666' }}>
+              {doctor?.specialty}
+            </div>
             <div style={{ fontSize: '10px', marginTop: '4px' }}>
-              {appointments.filter(a => a.employeeId === employee.id).length} appointments
+              {appointments.filter(a => a.employeeId === employee.id).length}{' '}
+              appointments
             </div>
           </div>
         )
@@ -1022,16 +1160,20 @@ function MedicalScheduler() {
       renderEvent={({ event }) => {
         const appointment = event as AppointmentData
         return (
-          <div style={{
-            padding: '8px',
-            background: event.color,
-            color: 'white',
-            borderRadius: '4px',
-            fontSize: '11px'
-          }}>
+          <div
+            style={{
+              padding: '8px',
+              background: event.color,
+              color: 'white',
+              borderRadius: '4px',
+              fontSize: '11px',
+            }}
+          >
             <div style={{ fontWeight: 'bold' }}>{appointment.patientName}</div>
             <div>{appointment.appointmentType}</div>
-            <div>{event.start} - {event.end}</div>
+            <div>
+              {event.start} - {event.end}
+            </div>
             {appointment.notes && (
               <div style={{ fontSize: '9px', opacity: 0.8 }}>
                 {appointment.notes}
@@ -1041,17 +1183,26 @@ function MedicalScheduler() {
         )
       }}
       onEventDrop={(event, next) => {
-        setAppointments(prev => prev.map(a =>
-          a.id === event.id
-            ? { ...a, employeeId: next.employeeId, start: next.start, end: next.end }
-            : a
-        ))
+        setAppointments(prev =>
+          prev.map(a =>
+            a.id === event.id
+              ? {
+                  ...a,
+                  employeeId: next.employeeId,
+                  start: next.start,
+                  end: next.end,
+                }
+              : a
+          )
+        )
       }}
       headerActions={
-        <button onClick={() => {
-          // Add new appointment logic
-          console.log('Add new appointment')
-        }}>
+        <button
+          onClick={() => {
+            // Add new appointment logic
+            console.log('Add new appointment')
+          }}
+        >
           New Appointment
         </button>
       }
@@ -1075,15 +1226,19 @@ function ServiceBookingCalendar() {
   const [bookings, setBookings] = useState<ServiceBooking[]>([])
   const [technicians] = useState([
     { id: 'tech1', name: 'Mike Wilson', skills: ['plumbing', 'electrical'] },
-    { id: 'tech2', name: 'Sarah Davis', skills: ['hvac', 'plumbing'] }
+    { id: 'tech2', name: 'Sarah Davis', skills: ['hvac', 'plumbing'] },
   ])
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'confirmed': return '#10b981'
-      case 'pending': return '#f59e0b'
-      case 'completed': return '#6b7280'
-      default: return '#3b82f6'
+      case 'confirmed':
+        return '#10b981'
+      case 'pending':
+        return '#f59e0b'
+      case 'completed':
+        return '#6b7280'
+      default:
+        return '#3b82f6'
     }
   }
 
@@ -1094,7 +1249,7 @@ function ServiceBookingCalendar() {
       stepMinutes={30}
       events={bookings}
       employeeIds={technicians.map(t => t.id)}
-      renderEmployee={(employee) => {
+      renderEmployee={employee => {
         const tech = technicians.find(t => t.id === employee.id)
         const todayBookings = bookings.filter(b => b.employeeId === employee.id)
         return (
@@ -1112,28 +1267,34 @@ function ServiceBookingCalendar() {
       renderEvent={({ event }) => {
         const booking = event as ServiceBooking
         return (
-          <div style={{
-            padding: '10px',
-            background: getStatusColor(booking.status),
-            color: 'white',
-            borderRadius: '6px',
-            fontSize: '11px',
-            border: booking.status === 'pending' ? '2px dashed #fff' : 'none'
-          }}>
+          <div
+            style={{
+              padding: '10px',
+              background: getStatusColor(booking.status),
+              color: 'white',
+              borderRadius: '6px',
+              fontSize: '11px',
+              border: booking.status === 'pending' ? '2px dashed #fff' : 'none',
+            }}
+          >
             <div style={{ fontWeight: 'bold' }}>{booking.serviceType}</div>
             <div>{booking.customerName}</div>
-            <div>{event.start} - {event.end}</div>
+            <div>
+              {event.start} - {event.end}
+            </div>
             <div style={{ fontSize: '9px', opacity: 0.8 }}>
               📞 {booking.customerPhone}
             </div>
-            <div style={{
-              fontSize: '8px',
-              background: 'rgba(255,255,255,0.2)',
-              borderRadius: '3px',
-              padding: '2px 4px',
-              marginTop: '4px',
-              textTransform: 'uppercase'
-            }}>
+            <div
+              style={{
+                fontSize: '8px',
+                background: 'rgba(255,255,255,0.2)',
+                borderRadius: '3px',
+                padding: '2px 4px',
+                marginTop: '4px',
+                textTransform: 'uppercase',
+              }}
+            >
               {booking.status}
             </div>
           </div>
@@ -1141,7 +1302,9 @@ function ServiceBookingCalendar() {
       }}
       onEventClick={(event, employee) => {
         const booking = event as ServiceBooking
-        console.log(`Booking clicked: ${booking.customerName} - ${booking.serviceType}`)
+        console.log(
+          `Booking clicked: ${booking.customerName} - ${booking.serviceType}`
+        )
         // Open booking details modal
       }}
     />

@@ -18,9 +18,7 @@ const MyCalendar = () => {
 
   return (
     <div>
-      <button onClick={handleScrollToNow}>
-        滚动到当前时间
-      </button>
+      <button onClick={handleScrollToNow}>滚动到当前时间</button>
 
       <DayView
         ref={dayViewRef}
