@@ -9,7 +9,7 @@ export const resolveEmployeeColumnTemplate = (
   }
 
   if (typeof customWidth === 'number') {
-    return `${customWidth}px`
+    return `minmax(${customWidth}px, 1fr)`
   }
 
   return customWidth

@@ -20,6 +20,7 @@
     background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
     border-bottom: 1px solid rgba(226, 232, 240, 0.6);
     box-sizing: border-box;
+    overflow: hidden;
   }
 
   &::-webkit-scrollbar {

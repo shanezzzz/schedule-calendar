@@ -60,13 +60,17 @@ const employees: Employee[] = [
 ]
 
 const employeesWithWidths: Employee[] = [
-  { id: 'Carry', name: 'Carry Johnson', columnWidth: 180 },
-  { id: 'Lucy', name: 'Lucy Tran', columnWidth: 280 },
-  { id: 'John', name: 'John Ikeda', columnWidth: 220 },
-  { id: 'Tom', name: 'Tomas Garcia', columnWidth: '18rem' },
-  { id: 'Jerry', name: 'Jerry Liu', columnWidth: 240 },
+  {
+    id: 'Carry',
+    name: 'Carry Johnson',
+    columnWidth: 320,
+  },
+  { id: 'Lucy', name: 'Lucy Tran', columnWidth: 200 },
+  { id: 'John', name: 'John Ikeda', columnWidth: 200 },
+  { id: 'Tom', name: 'Tomas Garcia', columnWidth: 200 },
+  { id: 'Jerry', name: 'Jerry Liu', columnWidth: 200 },
   { id: 'Alice', name: 'Alice Muller', columnWidth: 200 },
-  { id: 'Bob', name: 'Bob Singh', columnWidth: '14rem' },
+  { id: 'Bob', name: 'Bob Singh', columnWidth: 200 },
 ]
 
 // 示例 Block Time 数据
