@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react'
 import CalendarCell from '@/components/CalendarCell'
 import type { CalendarCellEmployee } from '@/components/CalendarCell'
 import CalendarEvent from '@/components/CalendarEvent'
+import CalendarBlockTime from '@/components/CalendarBlockTime'
 import styles from './CalendarGrid.module.scss'
 import {
   addMinutesToSlot,
@@ -19,6 +20,7 @@ import type {
   CalendarEventRenderContext,
 } from '@/components/CalendarEvent'
 import type { CalendarGridEmployee, CalendarGridProps } from './types'
+import type { BlockTime } from '@/types/blockTime'
 
 const CalendarGrid: React.FC<CalendarGridProps> = ({
   events = [],
@@ -35,7 +37,9 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   onEventDragEnd,
   onEventDrop,
   onTimeLabelClick,
+  onBlockTimeClick,
   renderEvent,
+  renderBlockTime,
 }) => {
   const displayTimeSlots = useMemo(
     () => (timeSlots.length > 0 ? timeSlots : []),
@@ -202,6 +206,121 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
     if (value >= max) return max - 1
     return value
   }, [])
+
+  const blockTimeLayouts = useMemo(() => {
+    if (displayEmployeeIds.length === 0 || displayTimeSlots.length === 0) {
+      return []
+    }
+
+    const interval =
+      slotIntervalMinutes > 0
+        ? slotIntervalMinutes
+        : stepMinutes > 0
+          ? stepMinutes
+          : 30
+
+    const lastSlot = displayTimeSlots[displayTimeSlots.length - 1]
+    const lastSlotMinutes = lastSlot ? slotToMinutes(lastSlot) : null
+    const scheduleEndMinutes =
+      lastSlotMinutes !== null
+        ? lastSlotMinutes + interval
+        : minSlotMinutes + interval
+
+    const layouts: Array<{
+      key: string
+      blockTime: BlockTime
+      employee: CalendarCellEmployee
+      style: React.CSSProperties
+    }> = []
+
+    displayEmployeeIds.forEach((employeeId, employeeIndex) => {
+      const employeeBlockTimes = getEmployeeBlockTimes(employeeId, blockTimes)
+      if (!employeeBlockTimes.length) {
+        return
+      }
+
+      const employeeData = getEmployeeData(employeeId)
+
+      employeeBlockTimes.forEach(blockTime => {
+        const startMinutes = slotToMinutes(blockTime.start)
+        const endMinutes = slotToMinutes(blockTime.end)
+
+        if (startMinutes === null || endMinutes === null) {
+          return
+        }
+
+        const constrainedStart = Math.max(startMinutes, minSlotMinutes)
+        const constrainedEnd = Math.min(endMinutes, scheduleEndMinutes)
+
+        if (constrainedEnd <= constrainedStart) {
+          return
+        }
+
+        const relativeStart = Math.max(0, constrainedStart - minSlotMinutes)
+        const baseRowIndex =
+          interval > 0 ? Math.floor(relativeStart / interval) : 0
+        const clampedRowIndex = clampIndex(
+          Number.isFinite(baseRowIndex) ? baseRowIndex : 0,
+          displayTimeSlots.length
+        )
+        const rowStart = clampedRowIndex + 1
+        const baseRowStartMinutes = minSlotMinutes + clampedRowIndex * interval
+        const offsetMinutes = Math.max(
+          0,
+          constrainedStart - baseRowStartMinutes
+        )
+        const visibleDuration = Math.max(constrainedEnd - constrainedStart, 1)
+        const totalMinutes = offsetMinutes + visibleDuration
+        const rowSpan =
+          interval > 0 ? Math.max(1, Math.ceil(totalMinutes / interval)) : 1
+        const maxGridLine = displayTimeSlots.length + 1
+        const rowEnd = Math.min(maxGridLine, rowStart + rowSpan)
+        const marginTop =
+          interval > 0 ? (offsetMinutes / interval) * cellHeight : 0
+        const heightPx =
+          interval > 0 ? (visibleDuration / interval) * cellHeight : cellHeight
+
+        const style: React.CSSProperties = {
+          gridColumn: employeeIndex + 1,
+          gridRowStart: rowStart,
+          gridRowEnd: rowEnd,
+          marginTop,
+          height: `${Math.max(heightPx, 6)}px`,
+          alignSelf: 'start',
+          width: '100%',
+        }
+
+        layouts.push({
+          key: `${employeeId}-${blockTime.id}`,
+          blockTime,
+          employee: employeeData,
+          style,
+        })
+      })
+    })
+
+    return layouts
+  }, [
+    blockTimes,
+    cellHeight,
+    clampIndex,
+    displayEmployeeIds,
+    displayTimeSlots,
+    getEmployeeData,
+    minSlotMinutes,
+    slotIntervalMinutes,
+    stepMinutes,
+  ])
+
+  const handleBlockTimeOverlayClick = useCallback(
+    (blockTime: BlockTime, employee: CalendarCellEmployee) => {
+      if (!onBlockTimeClick) {
+        return
+      }
+      onBlockTimeClick(blockTime, blockTime.start, employee)
+    },
+    [onBlockTimeClick]
+  )
 
   const handleDragStart = useCallback(
     (event: CalendarEventData) => {
@@ -518,10 +637,25 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
                 employee={employeeMap.get(employeeId)}
                 blockTimes={employeeBlockTimes}
                 onTimeLabelClick={onTimeLabelClick}
+                onBlockTimeClick={onBlockTimeClick}
               />
             )
           })
         )}
+      </div>
+
+      <div className={styles.blockLayer} style={gridStyle}>
+        {blockTimeLayouts.map(({ key, blockTime, employee, style }) => (
+          <CalendarBlockTime
+            key={key}
+            blockTime={blockTime}
+            employee={employee}
+            style={style}
+            use24HourFormat={use24HourFormat}
+            onClick={onBlockTimeClick ? handleBlockTimeOverlayClick : undefined}
+            renderContent={renderBlockTime}
+          />
+        ))}
       </div>
 
       <div ref={eventLayerRef} className={styles.eventLayer} style={gridStyle}>

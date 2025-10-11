@@ -16,4 +16,9 @@ export interface CalendarCellProps {
     timeSlot: string,
     employee: CalendarCellEmployee
   ) => void
+  onBlockTimeClick?: (
+    blockTime: BlockTime,
+    timeSlot: string,
+    employee: CalendarCellEmployee
+  ) => void
 }

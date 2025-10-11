@@ -46,7 +46,9 @@ const DayView = forwardRef<DayViewRef, DayViewProps>(
       onEventDragEnd,
       onEventDrop,
       onTimeLabelClick,
+      onBlockTimeClick,
       renderEvent,
+      renderBlockTime,
       renderEmployee,
       employeeHeaderProps,
       timeColumnHeaderContent,
@@ -295,7 +297,9 @@ const DayView = forwardRef<DayViewRef, DayViewProps>(
               onEventDragEnd={onEventDragEnd}
               onEventDrop={onEventDrop}
               onTimeLabelClick={onTimeLabelClick}
+              onBlockTimeClick={onBlockTimeClick}
               renderEvent={renderEvent}
+              renderBlockTime={renderBlockTime}
             />
             {showCurrentTimeLine && (
               <CurrentTimeLine
