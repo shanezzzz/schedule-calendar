@@ -7,6 +7,9 @@ export type * from './components/CalendarCell'
 export { default as CalendarEvent } from './components/CalendarEvent'
 export type * from './components/CalendarEvent'
 
+export { default as CalendarBlockTime } from './components/CalendarBlockTime'
+export type * from './components/CalendarBlockTime'
+
 export { default as TimeColumn } from './components/TimeColumn'
 export type * from './components/TimeColumn'
 
