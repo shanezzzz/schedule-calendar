@@ -13,37 +13,37 @@
   flex: 1;
   overflow: auto;
   position: relative;
-  grid-template-areas: 
-    "time-column employee-header"
-    "time-column calendar-grid";
+  grid-template-areas:
+    'time-column employee-header'
+    'time-column calendar-grid';
   grid-template-columns: 80px 1fr;
   grid-template-rows: auto 1fr;
-  
+
   /* Ultra-minimal scrollbar for main content area */
   scrollbar-width: thin;
   scrollbar-color: rgba(148, 163, 184, 0.1) transparent;
-  
+
   &::-webkit-scrollbar {
     width: 3px;
     height: 3px;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: transparent;
     border: none;
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background: rgba(148, 163, 184, 0.1);
     border-radius: 1px;
     transition: opacity 0.2s ease;
     opacity: 0;
   }
-  
+
   &:hover::-webkit-scrollbar-thumb {
     opacity: 0.4;
   }
-  
+
   &::-webkit-scrollbar-corner {
     background: transparent;
   }
@@ -76,7 +76,7 @@
   .dayView {
     height: 100vh;
   }
-  
+
   .dayViewContent {
     grid-template-columns: 60px 1fr;
   }

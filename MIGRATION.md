@@ -7,20 +7,19 @@ This guide helps you migrate from basic calendar usage to the comprehensive day-
 ### Old vs New Imports
 
 **Before:**
+
 ```tsx
 import { Calendar } from 'schedule-calendar'
 
-<Calendar
-  value={selectedDate}
-  onChange={setSelectedDate}
-/>
+;<Calendar value={selectedDate} onChange={setSelectedDate} />
 ```
 
 **After:**
+
 ```tsx
 import { DayView, CalendarEventData } from 'schedule-calendar'
 
-<DayView
+;<DayView
   currentDate={selectedDate}
   onDateChange={setSelectedDate}
   events={events}
@@ -35,10 +34,12 @@ import { DayView, CalendarEventData } from 'schedule-calendar'
 The library has evolved from a simple date picker to a comprehensive scheduling system:
 
 **Old Focus:**
+
 - Date selection
 - Basic calendar navigation
 
 **New Focus:**
+
 - Day-view event scheduling
 - Employee/resource management
 - Drag-and-drop events
@@ -52,8 +53,8 @@ The `DayView` component requires different props than the old `Calendar`:
 ```tsx
 // Minimum required setup
 <DayView
-  employeeIds={['emp1', 'emp2', 'emp3']}  // Required for columns
-  events={eventArray}                     // Events to display
+  employeeIds={['emp1', 'emp2', 'emp3']} // Required for columns
+  events={eventArray} // Events to display
 />
 ```
 
@@ -63,12 +64,12 @@ Events now use a specific data structure:
 
 ```tsx
 interface CalendarEventData {
-  id: string           // Required unique identifier
-  title?: string       // Event title
-  start: string        // Start time ("09:00" or "9:00 AM")
-  end: string          // End time ("10:00" or "10:00 AM")
-  employeeId: string   // Which employee/resource
-  color?: string       // Background color
+  id: string // Required unique identifier
+  title?: string // Event title
+  start: string // Start time ("09:00" or "9:00 AM")
+  end: string // End time ("10:00" or "10:00 AM")
+  employeeId: string // Which employee/resource
+  color?: string // Background color
   description?: string // Optional description
 }
 ```
@@ -96,7 +97,7 @@ const events: CalendarEventData[] = [
     start: '09:00',
     end: '10:00',
     employeeId: 'john',
-    color: '#3b82f6'
+    color: '#3b82f6',
   },
   // ... more events
 ]
@@ -112,7 +113,7 @@ const employeeIds = ['john', 'jane', 'mike']
 const employees: Employee[] = [
   { id: 'john', name: 'John Doe' },
   { id: 'jane', name: 'Jane Smith' },
-  { id: 'mike', name: 'Mike Johnson' }
+  { id: 'mike', name: 'Mike Johnson' },
 ]
 ```
 
@@ -146,6 +147,7 @@ function MyScheduler() {
 ### Date Navigation
 
 **Old:**
+
 ```tsx
 <Calendar
   value={selectedDate}
@@ -156,6 +158,7 @@ function MyScheduler() {
 ```
 
 **New:**
+
 ```tsx
 <DayView
   currentDate={selectedDate}
@@ -167,20 +170,19 @@ function MyScheduler() {
 ### Custom Styling
 
 **Old:**
+
 ```tsx
-<Calendar
-  className="custom-calendar"
-  style={{ width: '300px' }}
-/>
+<Calendar className="custom-calendar" style={{ width: '300px' }} />
 ```
 
 **New:**
+
 ```tsx
 <DayView
   // Wrap in a container for styling
   employeeHeaderProps={{
     className: 'custom-employee-header',
-    style: { background: '#f0f0f0' }
+    style: { background: '#f0f0f0' },
   }}
 />
 ```
@@ -197,11 +199,18 @@ function AdvancedScheduler() {
 
   const handleEventDrop = (event: CalendarEventData, next: any) => {
     // Update event position
-    setEvents(prev => prev.map(e =>
-      e.id === event.id
-        ? { ...e, employeeId: next.employeeId, start: next.start, end: next.end }
-        : e
-    ))
+    setEvents(prev =>
+      prev.map(e =>
+        e.id === event.id
+          ? {
+              ...e,
+              employeeId: next.employeeId,
+              start: next.start,
+              end: next.end,
+            }
+          : e
+      )
+    )
   }
 
   const handleEventClick = (event: CalendarEventData) => {
@@ -216,7 +225,7 @@ function AdvancedScheduler() {
       onEventDrop={handleEventDrop}
       onEventClick={handleEventClick}
       // Enable drag and drop
-      stepMinutes={15}  // Fine-grained snapping
+      stepMinutes={15} // Fine-grained snapping
     />
   )
 }
@@ -273,7 +282,7 @@ function AppointmentScheduler() {
           start: timeSlot,
           end: addMinutesToSlot(timeSlot, 30),
           employeeId: employee.id,
-          color: '#3b82f6'
+          color: '#3b82f6',
         }
         setAppointments(prev => [...prev, newAppointment])
       }}
@@ -289,14 +298,12 @@ function ResourceBooking() {
   return (
     <DayView
       employeeIds={['room-a', 'room-b', 'room-c']}
-      renderEmployee={(employee) => (
+      renderEmployee={employee => (
         <div style={{ textAlign: 'center', padding: '16px' }}>
           <div style={{ fontWeight: 'bold' }}>
             {employee.name.replace('-', ' ').toUpperCase()}
           </div>
-          <div style={{ fontSize: '12px', color: '#666' }}>
-            Conference Room
-          </div>
+          <div style={{ fontSize: '12px', color: '#666' }}>Conference Room</div>
         </div>
       )}
       events={roomBookings}

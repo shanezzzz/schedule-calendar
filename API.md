@@ -203,31 +203,29 @@ interface CalendarGridProps {
     employee: CalendarCellEmployee
   ) => void
   renderEvent?: (context: CalendarEventRenderContext) => React.ReactNode
-  renderBlockTime?: (
-    context: CalendarBlockTimeRenderContext
-  ) => React.ReactNode
+  renderBlockTime?: (context: CalendarBlockTimeRenderContext) => React.ReactNode
 }
 ```
 
-| Prop               | Type                                       | Default | Description                                                                 |
-| ------------------ | ------------------------------------------ | ------- | --------------------------------------------------------------------------- |
-| `events`           | `CalendarEventData[]`                      | `[]`    | Events to render.                                                           |
-| `timeSlots`        | `string[]`                                 | `[]`    | Ordered list of time slot labels (e.g. `['07:00', '07:30']`).               |
-| `employeeIds`      | `string[]`                                 | `[]`    | Column identifiers. When omitted, `employees` drives both header and grid.  |
-| `cellHeight`       | `number`                                   | `80`    | Height per `timeSlots` row (px).                                            |
-| `stepMinutes`      | `number`                                   | `30`    | Base duration in minutes for layout calculations.                           |
-| `use24HourFormat`  | `boolean`                                  | `false` | 24-hour label formatting.                                                   |
-| `blockTimes`       | `EmployeeBlockTimes`                       | `{}`    | Map of blocked intervals per employee.                                      |
-| `employees`        | `CalendarGridEmployee[]`                   | `[]`    | Optional employee descriptors used for callbacks and cell metadata.         |
-| `defaultColumnWidth` | `number`                                 | `210`   | Fallback width (px) applied when an employee does not specify `columnWidth`. |
-| `onEventClick`     | `(event, employee) => void`                | –       | Fired when an event is clicked.                                             |
-| `onEventDrag`      | `(event, deltaX, deltaY) => void`          | –       | Continuous drag updates.                                                    |
-| `onEventDragEnd`   | `(event, newEmployeeId, newStart) => void` | –       | Called after dragging stops; provides the snapped slot.                     |
-| `onEventDrop`      | `(event, next) => void`                    | –       | Invoked once an event is dropped on a valid target with normalized payload. |
-| `onTimeLabelClick` | `(label, index, slot, employee) => void`   | –       | Fired when an empty slot label is clicked.                                  |
-| `onBlockTimeClick` | `(blockTime, slot, employee) => void`      | –       | Triggered when a block overlay is clicked.                                  |
-| `renderEvent`      | `(context) => ReactNode`                   | –       | Custom renderer for events.                                                 |
-| `renderBlockTime`  | `(context) => ReactNode`                   | –       | Custom renderer for block time overlays.                                    |
+| Prop                 | Type                                       | Default | Description                                                                  |
+| -------------------- | ------------------------------------------ | ------- | ---------------------------------------------------------------------------- |
+| `events`             | `CalendarEventData[]`                      | `[]`    | Events to render.                                                            |
+| `timeSlots`          | `string[]`                                 | `[]`    | Ordered list of time slot labels (e.g. `['07:00', '07:30']`).                |
+| `employeeIds`        | `string[]`                                 | `[]`    | Column identifiers. When omitted, `employees` drives both header and grid.   |
+| `cellHeight`         | `number`                                   | `80`    | Height per `timeSlots` row (px).                                             |
+| `stepMinutes`        | `number`                                   | `30`    | Base duration in minutes for layout calculations.                            |
+| `use24HourFormat`    | `boolean`                                  | `false` | 24-hour label formatting.                                                    |
+| `blockTimes`         | `EmployeeBlockTimes`                       | `{}`    | Map of blocked intervals per employee.                                       |
+| `employees`          | `CalendarGridEmployee[]`                   | `[]`    | Optional employee descriptors used for callbacks and cell metadata.          |
+| `defaultColumnWidth` | `number`                                   | `210`   | Fallback width (px) applied when an employee does not specify `columnWidth`. |
+| `onEventClick`       | `(event, employee) => void`                | –       | Fired when an event is clicked.                                              |
+| `onEventDrag`        | `(event, deltaX, deltaY) => void`          | –       | Continuous drag updates.                                                     |
+| `onEventDragEnd`     | `(event, newEmployeeId, newStart) => void` | –       | Called after dragging stops; provides the snapped slot.                      |
+| `onEventDrop`        | `(event, next) => void`                    | –       | Invoked once an event is dropped on a valid target with normalized payload.  |
+| `onTimeLabelClick`   | `(label, index, slot, employee) => void`   | –       | Fired when an empty slot label is clicked.                                   |
+| `onBlockTimeClick`   | `(blockTime, slot, employee) => void`      | –       | Triggered when a block overlay is clicked.                                   |
+| `renderEvent`        | `(context) => ReactNode`                   | –       | Custom renderer for events.                                                  |
+| `renderBlockTime`    | `(context) => ReactNode`                   | –       | Custom renderer for block time overlays.                                     |
 
 ---
 

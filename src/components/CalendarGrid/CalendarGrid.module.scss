@@ -5,11 +5,11 @@
   overflow: hidden;
   box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(226, 232, 240, 0.8);
-  
+
   /* Hidden scrollbar for grid container */
   scrollbar-width: none;
   -ms-overflow-style: none;
-  
+
   &::-webkit-scrollbar {
     display: none;
   }

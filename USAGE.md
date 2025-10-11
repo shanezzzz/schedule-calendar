@@ -21,10 +21,7 @@ function App() {
   return (
     <div>
       <h1>My Calendar</h1>
-      <Calendar
-        value={selectedDate}
-        onChange={setSelectedDate}
-      />
+      <Calendar value={selectedDate} onChange={setSelectedDate} />
     </div>
   )
 }
@@ -63,7 +60,7 @@ import { Calendar } from 'schedule-calendar'
 
 function App() {
   const [date, setDate] = useState(new Date())
-  
+
   return (
     <div>
       <Calendar
@@ -97,7 +94,7 @@ import 'schedule-calendar/styles'
 
 function AdvancedCalendar() {
   const [selectedDate, setSelectedDate] = useState(new Date())
-  
+
   return (
     <div className="my-calendar-container">
       <Calendar
@@ -107,9 +104,9 @@ function AdvancedCalendar() {
         maxDate={new Date(2024, 11, 31)}
         disabled={false}
         className="custom-calendar"
-        style={{ 
+        style={{
           boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          borderRadius: '8px'
+          borderRadius: '8px',
         }}
       />
     </div>

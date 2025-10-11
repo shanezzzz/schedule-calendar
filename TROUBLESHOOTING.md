@@ -20,10 +20,12 @@ This guide helps you resolve common issues when using the schedule-calendar libr
 **Problem:** `npm install schedule-calendar` fails or package not found
 
 **Solutions:**
+
 1. Check if you're using the correct package name
 2. Try clearing npm cache: `npm cache clean --force`
 3. For local development, ensure you've built the package: `npm run build`
 4. For npm link issues:
+
    ```bash
    # In the library project
    npm run build
@@ -38,6 +40,7 @@ This guide helps you resolve common issues when using the schedule-calendar libr
 **Problem:** Warnings about React peer dependencies
 
 **Solution:**
+
 ```bash
 npm install react@^18.0.0 react-dom@^18.0.0
 ```
@@ -49,6 +52,7 @@ The library requires React 18 or higher.
 **Problem:** TypeScript can't find type declarations
 
 **Solutions:**
+
 1. Ensure the library is built: `npm run build`
 2. Check that `dist/index.d.ts` exists
 3. Add to your `tsconfig.json`:
@@ -70,6 +74,7 @@ The library requires React 18 or higher.
 **Common Causes & Solutions:**
 
 1. **Missing employee IDs:**
+
    ```tsx
    // ❌ Wrong - empty or missing employeeIds
    <DayView events={events} />
@@ -82,6 +87,7 @@ The library requires React 18 or higher.
    ```
 
 2. **Container has no height:**
+
    ```tsx
    // ❌ Wrong - no height specified
    <div>
@@ -95,6 +101,7 @@ The library requires React 18 or higher.
    ```
 
 3. **Invalid time range:**
+
    ```tsx
    // ❌ Wrong - end hour before start hour
    <DayView startHour={18} endHour={9} />
@@ -110,10 +117,11 @@ The library requires React 18 or higher.
 **Solutions:**
 
 1. **Time column not aligned with events:**
+
    ```tsx
    // Ensure consistent cellHeight across TimeColumn and CalendarGrid
    <DayView
-     cellHeight={40}  // This should be consistent
+     cellHeight={40} // This should be consistent
      stepMinutes={30}
    />
    ```
@@ -123,7 +131,7 @@ The library requires React 18 or higher.
    // The library automatically handles this, but if you have custom styling:
    <DayView
      employeeHeaderProps={{
-       style: { minHeight: '60px' }  // Adjust as needed
+       style: { minHeight: '60px' }, // Adjust as needed
      }}
    />
    ```
@@ -137,26 +145,28 @@ The library requires React 18 or higher.
 **Debugging Steps:**
 
 1. **Check event data structure:**
+
    ```tsx
    // ✅ Correct event structure
    const events: CalendarEventData[] = [
      {
-       id: '1',                    // Required: unique ID
-       title: 'Meeting',           // Optional but recommended
-       start: '09:00',            // Required: valid time format
-       end: '10:00',              // Required: valid time format
-       employeeId: 'emp1',        // Required: must match employeeIds
-       color: '#3b82f6'           // Optional
-     }
+       id: '1', // Required: unique ID
+       title: 'Meeting', // Optional but recommended
+       start: '09:00', // Required: valid time format
+       end: '10:00', // Required: valid time format
+       employeeId: 'emp1', // Required: must match employeeIds
+       color: '#3b82f6', // Optional
+     },
    ]
    ```
 
 2. **Verify employee ID matching:**
+
    ```tsx
    // ❌ Wrong - employeeId doesn't match
    const employeeIds = ['john', 'jane']
    const events = [
-     { id: '1', employeeId: 'mike', start: '09:00', end: '10:00' }  // 'mike' not in employeeIds
+     { id: '1', employeeId: 'mike', start: '09:00', end: '10:00' }, // 'mike' not in employeeIds
    ]
 
    // ✅ Correct
@@ -164,17 +174,18 @@ The library requires React 18 or higher.
    ```
 
 3. **Check time format:**
+
    ```tsx
    // ✅ Supported formats
-   start: '09:00'      // 24-hour
-   start: '9:00 AM'    // 12-hour
-   start: '14:30'      // 24-hour with minutes
-   start: '2:30 PM'    // 12-hour with minutes
+   start: '09:00' // 24-hour
+   start: '9:00 AM' // 12-hour
+   start: '14:30' // 24-hour with minutes
+   start: '2:30 PM' // 12-hour with minutes
 
    // ❌ Unsupported formats
-   start: '9'          // Missing minutes
-   start: '9:00:00'    // Seconds not supported
-   start: 'morning'    // Text not supported
+   start: '9' // Missing minutes
+   start: '9:00:00' // Seconds not supported
+   start: 'morning' // Text not supported
    ```
 
 4. **Time range validation:**
@@ -198,20 +209,22 @@ The library requires React 18 or higher.
 **Solutions:**
 
 1. **Check time parsing:**
+
    ```tsx
    import { parseTimeSlot, slotToMinutes } from 'schedule-calendar'
 
    // Debug time parsing
-   console.log(parseTimeSlot('9:30 AM'))  // Should return { success: true, data: { hours: 9, minutes: 30 }}
-   console.log(slotToMinutes('9:30 AM'))  // Should return 570
+   console.log(parseTimeSlot('9:30 AM')) // Should return { success: true, data: { hours: 9, minutes: 30 }}
+   console.log(slotToMinutes('9:30 AM')) // Should return 570
    ```
 
 2. **Verify stepMinutes configuration:**
+
    ```tsx
    // If using 15-minute intervals
    <DayView
      stepMinutes={15}
-     displayIntervalMinutes={30}  // Time labels every 30 min
+     displayIntervalMinutes={30} // Time labels every 30 min
      events={events}
    />
    ```
@@ -222,7 +235,7 @@ The library requires React 18 or higher.
    // But ensure your data is correct
    const events = [
      { id: '1', start: '09:00', end: '10:00', employeeId: 'emp1' },
-     { id: '2', start: '09:30', end: '10:30', employeeId: 'emp1' }  // Overlaps with event 1
+     { id: '2', start: '09:30', end: '10:30', employeeId: 'emp1' }, // Overlaps with event 1
    ]
    ```
 
@@ -235,6 +248,7 @@ The library requires React 18 or higher.
 **Solutions:**
 
 1. **Ensure drag handlers are provided:**
+
    ```tsx
    // ❌ Wrong - no drag handlers
    <DayView events={events} />
@@ -256,9 +270,9 @@ The library requires React 18 or higher.
    // Events must have proper IDs for drag tracking
    const events = [
      {
-       id: 'unique-id-1',  // Required for drag operations
+       id: 'unique-id-1', // Required for drag operations
        // ... other properties
-     }
+     },
    ]
    ```
 
@@ -269,6 +283,7 @@ The library requires React 18 or higher.
 **Solutions:**
 
 1. **Adjust stepMinutes:**
+
    ```tsx
    // For 15-minute precision
    <DayView stepMinutes={15} />
@@ -280,9 +295,9 @@ The library requires React 18 or higher.
 2. **Check grid configuration:**
    ```tsx
    <DayView
-     cellHeight={40}      // Affects vertical snapping
-     stepMinutes={30}     // Affects time precision
-     displayIntervalMinutes={30}  // Affects display granularity
+     cellHeight={40} // Affects vertical snapping
+     stepMinutes={30} // Affects time precision
+     displayIntervalMinutes={30} // Affects display granularity
    />
    ```
 
@@ -293,6 +308,7 @@ The library requires React 18 or higher.
 **Explanation:** Events cannot be dropped on blocked time periods. This is by design.
 
 **Solution:** If you need to allow this, handle it in your drop handler:
+
 ```tsx
 <DayView
   onEventDrop={(event, next) => {
@@ -319,10 +335,11 @@ The library requires React 18 or higher.
 **Solutions:**
 
 1. **The library supports mixed formats automatically:**
+
    ```tsx
    const events = [
-     { start: '09:00', end: '10:00' },      // 24-hour
-     { start: '2:30 PM', end: '3:30 PM' }   // 12-hour
+     { start: '09:00', end: '10:00' }, // 24-hour
+     { start: '2:30 PM', end: '3:30 PM' }, // 12-hour
    ]
    // Both work together seamlessly
    ```
@@ -330,8 +347,8 @@ The library requires React 18 or higher.
 2. **Use consistent display format:**
    ```tsx
    <DayView
-     use24HourFormat={true}   // Display all times in 24-hour format
-     events={events}          // Can contain mixed input formats
+     use24HourFormat={true} // Display all times in 24-hour format
+     events={events} // Can contain mixed input formats
    />
    ```
 
@@ -342,6 +359,7 @@ The library requires React 18 or higher.
 **Solutions:**
 
 1. **Check time string format:**
+
    ```tsx
    // ✅ Valid formats
    '09:00'
@@ -350,13 +368,14 @@ The library requires React 18 or higher.
    '2:30 PM'
 
    // ❌ Invalid formats
-   '9'           // Missing minutes
-   '25:00'       // Invalid hour
-   '12:60'       // Invalid minutes
-   '9:00 XM'     // Invalid AM/PM
+   '9' // Missing minutes
+   '25:00' // Invalid hour
+   '12:60' // Invalid minutes
+   '9:00 XM' // Invalid AM/PM
    ```
 
 2. **Use time utilities for validation:**
+
    ```tsx
    import { parseTimeSlot } from 'schedule-calendar'
 
@@ -379,6 +398,7 @@ The library requires React 18 or higher.
 **Solutions:**
 
 1. **Optimize event data:**
+
    ```tsx
    // Use memo for stable references
    const events = useMemo(() =>
@@ -400,16 +420,18 @@ The library requires React 18 or higher.
    ```
 
 2. **Limit visible time range:**
+
    ```tsx
    // Show smaller time windows for better performance
    <DayView
-     startHour={8}    // Instead of 0
-     endHour={18}     // Instead of 23
+     startHour={8} // Instead of 0
+     endHour={18} // Instead of 23
      stepMinutes={30} // Instead of 15 for fewer time slots
    />
    ```
 
 3. **Virtualization for many employees:**
+
    ```tsx
    // If you have many employees, consider showing only relevant ones
    const visibleEmployees = employees.slice(0, 10)  // Show first 10
@@ -424,10 +446,13 @@ The library requires React 18 or higher.
 **Solutions:**
 
 1. **Clean up event listeners:**
+
    ```tsx
    useEffect(() => {
      // If you're adding external event listeners
-     const handleResize = () => { /* ... */ }
+     const handleResize = () => {
+       /* ... */
+     }
      window.addEventListener('resize', handleResize)
 
      return () => {
@@ -437,6 +462,7 @@ The library requires React 18 or higher.
    ```
 
 2. **Use proper dependency arrays:**
+
    ```tsx
    // ❌ Wrong - missing dependencies
    const handleDrop = useCallback((event, next) => {
@@ -444,9 +470,12 @@ The library requires React 18 or higher.
    }, [])
 
    // ✅ Correct - proper dependencies
-   const handleDrop = useCallback((event, next) => {
-     updateEvents(events, event, next)
-   }, [events, updateEvents])
+   const handleDrop = useCallback(
+     (event, next) => {
+       updateEvents(events, event, next)
+     },
+     [events, updateEvents]
+   )
    ```
 
 ## TypeScript Issues
@@ -458,15 +487,14 @@ The library requires React 18 or higher.
 **Common Solutions:**
 
 1. **Import types correctly:**
+
    ```tsx
    import { DayView, CalendarEventData, Employee } from 'schedule-calendar'
-   import type {
-     DayViewProps,
-     EmployeeBlockTimes
-   } from 'schedule-calendar'
+   import type { DayViewProps, EmployeeBlockTimes } from 'schedule-calendar'
    ```
 
 2. **Use proper event type:**
+
    ```tsx
    // ✅ Correct typing
    const events: CalendarEventData[] = [
@@ -475,8 +503,8 @@ The library requires React 18 or higher.
        title: 'Meeting',
        start: '09:00',
        end: '10:00',
-       employeeId: 'emp1'
-     }
+       employeeId: 'emp1',
+     },
    ]
 
    // For extended event data
@@ -500,6 +528,7 @@ The library requires React 18 or higher.
 **Problem:** Types not found for custom properties
 
 **Solution:**
+
 ```tsx
 // Extend the Employee interface if needed
 interface ExtendedEmployee extends Employee {
@@ -524,6 +553,7 @@ declare module 'schedule-calendar' {
 **Solutions:**
 
 1. **CSS specificity issues:**
+
    ```css
    /* Increase specificity */
    .my-calendar .schedule-calendar-event {
@@ -532,11 +562,12 @@ declare module 'schedule-calendar' {
    ```
 
 2. **Use CSS Modules properly:**
+
    ```tsx
    // If the library uses CSS Modules
    <DayView
      employeeHeaderProps={{
-       className: 'my-custom-header'
+       className: 'my-custom-header',
      }}
    />
    ```
@@ -545,11 +576,13 @@ declare module 'schedule-calendar' {
    ```tsx
    <DayView
      renderEvent={({ event }) => (
-       <div style={{
-         background: event.color,
-         padding: '8px',
-         borderRadius: '4px'
-       }}>
+       <div
+         style={{
+           background: event.color,
+           padding: '8px',
+           borderRadius: '4px',
+         }}
+       >
          {event.title}
        </div>
      )}
@@ -563,22 +596,25 @@ declare module 'schedule-calendar' {
 **Solutions:**
 
 1. **Adjust minimum column width:**
+
    ```tsx
    <DayView
      employeeHeaderProps={{
-       minColumnWidth: 100  // Smaller for mobile
+       minColumnWidth: 100, // Smaller for mobile
      }}
    />
    ```
 
 2. **Use responsive container:**
    ```tsx
-   <div style={{
-     height: '600px',
-     width: '100%',
-     minWidth: '320px',  // Prevent too small
-     overflow: 'auto'    // Allow scrolling
-   }}>
+   <div
+     style={{
+       height: '600px',
+       width: '100%',
+       minWidth: '320px', // Prevent too small
+       overflow: 'auto', // Allow scrolling
+     }}
+   >
      <DayView />
    </div>
    ```
@@ -599,7 +635,7 @@ const handleEventClick = (event, employee) => {
   console.log('Event click:', { event, employee })
 }
 
-<DayView
+;<DayView
   onEventDrop={handleEventDrop}
   onEventClick={handleEventClick}
   // Add more event handlers for debugging
@@ -626,8 +662,8 @@ function TestCalendar() {
       start: '10:00',
       end: '11:00',
       employeeId: 'test-emp',
-      color: '#3b82f6'
-    }
+      color: '#3b82f6',
+    },
   ]
 
   return (
@@ -637,7 +673,7 @@ function TestCalendar() {
         events={testEvents}
         startHour={9}
         endHour={17}
-        onEventClick={(event) => console.log('Test click:', event)}
+        onEventClick={event => console.log('Test click:', event)}
       />
     </div>
   )
