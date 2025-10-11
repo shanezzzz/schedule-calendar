@@ -32,6 +32,8 @@ All public APIs are re-exported from `src/index.ts`.
 | `CalendarGridProps`, `CalendarGridDropResult`, `CalendarGridEmployee`                                                                              | Types     | Grid configuration, drag result payload, and employee descriptor (with optional `columnWidth`).        |
 | `CalendarEvent`                                                                                                                                    | Component | Individual calendar event with optional drag-and-drop.                                                 |
 | `CalendarEventProps`, `CalendarEventData`, `CalendarEventDragMeta`, `CalendarEventRenderContext`, `CalendarEventChildren`, `CalendarEventSnapGrid` | Types     | Event payloads and render contracts.                                                                   |
+| `CalendarBlockTime`                                                                                                                                | Component | Visual block overlay rendered inside the grid.                                                         |
+| `CalendarBlockTimeProps`, `CalendarBlockTimeRenderContext`                                                                                         | Types     | Block overlay configuration and custom render context.                                                 |
 | `CalendarCell`                                                                                                                                     | Component | Low-level time-slot cell.                                                                              |
 | `CalendarCellProps`, `CalendarCellEmployee`                                                                                                        | Types     | Cell props and lightweight employee descriptor.                                                        |
 | `TimeColumn`                                                                                                                                       | Component | Timeline labels column.                                                                                |
@@ -76,6 +78,7 @@ interface DayViewProps {
   onEventDrop?: DayViewEventDropHandler
   onTimeLabelClick?: DayViewTimeLabelClickHandler
   renderEvent?: DayViewEventRenderer
+  renderBlockTime?: DayViewBlockTimeRenderer
   renderEmployee?: EmployeeRenderer
   employeeHeaderProps?: DayViewEmployeeHeaderProps
   timeColumnHeaderContent?: React.ReactNode
@@ -106,6 +109,7 @@ interface DayViewProps {
 | `onEventDrop`                   | `DayViewEventDropHandler`                          | –                                     | Invoked once an event is dropped on a new cell with normalized payload.                |
 | `onTimeLabelClick`              | `DayViewTimeLabelClickHandler`                     | –                                     | Called when the user taps a time label within a cell.                                  |
 | `renderEvent`                   | `DayViewEventRenderer`                             | –                                     | Custom renderer for events; receives `{ event, isDragging }`.                          |
+| `renderBlockTime`               | `DayViewBlockTimeRenderer`                         | –                                     | Custom renderer for block overlays; receives `{ blockTime, employee }`.                |
 | `renderEmployee`                | `EmployeeRenderer`                                 | –                                     | Replaces the default employee header renderer.                                         |
 | `employeeHeaderProps`           | `DayViewEmployeeHeaderProps`                       | –                                     | Props forwarded to `EmployeeHeader` (`className`, `style`, `minColumnWidth`).          |
 | `timeColumnHeaderContent`       | `React.ReactNode`                                  | `undefined`                           | Custom content rendered at the top of the time column (aligned with employee headers). |
@@ -171,6 +175,7 @@ interface CalendarGridProps {
   use24HourFormat?: boolean
   blockTimes?: EmployeeBlockTimes
   employees?: CalendarGridEmployee[]
+  defaultColumnWidth?: number
   onEventClick?: (
     event: CalendarEventData,
     employee: CalendarCellEmployee
@@ -192,7 +197,15 @@ interface CalendarGridProps {
     timeSlot: string,
     employee: CalendarCellEmployee
   ) => void
+  onBlockTimeClick?: (
+    blockTime: BlockTime,
+    timeSlot: string,
+    employee: CalendarCellEmployee
+  ) => void
   renderEvent?: (context: CalendarEventRenderContext) => React.ReactNode
+  renderBlockTime?: (
+    context: CalendarBlockTimeRenderContext
+  ) => React.ReactNode
 }
 ```
 
@@ -206,12 +219,15 @@ interface CalendarGridProps {
 | `use24HourFormat`  | `boolean`                                  | `false` | 24-hour label formatting.                                                   |
 | `blockTimes`       | `EmployeeBlockTimes`                       | `{}`    | Map of blocked intervals per employee.                                      |
 | `employees`        | `CalendarGridEmployee[]`                   | `[]`    | Optional employee descriptors used for callbacks and cell metadata.         |
+| `defaultColumnWidth` | `number`                                 | `210`   | Fallback width (px) applied when an employee does not specify `columnWidth`. |
 | `onEventClick`     | `(event, employee) => void`                | –       | Fired when an event is clicked.                                             |
 | `onEventDrag`      | `(event, deltaX, deltaY) => void`          | –       | Continuous drag updates.                                                    |
 | `onEventDragEnd`   | `(event, newEmployeeId, newStart) => void` | –       | Called after dragging stops; provides the snapped slot.                     |
 | `onEventDrop`      | `(event, next) => void`                    | –       | Invoked once an event is dropped on a valid target with normalized payload. |
 | `onTimeLabelClick` | `(label, index, slot, employee) => void`   | –       | Fired when an empty slot label is clicked.                                  |
+| `onBlockTimeClick` | `(blockTime, slot, employee) => void`      | –       | Triggered when a block overlay is clicked.                                  |
 | `renderEvent`      | `(context) => ReactNode`                   | –       | Custom renderer for events.                                                 |
+| `renderBlockTime`  | `(context) => ReactNode`                   | –       | Custom renderer for block time overlays.                                    |
 
 ---
 

@@ -8,6 +8,8 @@ import type {
   DayViewEventDropHandler,
   DayViewEventClickHandler,
   DayViewTimeLabelClickHandler,
+  DayViewBlockTimeClickHandler,
+  DayViewBlockTimeRenderer,
 } from './types'
 
 const initialEvents: CalendarEventData[] = [
@@ -152,6 +154,39 @@ export const DayViews: Story = () => {
     []
   )
 
+  const handleBlockTimeClick = useCallback<DayViewBlockTimeClickHandler>(
+    (blockTime, timeSlot, employee) => {
+      console.log('Block time clicked:', { blockTime, timeSlot, employee })
+      alert(
+        `Block Time Clicked!\n\nEmployee: ${employee.name}\nTime Slot: ${timeSlot}\nTitle: ${blockTime.title || 'N/A'}\nType: ${blockTime.type || 'N/A'}`
+      )
+    },
+    []
+  )
+
+  const renderBlockOverlay = useCallback<DayViewBlockTimeRenderer>(
+    ({ blockTime }) => (
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 4,
+        }}
+      >
+        <div style={{ fontWeight: 600, fontSize: 12 }}>
+          {blockTime.title ?? 'Unavailable'}
+        </div>
+        <div style={{ fontSize: 11, opacity: 0.75 }}>
+          {blockTime.start} – {blockTime.end}
+        </div>
+        {blockTime.description && (
+          <div style={{ fontSize: 11 }}>{blockTime.description}</div>
+        )}
+      </div>
+    ),
+    []
+  )
+
   const handleAddEvent = useCallback(() => {
     setEvents(prev => [
       ...prev,
@@ -263,6 +298,7 @@ export const DayViews: Story = () => {
         onDateChange={handleDateChange}
         onTimeLabelClick={handleTimeLabelClick}
         onEventClick={handleEventClick}
+        onBlockTimeClick={handleBlockTimeClick}
         headerActions={headerActions}
         timeColumnHeaderContent={timeColumnHeaderContent}
         timeColumnSlotContentRenderer={renderSlotContent}
@@ -282,6 +318,7 @@ export const DayViews: Story = () => {
             )}
           </div>
         )}
+        renderBlockTime={renderBlockOverlay}
       />
     </div>
   )
