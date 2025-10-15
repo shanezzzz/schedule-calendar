@@ -180,6 +180,7 @@ interface DayViewProps {
   blockTimes?: EmployeeBlockTimes // Blocked time periods
   showCurrentTimeLine?: boolean // Show current time indicator
   currentDate?: Date // Selected date
+  eventWidth?: number | string // Event width: number (percentage) or CSS string, default: 88
   onDateChange?: (date: Date) => void // Date change handler
   onEventDrop?: (event, next) => void // Event drop handler
   // ... and many more customization options
@@ -205,6 +206,30 @@ const employees = [
 ```
 
 `columnWidth` 支持 number（像素）或字符串（任意 CSS 长度，如 `rem`），传入后既会控制 `EmployeeHeader` 列宽，也会让 `CalendarGrid` 中对应员工的时间列保持一致。`employeeHeaderProps.minColumnWidth` 仍然作为全局兜底宽度。
+
+### Event Width Customization
+
+Control event width to leave space for timetable interaction:
+
+```tsx
+// Using percentage (default: 88%)
+<DayView
+  eventWidth={85} // Events take 85% width, leaving 15% for right-side clicking
+  {...otherProps}
+/>
+
+// Using CSS calc expression for precise control
+<DayView
+  eventWidth="calc(90% - 12px)" // Custom width with margin
+  {...otherProps}
+/>
+
+// Maximum width for better mobile experience
+<DayView
+  eventWidth={95} // Events take 95% width for smaller screens
+  {...otherProps}
+/>
+```
 
 ### Custom Time Column Header
 

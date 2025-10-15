@@ -76,6 +76,7 @@ export interface DayViewProps {
   blockTimes?: EmployeeBlockTimes
   showCurrentTimeLine?: boolean
   currentDate?: Date
+  eventWidth?: number | string
   onDateChange?: (date: Date) => void
   headerActions?: ReactNode
   onEventClick?: DayViewEventClickHandler

@@ -24,6 +24,7 @@ export interface CalendarGridProps {
   blockTimes?: EmployeeBlockTimes
   employees?: CalendarGridEmployee[]
   defaultColumnWidth?: number
+  eventWidth?: number | string
   onEventClick?: (
     event: CalendarEventData,
     employee: CalendarCellEmployee

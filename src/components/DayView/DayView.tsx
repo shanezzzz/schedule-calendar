@@ -39,6 +39,7 @@ const DayView = forwardRef<DayViewRef, DayViewProps>(
       blockTimes = {},
       showCurrentTimeLine = true, // Default to show current time line
       currentDate = new Date(),
+      eventWidth = '100%',
       onDateChange,
       headerActions,
       onEventClick,
@@ -288,6 +289,7 @@ const DayView = forwardRef<DayViewRef, DayViewProps>(
               employeeIds={employeeIdsForGrid}
               employees={resolvedEmployees}
               defaultColumnWidth={defaultColumnWidth}
+              eventWidth={eventWidth}
               cellHeight={slotsHeight}
               stepMinutes={stepMinutes}
               use24HourFormat={use24HourFormat}

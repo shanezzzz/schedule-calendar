@@ -260,6 +260,7 @@ export const DayViews: Story = () => {
         stepMinutes={15}
         use24HourFormat
         employees={employees}
+        eventWidth={86}
         renderEmployee={(employee, index) => (
           <div
             style={{

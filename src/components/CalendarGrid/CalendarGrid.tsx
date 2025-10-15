@@ -32,6 +32,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   blockTimes = {},
   employees,
   defaultColumnWidth,
+  eventWidth = 88,
   onEventClick,
   onEventDrag,
   onEventDragEnd,
@@ -519,16 +520,39 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
 
       const layoutMeta = eventLayouts.get(calendarEvent.id)
       const overlapGap = 4
-      const CellWidth = 94
-      const widthPercent = layoutMeta ? CellWidth / layoutMeta.columns : 100
-      const widthStyle =
-        layoutMeta && layoutMeta.columns > 1
-          ? `calc(${widthPercent}% - ${overlapGap}px)`
-          : '100%'
-      const marginLeftStyle =
-        layoutMeta && layoutMeta.columns > 1
-          ? `calc(${widthPercent * layoutMeta.column}% + ${layoutMeta.column * overlapGap}px)`
-          : undefined
+
+      // 解析eventWidth，支持数字（百分比）和字符串（如'calc(90% - 10px)'）
+      const widthPercent = (() => {
+        if (typeof eventWidth === 'number') {
+          return layoutMeta ? eventWidth / layoutMeta.columns : eventWidth
+        }
+        // 对于字符串类型，不进行数值计算
+        return 100 // 默认值，实际不会使用到
+      })()
+      const widthStyle = (() => {
+        if (typeof eventWidth === 'string') {
+          // 如果是字符串（如CSS calc表达式），直接使用
+          return layoutMeta && layoutMeta.columns > 1
+            ? `calc((${eventWidth}) / ${layoutMeta.columns} - ${overlapGap}px)`
+            : eventWidth
+        } else {
+          // 如果是数字，按百分比处理
+          return layoutMeta && layoutMeta.columns > 1
+            ? `calc(${widthPercent}% - ${overlapGap}px)`
+            : `${eventWidth}%`
+        }
+      })()
+      const marginLeftStyle = (() => {
+        if (!layoutMeta || layoutMeta.columns <= 1) return undefined
+
+        if (typeof eventWidth === 'string') {
+          // 对于字符串类型的eventWidth，简化处理，仅使用重叠间隙
+          return `${layoutMeta.column * overlapGap}px`
+        } else {
+          // 对于数字类型，使用百分比 + 间隙
+          return `calc(${widthPercent * layoutMeta.column}% + ${layoutMeta.column * overlapGap}px)`
+        }
+      })()
 
       const style: React.CSSProperties = {
         gridColumn: employeeIndex + 1,
@@ -615,6 +639,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
       stepMinutes,
       use24HourFormat,
       getEmployeeData,
+      eventWidth,
     ]
   )
 
