@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import dayjs from 'dayjs'
 import styles from './CurrentTimeLine.module.scss'
 import type { CurrentTimeLineProps, CurrentTimeLinePosition } from './types'
@@ -11,7 +11,9 @@ const CurrentTimeLine: React.FC<CurrentTimeLineProps> = ({
   isVisible = true,
   currentDate = new Date(),
 }) => {
-  const [, setCurrentTime] = useState(new Date())
+  const [currentTime, setCurrentTime] = useState(() => new Date())
+  const currentTimeLineRef = useRef<HTMLDivElement | null>(null)
+  const hasAutoScrolledRef = useRef(false)
 
   // 每分钟更新一次时间
   useEffect(() => {
@@ -28,43 +30,80 @@ const CurrentTimeLine: React.FC<CurrentTimeLineProps> = ({
     return () => clearInterval(interval)
   }, [])
 
-  // 计算当前时间在日历中的位置
-  const calculatePosition = (): CurrentTimeLinePosition => {
-    const now = new Date()
-    const currentHour = now.getHours()
-    const currentMinute = now.getMinutes()
+  const position = useMemo<CurrentTimeLinePosition>(() => {
+    const currentHour = currentTime.getHours()
+    const currentMinute = currentTime.getMinutes()
 
-    // 检查当前时间是否在显示范围内
     if (currentHour < startHour || currentHour >= endHour) {
-      return { top: -1000, isInRange: false } // 超出范围时隐藏
+      return { top: -1000, isInRange: false }
     }
 
-    // 计算从开始时间到当前时间的总分钟数
     const totalMinutesFromStart = (currentHour - startHour) * 60 + currentMinute
-
-    // 计算精确的像素位置
-    // 每个时间槽的高度 = cellHeight
-    // 每个时间槽代表 displayIntervalMinutes 分钟
     const positionInPixels =
       (totalMinutesFromStart / displayIntervalMinutes) * cellHeight
 
     return {
-      top: positionInPixels, // CalendarGrid 容器本身没有额外的偏移
+      top: positionInPixels,
       isInRange: true,
     }
-  }
-
-  const position = calculatePosition()
+  }, [currentTime, startHour, endHour, displayIntervalMinutes, cellHeight])
 
   // 检查当前显示的日期是否是今天
   const isToday = dayjs(currentDate).isSame(dayjs(), 'day')
+
+  useEffect(() => {
+    if (
+      !isVisible ||
+      !isToday ||
+      !position.isInRange ||
+      hasAutoScrolledRef.current
+    ) {
+      return
+    }
+
+    const element = currentTimeLineRef.current
+    if (!element) {
+      return
+    }
+
+    const parent = element.parentElement
+    if (parent) {
+      const parentRect = parent.getBoundingClientRect()
+      const elementRect = element.getBoundingClientRect()
+      const isAlreadyVisible =
+        elementRect.top >= parentRect.top &&
+        elementRect.bottom <= parentRect.bottom
+
+      if (isAlreadyVisible) {
+        hasAutoScrolledRef.current = true
+        return
+      }
+    }
+
+    hasAutoScrolledRef.current = true
+    element.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+      inline: 'nearest',
+    })
+  }, [isVisible, isToday, position.isInRange, position.top])
+
+  useEffect(() => {
+    if (!isVisible || !isToday || !position.isInRange) {
+      hasAutoScrolledRef.current = false
+    }
+  }, [isVisible, isToday, position.isInRange])
 
   if (!isVisible || !position.isInRange || !isToday) {
     return null
   }
 
   return (
-    <div className={styles.currentTimeLine} style={{ top: position.top }} />
+    <div
+      ref={currentTimeLineRef}
+      className={styles.currentTimeLine}
+      style={{ top: position.top }}
+    />
   )
 }
 

@@ -10,7 +10,6 @@ This guide helps you migrate from basic calendar usage to the comprehensive day-
 
 ```tsx
 import { Calendar } from 'schedule-calendar'
-
 ;<Calendar value={selectedDate} onChange={setSelectedDate} />
 ```
 
@@ -18,7 +17,6 @@ import { Calendar } from 'schedule-calendar'
 
 ```tsx
 import { DayView, CalendarEventData } from 'schedule-calendar'
-
 ;<DayView
   currentDate={selectedDate}
   onDateChange={setSelectedDate}

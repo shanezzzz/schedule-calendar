@@ -47,4 +47,8 @@ export interface CalendarEventProps {
   onDrag?: (event: CalendarEventData, meta: CalendarEventDragMeta) => void
   onDragEnd?: (event: CalendarEventData, meta: CalendarEventDragMeta) => void
   snapToGrid?: CalendarEventSnapGrid
+  onMouseEnter?: (event: CalendarEventData) => void
+  onMouseLeave?: (event: CalendarEventData) => void
+  onFocus?: (event: CalendarEventData) => void
+  onBlur?: (event: CalendarEventData) => void
 }

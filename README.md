@@ -1,28 +1,42 @@
 # Schedule Calendar
 
-A modern React calendar component library built with TypeScript and Tailwind CSS, specifically designed for day-view scheduling with employee/resource management, drag-and-drop events, and time slot blocking.
+Schedule Calendar is a modern React calendar component library built with TypeScript and Tailwind CSS. It is designed for day-view scheduling scenarios where you need to coordinate employees, resources, or rooms, and it ships with rich drag-and-drop interactions and accessibility support out of the box.
 
-## ✨ Features
+## Table of Contents
 
-- 📅 **Day View Calendar** - Comprehensive day-view scheduler with time slots
-- 👥 **Employee/Resource Management** - Support for multiple employees or resources
-- 🎯 **Drag & Drop Events** - Full drag-and-drop support with grid snapping
-- 🚫 **Block Times** - Define unavailable time periods for employees
-- ⏰ **Flexible Time Formats** - Support for both 12-hour (AM/PM) and 24-hour formats
-- 🎨 **Customizable UI** - Custom event and employee header rendering
-- 📱 **Responsive Design** - Mobile-friendly and adaptive layout
-- ♿ **Accessibility** - Complete ARIA support and keyboard navigation
-- 🎯 **TypeScript** - Full TypeScript support with comprehensive type definitions
-- 🧪 **Well Tested** - Comprehensive test coverage
-- 📚 **Interactive Documentation** - Storybook-based documentation with live examples
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Styling](#styling)
+- [Component Overview](#component-overview)
+- [Customization Examples](#customization-examples)
+- [Event Handling](#event-handling)
+- [Time Format Support](#time-format-support)
+- [Utility Helpers](#utility-helpers)
+- [Documentation](#documentation)
+- [Local Development](#local-development)
+- [TypeScript Support](#typescript-support)
+- [Contributing](#contributing)
+- [License](#license)
 
-## 🚀 Installation
+## Features
+
+- Day-view scheduler with configurable time grid and current time indicator
+- Resource aware layout for employees, rooms, or equipment
+- Drag-and-drop interactions with grid snapping and collision detection
+- Blocked time ranges per employee for managing availability
+- Custom rendering hooks for events, headers, and time columns
+- Responsive layout with keyboard, screen reader, and pointer support
+- Tailwind CSS friendly styling surface without leaking globals
+- Comprehensive automated tests and TypeScript definitions
+
+## Installation
 
 ```bash
 npm install schedule-calendar
 ```
 
-## 📖 Quick Start
+## Quick Start
 
 ### Basic Day View
 
@@ -56,7 +70,7 @@ function MyScheduler() {
         startHour={8}
         endHour={18}
         stepMinutes={30}
-        use24HourFormat={true}
+        use24HourFormat
         employeeIds={['john', 'jane', 'mike']}
         events={events}
         onEventDrop={(event, next) => {
@@ -79,7 +93,7 @@ function MyScheduler() {
 }
 ```
 
-### With Custom Employee Headers
+### Custom Employee Headers
 
 ```tsx
 <DayView
@@ -104,11 +118,11 @@ function MyScheduler() {
 />
 ```
 
-### With Block Times (Unavailable Periods)
+### Blocked Time Ranges
 
 ```tsx
 const blockTimes = {
-  'john': [
+  john: [
     {
       id: 'lunch1',
       employeeId: 'john',
@@ -116,10 +130,10 @@ const blockTimes = {
       end: '13:00',
       title: 'Lunch Break',
       color: '#fef3c7',
-      type: 'unavailable' as const
-    }
+      type: 'unavailable' as const,
+    },
   ],
-  'jane': [
+  jane: [
     {
       id: 'meeting1',
       employeeId: 'jane',
@@ -127,67 +141,54 @@ const blockTimes = {
       end: '17:00',
       title: 'External Meeting',
       color: '#fee2e2',
-      type: 'blocked' as const
-    }
-  ]
+      type: 'blocked' as const,
+    },
+  ],
 }
 
-<DayView
-  events={events}
-  blockTimes={blockTimes}
-  employeeIds={['john', 'jane']}
-/>
+<DayView events={events} blockTimes={blockTimes} employeeIds={['john', 'jane']} />
 ```
 
-## 🎨 Styling
+## Styling
 
-Component styles are encapsulated via CSS Modules so importing `schedule-calendar` does not modify host application globals. If you want the pre-built theme (rounded corners, subtle gradients, minimal scrollbars), opt in explicitly:
+Component styles are encapsulated via CSS Modules, so importing `schedule-calendar` does not modify the host application. Opt into the pre-built theme for rounded corners, subtle gradients, and minimal scrollbars:
 
 ```ts
 import 'schedule-calendar/styles'
 ```
 
-You can always wrap `DayView` with your own classes for a fully bespoke look.
+You can also wrap `DayView` with your own classes or compose Tailwind utilities for a bespoke look.
 
-## 🚢 Release & Automation
-
-1. Run `npm version <patch|minor|major>` to bump the semver and create a git tag (e.g. `v0.1.0`).
-2. Push the commit and tag: `git push origin HEAD --tags`.
-3. The **Publish to npm** workflow builds, verifies, and publishes the package automatically. Add an `NPM_TOKEN` secret with publish rights before triggering the workflow.
-4. For a manual publish, execute `npm run release:dry-run` locally, then `npm run release` once the artifacts look correct.
-
-## 📚 Documentation
-
-- **[API Documentation](./API.md)** - Detailed API reference for all components and props
-- **[Examples](./EXAMPLES.md)** - Comprehensive examples for various use cases
-- **[USAGE.md](./USAGE.md)** - Additional usage patterns and local development setup
-
-## 🧩 Main Components
+## Component Overview
 
 ### DayView
 
-The primary component for rendering a complete day-view scheduler.
+`DayView` renders the entire scheduling surface. Notable props include:
 
-```typescript
+```ts
 interface DayViewProps {
-  startHour?: number // Start hour (0-23), default: 7
-  endHour?: number // End hour (0-23), default: 23
-  stepMinutes?: number // Time step for events, default: 30
-  cellHeight?: number // Height of time cells, default: 40
-  use24HourFormat?: boolean // Time format, default: false (12-hour)
-  employeeIds?: string[] // Employee/resource IDs
-  events?: CalendarEventData[] // Events to display
-  blockTimes?: EmployeeBlockTimes // Blocked time periods
-  showCurrentTimeLine?: boolean // Show current time indicator
-  currentDate?: Date // Selected date
-  eventWidth?: number | string // Event width: number (percentage) or CSS string, default: 88
-  onDateChange?: (date: Date) => void // Date change handler
-  onEventDrop?: (event, next) => void // Event drop handler
-  // ... and many more customization options
+  startHour?: number
+  endHour?: number
+  stepMinutes?: number
+  cellHeight?: number
+  use24HourFormat?: boolean
+  employeeIds?: string[]
+  employees?: Employee[]
+  events?: CalendarEventData[]
+  blockTimes?: EmployeeBlockTimes
+  showCurrentTimeLine?: boolean
+  currentDate?: Date
+  eventWidth?: number | string
+  onDateChange?: (date: Date) => void
+  onEventDrop?: (event: CalendarEventData, next: CalendarEventDragMeta) => void
+  renderEvent?: (context: CalendarEventRenderContext) => React.ReactNode
+  renderEmployee?: (employee: Employee, index: number) => React.ReactNode
+  timeColumnHeaderContent?: React.ReactNode
+  timeColumnSlotContentRenderer?: (time: string) => React.ReactNode
 }
 ```
 
-### Different Column Widths Per Employee
+### Column Width per Employee
 
 ```tsx
 const employees = [
@@ -202,34 +203,10 @@ const employees = [
   events={events}
   blockTimes={blockTimes}
   onEventDrop={handleDrop}
-/>;
-```
-
-`columnWidth` 支持 number（像素）或字符串（任意 CSS 长度，如 `rem`），传入后既会控制 `EmployeeHeader` 列宽，也会让 `CalendarGrid` 中对应员工的时间列保持一致。`employeeHeaderProps.minColumnWidth` 仍然作为全局兜底宽度。
-
-### Event Width Customization
-
-Control event width to leave space for timetable interaction:
-
-```tsx
-// Using percentage (default: 88%)
-<DayView
-  eventWidth={85} // Events take 85% width, leaving 15% for right-side clicking
-  {...otherProps}
-/>
-
-// Using CSS calc expression for precise control
-<DayView
-  eventWidth="calc(90% - 12px)" // Custom width with margin
-  {...otherProps}
-/>
-
-// Maximum width for better mobile experience
-<DayView
-  eventWidth={95} // Events take 95% width for smaller screens
-  {...otherProps}
 />
 ```
+
+`columnWidth` accepts either a number (interpreted as pixels) or a string (any valid CSS length such as `rem`). When set, it controls the width of both the employee header and the corresponding time column so that the grid stays aligned. The `employeeHeaderProps.minColumnWidth` value still acts as the global fallback for employees without an explicit width.
 
 ### Custom Time Column Header
 
@@ -247,26 +224,23 @@ Control event width to leave space for timetable interaction:
 />
 ```
 
-`timeColumnHeaderContent` 会直接渲染在时间列顶端（与员工头部对齐的区域），用于展示标题、图例或其他说明信息。
-`timeColumnSlotContentRenderer` 支持针对每个时间刻度追加自定义内容（如半点提示、图例标识等）。
+`timeColumnHeaderContent` renders at the top of the time column (aligned with employee headers) and is a convenient place for labels or legends. `timeColumnSlotContentRenderer` allows you to append custom content to each time slot, for example half-hour markers or icons.
 
-### CalendarEventData
+### CalendarEventData shape
 
-The event data structure:
-
-```typescript
+```ts
 interface CalendarEventData {
-  id: string // Unique identifier
-  title?: string // Event title
-  start: string // Start time ("09:00" or "9:00 AM")
-  end: string // End time ("10:00" or "10:00 AM")
-  employeeId: string // Assigned employee/resource
-  color?: string // Background color
-  description?: string // Optional description
+  id: string
+  title?: string
+  start: string
+  end: string
+  employeeId: string
+  color?: string
+  description?: string
 }
 ```
 
-## 🎨 Customization
+## Customization Examples
 
 ### Custom Event Rendering
 
@@ -316,7 +290,6 @@ interface CalendarEventData {
           position: 'relative',
         }}
       >
-        {/* Status indicator */}
         <div
           style={{
             position: 'absolute',
@@ -328,8 +301,6 @@ interface CalendarEventData {
             backgroundColor: isAvailable ? '#10b981' : '#ef4444',
           }}
         />
-
-        {/* Employee avatar */}
         <div
           style={{
             width: '40px',
@@ -346,7 +317,6 @@ interface CalendarEventData {
         >
           {employee.name.charAt(0).toUpperCase()}
         </div>
-
         <div style={{ fontWeight: 'bold' }}>{employee.name}</div>
         <div style={{ fontSize: '12px', color: '#666' }}>
           {isAvailable ? 'Available' : 'Busy'}
@@ -357,7 +327,28 @@ interface CalendarEventData {
 />
 ```
 
-## ⚡ Event Handling
+### Event Width Adjustments
+
+```tsx
+<DayView
+  eventWidth={85}
+  {...otherProps}
+/>
+
+<DayView
+  eventWidth="calc(90% - 12px)"
+  {...otherProps}
+/>
+
+<DayView
+  eventWidth={95}
+  {...otherProps}
+/>
+```
+
+The `eventWidth` prop accepts either a number (interpreted as a percentage of the column width) or any CSS length string. Adjusting the width is useful when you want to leave room for context menus, create a margin for touch targets, or fit more detail on compact screens.
+
+## Event Handling
 
 ```tsx
 <DayView
@@ -370,32 +361,28 @@ interface CalendarEventData {
   }}
   onTimeLabelClick={(timeLabel, index, timeSlot, employee) => {
     console.log(`Clicked time slot: ${timeSlot} for ${employee.name}`)
-    // Create new event or show context menu
+    // Create new event or show a context menu
   }}
 />
 ```
 
-## 🕒 Time Format Support
-
-The library supports multiple time formats automatically:
+## Time Format Support
 
 ```tsx
 const events = [
-  { start: '09:00', end: '10:00' },     // 24-hour format
-  { start: '2:30 PM', end: '3:30 PM' }, // 12-hour format
-  // Both formats work seamlessly together
+  { start: '09:00', end: '10:00', employeeId: 'a' },
+  { start: '2:30 PM', end: '3:30 PM', employeeId: 'b' },
 ]
 
-// Display in 12-hour format
 <DayView use24HourFormat={false} events={events} />
-
-// Display in 24-hour format
-<DayView use24HourFormat={true} events={events} />
+<DayView use24HourFormat events={events} />
 ```
 
-## 🔧 Utility Functions
+The scheduler understands both 12-hour and 24-hour inputs. Toggle the `use24HourFormat` flag to control how times are rendered.
 
-```tsx
+## Utility Helpers
+
+```ts
 import {
   parseTimeSlot,
   slotToMinutes,
@@ -405,84 +392,51 @@ import {
   generateTimeSlots,
 } from 'schedule-calendar'
 
-// Parse time string
-const parsed = parseTimeSlot('2:30 PM') // { hours: 14, minutes: 30 }
-
-// Convert to minutes from midnight
-const minutes = slotToMinutes('14:30') // 870
-
-// Add time
-const later = addMinutesToSlot('14:30', 45) // "15:15"
-
-// Calculate duration
-const duration = differenceInMinutes('14:30', '16:00') // 90 minutes
-
-// Generate time slots
+const parsed = parseTimeSlot('2:30 PM')
+const minutes = slotToMinutes('14:30')
+const later = addMinutesToSlot('14:30', 45)
+const duration = differenceInMinutes('14:30', '16:00')
 const slots = generateTimeSlots(9, 17, 30, true)
-// ["09:00", "09:30", "10:00", ..., "17:00"]
 ```
 
-## 🏗️ Local Development
+## Documentation
 
-### Install Dependencies
+- [API Documentation](./API.md)
+- [Examples](./EXAMPLES.md)
+- [Usage Guide](./USAGE.md)
+- [Troubleshooting](./TROUBLESHOOTING.md)
+- [Migration Notes](./MIGRATION.md)
+
+## Local Development
 
 ```bash
 npm install
-```
-
-### Development Mode
-
-```bash
 npm run dev
-```
-
-### Build Library
-
-```bash
 npm run build
-```
-
-### Run Tests
-
-```bash
 npm run test
 npm run test:coverage
-```
-
-### Interactive Documentation
-
-```bash
-npm run storybook
-```
-
-### Code Quality
-
-```bash
 npm run lint
 npm run format
 npm run type-check
+npm run storybook
 ```
 
-### Local Development with npm link
-
-#### In this project:
+### Linking the Library
 
 ```bash
+# In this repository
 npm run build
 npm link
-```
 
-#### In your target project:
-
-```bash
+# In a consuming project
 npm link schedule-calendar
 ```
 
-## 📝 TypeScript
+## TypeScript Support
 
-The library is built with TypeScript and provides comprehensive type definitions:
+All components ship with first-class TypeScript definitions:
 
-```typescript
+```ts
 import type {
   DayViewProps,
   CalendarEventData,
@@ -494,33 +448,14 @@ import type {
 } from 'schedule-calendar'
 ```
 
-## 🎯 Use Cases
-
-- **Medical Appointment Scheduling** - Doctor/patient appointment management
-- **Service Booking Systems** - Technician/service scheduling
-- **Meeting Room Management** - Conference room booking
-- **Staff Scheduling** - Employee work schedule management
-- **Resource Planning** - Equipment or facility scheduling
-- **Educational Scheduling** - Class and instructor scheduling
-
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m "Add amazing feature"`)
+4. Push the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
-## 📄 License
-
-MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🔗 Links
-
-- [API Documentation](./API.md)
-- [Examples](./EXAMPLES.md)
-- [Usage Guide](./USAGE.md)
 
 ## License
 
-MIT
+This project is licensed under the MIT License. See [LICENSE](./LICENSE) for details.

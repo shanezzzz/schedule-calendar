@@ -19,6 +19,10 @@ const CalendarEvent: React.FC<CalendarEventProps> = ({
   onDrag,
   onDragEnd,
   snapToGrid,
+  onMouseEnter,
+  onMouseLeave,
+  onFocus,
+  onBlur,
 }) => {
   const eventRef = useRef<HTMLDivElement>(null)
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null)
@@ -236,6 +240,18 @@ const CalendarEvent: React.FC<CalendarEventProps> = ({
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerCancel}
+      onMouseEnter={() => {
+        onMouseEnter?.(event)
+      }}
+      onMouseLeave={() => {
+        onMouseLeave?.(event)
+      }}
+      onFocus={() => {
+        onFocus?.(event)
+      }}
+      onBlur={() => {
+        onBlur?.(event)
+      }}
       role="button"
       tabIndex={0}
       aria-label={event.title || `${event.start} - ${event.end}`}

@@ -428,6 +428,17 @@ export interface ScrollPositionResult {
   isInRange: boolean
 }
 
+export type ScrollTargetType =
+  | 'currentTimeLine'
+  | 'latestEvent'
+  | 'newEvent'
+  | 'none'
+
+export interface ScrollTargetResult {
+  position: number
+  type: ScrollTargetType
+}
+
 /**
  * Calculate the pixel position of current time line
  * @param config Scroll configuration
@@ -553,47 +564,79 @@ export function determineScrollTarget(
   currentTimeLinePosition: ScrollPositionResult,
   latestEventPosition: ScrollPositionResult,
   newEventPosition?: ScrollPositionResult
-): number {
+): ScrollTargetResult {
   // Highest priority: new event position
   if (newEventPosition && newEventPosition.isInRange) {
-    return newEventPosition.position
-  }
-
-  // If both positions are valid, prioritize the later one
-  if (latestEventPosition.isInRange && currentTimeLinePosition.isInRange) {
-    if (latestEventPosition.position > currentTimeLinePosition.position) {
-      return latestEventPosition.position
-    } else {
-      return currentTimeLinePosition.position
+    return {
+      position: newEventPosition.position,
+      type: 'newEvent',
     }
-  } else if (currentTimeLinePosition.isInRange) {
-    // Only current time line is valid
-    return currentTimeLinePosition.position
-  } else if (latestEventPosition.isInRange) {
-    // Only event position is valid
-    return latestEventPosition.position
   }
 
-  return -1 // No valid target
+  if (currentTimeLinePosition.isInRange) {
+    // Keep focus on the current time line when available
+    return {
+      position: currentTimeLinePosition.position,
+      type: 'currentTimeLine',
+    }
+  }
+
+  if (latestEventPosition.isInRange) {
+    // Fallback to latest event when time line is out of range
+    return {
+      position: latestEventPosition.position,
+      type: 'latestEvent',
+    }
+  }
+
+  return { position: -1, type: 'none' } // No valid target
 }
 
 /**
  * Calculate final scroll position with header height and margin
  * @param targetPosition Target pixel position
  * @param headerHeight Header height to offset
- * @param scrollMargin Additional margin from top
+ * @param scrollMargin Additional margin from top (ignored for current time line centering)
+ * @param viewportHeight Optional viewport height for centering calculations
+ * @param targetType Scroll target source to adjust behavior
+ * @param contentHeight Total scrollable content height, used to clamp scroll top
  * @returns Final scroll top position
  */
 export function calculateScrollTop(
   targetPosition: number,
   headerHeight: number = 0,
-  scrollMargin: number = 200
+  scrollMargin: number = 200,
+  viewportHeight?: number,
+  targetType: ScrollTargetType = 'latestEvent',
+  contentHeight?: number
 ): number {
   if (targetPosition === -1) {
     return 0
   }
 
-  return Math.max(0, targetPosition + headerHeight - scrollMargin)
+  const baseTop = targetPosition + headerHeight
+  const maxScrollTop =
+    typeof contentHeight === 'number' &&
+    typeof viewportHeight === 'number' &&
+    contentHeight > viewportHeight
+      ? contentHeight - viewportHeight
+      : undefined
+  const clampScrollTop = (value: number) =>
+    typeof maxScrollTop === 'number'
+      ? Math.min(Math.max(0, value), maxScrollTop)
+      : Math.max(0, value)
+
+  if (
+    targetType === 'currentTimeLine' &&
+    typeof viewportHeight === 'number' &&
+    viewportHeight > 0
+  ) {
+    // Center the current time line within the viewport when possible
+    const centeredTop = baseTop - viewportHeight / 2
+    return clampScrollTop(centeredTop)
+  }
+
+  return clampScrollTop(baseTop - scrollMargin)
 }
 
 /**
@@ -621,7 +664,7 @@ export function performCalendarAutoScroll(
       ? findEarliestNewEventPosition(newEvents, config)
       : undefined
 
-  const targetPosition = determineScrollTarget(
+  const { position: targetPosition, type: targetType } = determineScrollTarget(
     currentTimeLinePosition,
     latestEventPosition,
     newEventPosition
@@ -631,7 +674,10 @@ export function performCalendarAutoScroll(
     const scrollTop = calculateScrollTop(
       targetPosition,
       config.headerHeight || 0,
-      config.scrollMargin || 200
+      config.scrollMargin || 200,
+      element.clientHeight,
+      targetType,
+      element.scrollHeight
     )
 
     element.scrollTo({
