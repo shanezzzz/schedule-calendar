@@ -356,11 +356,13 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   )
 
   useEffect(() => {
+    const timers = collapseTimersRef.current
+
     return () => {
-      collapseTimersRef.current.forEach(timerId => {
+      timers.forEach(timerId => {
         clearTimeout(timerId)
       })
-      collapseTimersRef.current.clear()
+      timers.clear()
     }
   }, [])
 
