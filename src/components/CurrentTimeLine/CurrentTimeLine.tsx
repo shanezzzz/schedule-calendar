@@ -71,7 +71,8 @@ const CurrentTimeLine: React.FC<CurrentTimeLineProps> = ({
       const parentRect = parent.getBoundingClientRect()
       const elementRect = element.getBoundingClientRect()
       const isAlreadyVisible =
-        elementRect.top >= parentRect.top && elementRect.bottom <= parentRect.bottom
+        elementRect.top >= parentRect.top &&
+        elementRect.bottom <= parentRect.bottom
 
       if (isAlreadyVisible) {
         hasAutoScrolledRef.current = true

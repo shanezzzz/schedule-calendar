@@ -3,6 +3,7 @@
 Schedule Calendar is a modern React calendar component library built with TypeScript and Tailwind CSS. It is designed for day-view scheduling scenarios where you need to coordinate employees, resources, or rooms, and it ships with rich drag-and-drop interactions and accessibility support out of the box.
 
 ## Table of Contents
+
 - [Features](#features)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
@@ -19,6 +20,7 @@ Schedule Calendar is a modern React calendar component library built with TypeSc
 - [License](#license)
 
 ## Features
+
 - Day-view scheduler with configurable time grid and current time indicator
 - Resource aware layout for employees, rooms, or equipment
 - Drag-and-drop interactions with grid snapping and collision detection
@@ -261,7 +263,9 @@ interface CalendarEventData {
         {event.start} - {event.end}
       </div>
       {event.description && (
-        <div style={{ fontSize: '10px', opacity: 0.9 }}>{event.description}</div>
+        <div style={{ fontSize: '10px', opacity: 0.9 }}>
+          {event.description}
+        </div>
       )}
     </div>
   )}
