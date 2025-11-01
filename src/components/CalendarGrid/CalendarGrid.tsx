@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useMemo, useRef, useState } from 'react'
 import CalendarCell from '@/components/CalendarCell'
 import type { CalendarCellEmployee } from '@/components/CalendarCell'
 import CalendarEvent from '@/components/CalendarEvent'
@@ -8,9 +8,6 @@ import {
   addMinutesToSlot,
   differenceInMinutes,
   slotToMinutes,
-  formatTime,
-  parseTimeSlot,
-  timeValueToDate,
 } from '@/utils/util'
 import { getEmployeeBlockTimes, isTimeRangeBlocked } from '@/types/blockTime'
 import {
@@ -25,12 +22,6 @@ import type {
 } from '@/components/CalendarEvent'
 import type { CalendarGridEmployee, CalendarGridProps } from './types'
 import type { BlockTime } from '@/types/blockTime'
-
-type EventCluster = {
-  id: string
-  employeeId: string
-  events: CalendarEventData[]
-}
 
 interface RenderOptions {
   disableDrag?: boolean
@@ -77,12 +68,6 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   }, [employeeIds, employees])
   const eventLayerRef = useRef<HTMLDivElement>(null)
   const [activeEventId, setActiveEventId] = useState<string | null>(null)
-  const [expandedClusterId, setExpandedClusterId] = useState<string | null>(
-    null
-  )
-  const collapseTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(
-    new Map()
-  )
   const dragOriginRef = useRef<{
     eventId: string
     columnIndex: number
@@ -130,58 +115,6 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
 
     return map
   }, [displayEmployeeIds, events])
-
-  const eventClusters = useMemo(() => {
-    const map = new Map<string, EventCluster[]>()
-
-    displayEmployeeIds.forEach(employeeId => {
-      const employeeEvents = eventsByEmployee.get(employeeId) ?? []
-      const clusters: EventCluster[] = []
-      let clusterCounter = 0
-      let currentCluster: EventCluster | null = null
-      let currentClusterEnd: number | null = null
-
-      employeeEvents.forEach(calendarEvent => {
-        const startMinutes = slotToMinutes(calendarEvent.start)
-        const endMinutes = slotToMinutes(calendarEvent.end)
-
-        if (startMinutes === null || endMinutes === null) {
-          clusterCounter += 1
-          clusters.push({
-            id: `${employeeId}-cluster-${clusterCounter}`,
-            employeeId,
-            events: [calendarEvent],
-          })
-          currentCluster = null
-          currentClusterEnd = null
-          return
-        }
-
-        if (
-          currentCluster === null ||
-          currentClusterEnd === null ||
-          startMinutes >= currentClusterEnd
-        ) {
-          clusterCounter += 1
-          currentCluster = {
-            id: `${employeeId}-cluster-${clusterCounter}`,
-            employeeId,
-            events: [calendarEvent],
-          }
-          currentClusterEnd = endMinutes
-          clusters.push(currentCluster)
-          return
-        }
-
-        currentCluster.events.push(calendarEvent)
-        currentClusterEnd = Math.max(currentClusterEnd, endMinutes)
-      })
-
-      map.set(employeeId, clusters)
-    })
-
-    return map
-  }, [displayEmployeeIds, eventsByEmployee])
 
   const resolvedDefaultColumnWidth =
     defaultColumnWidth ?? DEFAULT_EMPLOYEE_COLUMN_WIDTH
@@ -307,64 +240,6 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
 
     return layoutMap
   }, [displayEmployeeIds, events])
-
-  const formatClusterTimeRange = useCallback(
-    (startSlot: string, endSlot: string) => {
-      const startParsed = parseTimeSlot(startSlot)
-      const endParsed = parseTimeSlot(endSlot)
-
-      const startLabel =
-        startParsed.success && startParsed.data
-          ? formatTime(timeValueToDate(startParsed.data), use24HourFormat)
-          : startSlot
-
-      const endLabel =
-        endParsed.success && endParsed.data
-          ? formatTime(timeValueToDate(endParsed.data), use24HourFormat)
-          : endSlot
-
-      return `${startLabel} - ${endLabel}`
-    },
-    [use24HourFormat]
-  )
-
-  const clearCollapseTimer = useCallback((clusterId: string) => {
-    const timers = collapseTimersRef.current
-    const timerId = timers.get(clusterId)
-    if (timerId) {
-      clearTimeout(timerId)
-      timers.delete(clusterId)
-    }
-  }, [])
-
-  const scheduleCollapse = useCallback(
-    (clusterId: string) => {
-      const timers = collapseTimersRef.current
-      const existing = timers.get(clusterId)
-      if (existing) {
-        clearTimeout(existing)
-      }
-
-      const timerId = setTimeout(() => {
-        setExpandedClusterId(prev => (prev === clusterId ? null : prev))
-        timers.delete(clusterId)
-      }, 150)
-
-      timers.set(clusterId, timerId)
-    },
-    [setExpandedClusterId]
-  )
-
-  useEffect(() => {
-    const timers = collapseTimersRef.current
-
-    return () => {
-      timers.forEach(timerId => {
-        clearTimeout(timerId)
-      })
-      timers.clear()
-    }
-  }, [])
 
   const clampIndex = useCallback((value: number, max: number) => {
     if (max <= 0) return 0
@@ -696,27 +571,25 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
       })()
       const widthStyle = (() => {
         if (typeof eventWidth === 'string') {
-          // 如果是字符串（如CSS calc表达式），直接使用
-          return layoutMeta && layoutMeta.columns > 1
-            ? `calc((${eventWidth}) / ${layoutMeta.columns} - ${overlapGap}px)`
-            : eventWidth
-        } else {
-          // 如果是数字，按百分比处理
-          return layoutMeta && layoutMeta.columns > 1
-            ? `calc(${widthPercent}% - ${overlapGap}px)`
-            : `${eventWidth}%`
+          if (layoutMeta && layoutMeta.columns > 1) {
+            const widthPerColumn = `(${eventWidth}) / ${layoutMeta.columns}`
+            return `calc(${widthPerColumn} - ${overlapGap}px)`
+          }
+          return eventWidth
         }
+        return layoutMeta && layoutMeta.columns > 1
+          ? `calc(${widthPercent}% - ${overlapGap}px)`
+          : `${eventWidth}%`
       })()
       const marginLeftStyle = (() => {
         if (!layoutMeta || layoutMeta.columns <= 1) return undefined
 
         if (typeof eventWidth === 'string') {
-          // 对于字符串类型的eventWidth，简化处理，仅使用重叠间隙
-          return `${layoutMeta.column * overlapGap}px`
-        } else {
-          // 对于数字类型，使用百分比 + 间隙
-          return `calc(${widthPercent * layoutMeta.column}% + ${layoutMeta.column * overlapGap}px)`
+          const widthPerColumn = `(${eventWidth}) / ${layoutMeta.columns}`
+          return `calc(${widthPerColumn} * ${layoutMeta.column} + ${layoutMeta.column * overlapGap}px)`
         }
+        // 对于数字类型，使用百分比 + 间隙
+        return `calc(${widthPercent * layoutMeta.column}% + ${layoutMeta.column * overlapGap}px)`
       })()
 
       const style: React.CSSProperties = {
@@ -824,136 +697,12 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   const eventNodes: React.ReactNode[] = []
 
   displayEmployeeIds.forEach(employeeId => {
-    const clusters = eventClusters.get(employeeId) ?? []
-    clusters.forEach(cluster => {
-      const clusterId = cluster.id
-      const clusterEvents = cluster.events
-      const hasMultiple = clusterEvents.length > 1
-      const isExpanded = expandedClusterId === clusterId
-
-      if (!hasMultiple) {
-        const singleEvent = clusterEvents[0]
-        if (!singleEvent) {
-          return
-        }
-
-        const node = renderCalendarEvent(singleEvent, {
-          onMouseEnter: () => clearCollapseTimer(clusterId),
-          onMouseLeave: () => scheduleCollapse(clusterId),
-        })
-
-        if (node) {
-          eventNodes.push(node)
-        }
-        return
+    const employeeEvents = eventsByEmployee.get(employeeId) ?? []
+    employeeEvents.forEach(calendarEvent => {
+      const node = renderCalendarEvent(calendarEvent)
+      if (node) {
+        eventNodes.push(node)
       }
-
-      if (!isExpanded) {
-        const primaryEvent = clusterEvents[0]
-        if (!primaryEvent) {
-          return
-        }
-
-        const accentColor = primaryEvent.color ?? '#2563eb'
-        const clusterStart = clusterEvents.reduce((earliest, current) => {
-          const earliestMinutes = slotToMinutes(earliest)
-          const currentMinutes = slotToMinutes(current.start)
-          if (earliestMinutes === null && currentMinutes === null) {
-            return earliest
-          }
-          if (earliestMinutes === null) {
-            return current.start
-          }
-          if (currentMinutes === null) {
-            return earliest
-          }
-          return currentMinutes < earliestMinutes ? current.start : earliest
-        }, primaryEvent.start)
-
-        const clusterEndSlot = clusterEvents.reduce((latest, current) => {
-          const latestMinutes = slotToMinutes(latest)
-          const currentMinutes = slotToMinutes(current.end)
-          if (latestMinutes === null && currentMinutes === null) {
-            return latest
-          }
-          if (latestMinutes === null) {
-            return current.end
-          }
-          if (currentMinutes === null) {
-            return latest
-          }
-          return currentMinutes > latestMinutes ? current.end : latest
-        }, primaryEvent.end)
-
-        const aggregateTitle = primaryEvent.title
-          ? `${primaryEvent.title} +${clusterEvents.length - 1}`
-          : `${clusterEvents.length} events`
-
-        const aggregatedEvent: CalendarEventData = {
-          id: `cluster-${clusterId}`,
-          employeeId,
-          start: clusterStart,
-          end: clusterEndSlot,
-          title: aggregateTitle,
-        }
-
-        const summaryContent = (
-          <div className={styles.eventCluster}>
-            <span className={styles.eventClusterBadge}>
-              +{clusterEvents.length} Events
-            </span>
-            <div className={styles.eventClusterTitle}>
-              {primaryEvent.title ?? 'Multiple events'}
-            </div>
-            <div className={styles.eventClusterMeta}>
-              <span>
-                {formatClusterTimeRange(clusterStart, clusterEndSlot)}
-              </span>
-            </div>
-            <div className={styles.eventClusterHint}>
-              Aggregate view · hover to expand
-            </div>
-          </div>
-        )
-
-        const node = renderCalendarEvent(aggregatedEvent, {
-          disableDrag: true,
-          disableClick: true,
-          overrideChildren: summaryContent,
-          className: styles.eventClusterCard,
-          styleOverrides: {
-            background:
-              'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(226, 232, 240, 0.92) 100%)',
-            border: `1px dashed ${accentColor}`,
-            boxShadow: '0 12px 28px rgba(37, 99, 235, 0.25)',
-            color: '#0f172a',
-          },
-          onMouseEnter: () => {
-            clearCollapseTimer(clusterId)
-            setExpandedClusterId(clusterId)
-          },
-          onMouseLeave: () => scheduleCollapse(clusterId),
-        })
-
-        if (node) {
-          eventNodes.push(node)
-        }
-        return
-      }
-
-      clusterEvents.forEach(event => {
-        const node = renderCalendarEvent(event, {
-          onMouseEnter: () => {
-            clearCollapseTimer(clusterId)
-            setExpandedClusterId(clusterId)
-          },
-          onMouseLeave: () => scheduleCollapse(clusterId),
-        })
-
-        if (node) {
-          eventNodes.push(node)
-        }
-      })
     })
   })
 
