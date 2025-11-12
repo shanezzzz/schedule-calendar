@@ -5,6 +5,7 @@ export type CalendarCellEmployee = Pick<Employee, 'id' | 'name'>
 export interface CalendarCellProps {
   timeSlot?: string
   stepMinutes?: number
+  cellHeight?: number
   use24HourFormat?: boolean
   employeeId?: string
   employee?: CalendarCellEmployee

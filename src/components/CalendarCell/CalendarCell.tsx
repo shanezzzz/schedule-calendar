@@ -6,6 +6,7 @@ import type { CalendarCellProps, CalendarCellEmployee } from './types'
 const CalendarCell: React.FC<CalendarCellProps> = ({
   timeSlot,
   stepMinutes = 30,
+  cellHeight,
   use24HourFormat = false,
   employeeId,
   employee,
@@ -19,6 +20,12 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
   const employeeData: CalendarCellEmployee =
     employee ||
     (employeeId ? { id: employeeId, name: employeeId } : { id: '', name: '' })
+
+  // 计算每个时间标签的高度
+  const labelHeight =
+    cellHeight && timeLabels.length > 0
+      ? cellHeight / timeLabels.length
+      : undefined
 
   return (
     <div
@@ -43,6 +50,7 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
           }}
           style={{
             cursor: onTimeLabelClick ? 'pointer' : 'default',
+            height: labelHeight ? `${labelHeight}px` : undefined,
           }}
         >
           <div className={styles.timeLabel}>{timeLabel}</div>

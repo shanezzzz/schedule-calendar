@@ -716,6 +716,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
                 key={`${timeIndex}-${empIndex}`}
                 timeSlot={timeSlot}
                 stepMinutes={stepMinutes}
+                cellHeight={cellHeight}
                 use24HourFormat={use24HourFormat}
                 employeeId={employeeId}
                 employee={employeeMap.get(employeeId)}

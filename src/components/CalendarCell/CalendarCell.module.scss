@@ -25,7 +25,6 @@
   background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
   border-radius: 10px;
   padding: 8px 12px;
-  max-height: 100%;
   box-sizing: border-box;
   cursor: pointer;
   border: 1px solid rgba(226, 232, 240, 0.8);
@@ -33,6 +32,9 @@
   opacity: 0;
   transform: translateY(-6px) scale(0.95);
   backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
     opacity: 1;
