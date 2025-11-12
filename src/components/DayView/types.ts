@@ -75,6 +75,7 @@ export interface DayViewProps {
   events?: CalendarEventData[]
   blockTimes?: EmployeeBlockTimes
   showCurrentTimeLine?: boolean
+  currentTimeLineStyle?: CSSProperties
   currentDate?: Date
   eventWidth?: number | string
   onDateChange?: (date: Date) => void

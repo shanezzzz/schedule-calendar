@@ -38,6 +38,7 @@ const DayView = forwardRef<DayViewRef, DayViewProps>(
       events = [],
       blockTimes = {},
       showCurrentTimeLine = true, // Default to show current time line
+      currentTimeLineStyle,
       currentDate = new Date(),
       eventWidth = '100%',
       onDateChange,
@@ -310,6 +311,7 @@ const DayView = forwardRef<DayViewRef, DayViewProps>(
                 cellHeight={slotsHeight}
                 displayIntervalMinutes={displayIntervalMinutes}
                 currentDate={currentDate}
+                style={currentTimeLineStyle}
               />
             )}
           </div>
