@@ -207,13 +207,15 @@ const CalendarEvent: React.FC<CalendarEventProps> = ({
         : event.end
 
     return (
-      <div className={styles.eventContent}>
-        {event.title && <div className={styles.eventTitle}>{event.title}</div>}
-        <div className={styles.eventTime}>
+      <div className={styles.defaultContent}>
+        {event.title && (
+          <div className={styles.defaultTitle}>{event.title}</div>
+        )}
+        <div className={styles.defaultTime}>
           {startLabel} - {endLabel}
         </div>
         {event.description && (
-          <div className={styles.eventDescription}>{event.description}</div>
+          <div className={styles.defaultDescription}>{event.description}</div>
         )}
       </div>
     )
