@@ -10,6 +10,8 @@ const CurrentTimeLine: React.FC<CurrentTimeLineProps> = ({
   displayIntervalMinutes,
   isVisible = true,
   currentDate = new Date(),
+  style,
+  className,
 }) => {
   const [currentTime, setCurrentTime] = useState(() => new Date())
   const currentTimeLineRef = useRef<HTMLDivElement | null>(null)
@@ -98,11 +100,20 @@ const CurrentTimeLine: React.FC<CurrentTimeLineProps> = ({
     return null
   }
 
+  const finalClassName = className
+    ? `${styles.currentTimeLine} ${className}`
+    : styles.currentTimeLine
+
+  const finalStyle: React.CSSProperties = {
+    top: position.top,
+    ...style,
+  }
+
   return (
     <div
       ref={currentTimeLineRef}
-      className={styles.currentTimeLine}
-      style={{ top: position.top }}
+      className={finalClassName}
+      style={finalStyle}
     />
   )
 }

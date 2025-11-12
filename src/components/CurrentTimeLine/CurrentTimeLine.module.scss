@@ -8,11 +8,6 @@
   pointer-events: none;
   border-radius: 2px;
 
-  // 现代化的阴影效果，更突出且美观
-  box-shadow:
-    0 2px 8px rgba(239, 68, 68, 0.4),
-    0 0 16px rgba(239, 68, 68, 0.2);
-
   // 添加轻微的脉冲动画效果
   animation: pulse 2s infinite;
 }

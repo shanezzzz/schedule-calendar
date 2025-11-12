@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'react'
+
 export interface CurrentTimeLineProps {
   startHour: number
   endHour: number
@@ -5,6 +7,8 @@ export interface CurrentTimeLineProps {
   displayIntervalMinutes: number
   isVisible?: boolean
   currentDate?: Date
+  style?: CSSProperties
+  className?: string
 }
 
 export interface CurrentTimeLinePosition {
