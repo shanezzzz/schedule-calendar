@@ -274,6 +274,12 @@ const DayView = forwardRef<DayViewRef, DayViewProps>(
               headerHeight={headerHeight}
               headerContent={timeColumnHeaderContent}
               renderSlotContent={timeColumnSlotContentRenderer}
+              showCurrentTimeIndicator={showCurrentTimeLine}
+              startHour={startHour}
+              endHour={endHour}
+              displayIntervalMinutes={displayIntervalMinutes}
+              currentDate={currentDate}
+              use24HourFormat={use24HourFormat}
             />
           </div>
           <div className={styles.employeeHeaderArea} ref={employeeHeaderRef}>

@@ -88,3 +88,35 @@
     padding-right: 6px;
   }
 }
+
+.currentTimeIndicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.currentTimePill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: #0f172a;
+  color: #f9fafb;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.35);
+  white-space: nowrap;
+}
+
+.currentTimePillText {
+  line-height: 1;
+}
