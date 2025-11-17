@@ -77,6 +77,18 @@ export interface DayViewProps {
   showCurrentTimeLine?: boolean
   currentTimeLineStyle?: CSSProperties
   currentDate?: Date
+  /**
+   * Optional Day.js-compatible format string used by the internal
+   * `CalendarHeader` for the primary date label.
+   *
+   * Examples:
+   * - 'YYYY/MM/DD'
+   * - 'YYYY-MM-DD'
+   * - 'MM/DD/YYYY'
+   * - 'DD/MM/YYYY'
+   * - 'MM/DD'
+   */
+  dateFormat?: string
   eventWidth?: number | string
   onDateChange?: (date: Date) => void
   headerActions?: ReactNode

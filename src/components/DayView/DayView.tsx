@@ -40,6 +40,7 @@ const DayView = forwardRef<DayViewRef, DayViewProps>(
       showCurrentTimeLine = true, // Default to show current time line
       currentTimeLineStyle,
       currentDate = new Date(),
+      dateFormat,
       eventWidth = '100%',
       onDateChange,
       headerActions,
@@ -265,6 +266,7 @@ const DayView = forwardRef<DayViewRef, DayViewProps>(
           currentDate={currentDate}
           onDateChange={handleDateChange}
           actionsSection={headerActions}
+          dateFormat={dateFormat}
         />
         <div className={styles.dayViewContent} ref={calendarContainerRef}>
           <div className={styles.timeColumnArea}>

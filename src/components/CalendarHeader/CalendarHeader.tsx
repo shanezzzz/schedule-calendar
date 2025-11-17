@@ -10,6 +10,7 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
   className,
   actionsSection,
   formatDateLabel,
+  dateFormat,
   onMonthChange,
   onToggleDatePicker,
 }) => {
@@ -34,10 +35,16 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
   }, [currentDate, onMonthChange])
 
   const formattedDateLabelValue = useMemo(() => {
-    return formatDateLabel
-      ? formatDateLabel(selectedDate)
-      : dayjs(selectedDate).format('dddd, MMM D, YYYY')
-  }, [formatDateLabel, selectedDate])
+    if (formatDateLabel) {
+      return formatDateLabel(selectedDate)
+    }
+
+    if (dateFormat) {
+      return dayjs(selectedDate).format(dateFormat)
+    }
+
+    return dayjs(selectedDate).format('dddd, MMM D, YYYY')
+  }, [formatDateLabel, dateFormat, selectedDate])
 
   // 处理点击外部关闭日期选择器
   useEffect(() => {
