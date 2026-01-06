@@ -52,6 +52,8 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   onBlockTimeClick,
   renderEvent,
   renderBlockTime,
+  eventStyle,
+  eventClassName,
 }) => {
   const displayTimeSlots = useMemo(
     () => (timeSlots.length > 0 ? timeSlots : []),
@@ -610,6 +612,10 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
         Object.assign(style, options.styleOverrides)
       }
 
+      if (eventStyle) {
+        Object.assign(style, eventStyle)
+      }
+
       const container = eventLayerRef.current
       const columnWidth =
         container && displayEmployeeIds.length > 0
@@ -646,12 +652,16 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
               })
           : undefined)
 
+      const finalClassName =
+        [options?.className, eventClassName].filter(Boolean).join(' ') ||
+        undefined
+
       return (
         <CalendarEvent
           key={calendarEvent.id}
           event={calendarEvent}
           style={style}
-          className={options?.className}
+          className={finalClassName}
           draggable={draggable}
           isActive={activeEventId === calendarEvent.id}
           use24HourFormat={use24HourFormat}
@@ -691,6 +701,8 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
       use24HourFormat,
       getEmployeeData,
       eventWidth,
+      eventStyle,
+      eventClassName,
     ]
   )
 
