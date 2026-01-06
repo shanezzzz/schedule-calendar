@@ -260,4 +260,16 @@ export interface DayViewProps {
    * @default undefined
    */
   style?: CSSProperties
+
+  /**
+   * Custom CSS styles to apply to all event elements
+   * @default undefined
+   */
+  eventStyle?: CSSProperties
+
+  /**
+   * Custom CSS class name to apply to all event elements
+   * @default undefined
+   */
+  eventClassName?: string
 }

@@ -830,6 +830,10 @@ export const AdvancedEmployeeHeader: Story = () => {
             )}
           </div>
         )}
+        eventStyle={{
+          borderRadius: '8px',
+        }}
+        eventClassName="custom-event-class"
         onEventClick={handleEventClick}
         headerActions={<button>Quick Book</button>}
       />

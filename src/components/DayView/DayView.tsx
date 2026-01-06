@@ -58,6 +58,8 @@ const DayView = forwardRef<DayViewRef, DayViewProps>(
       timeColumnSlotContentRenderer,
       className,
       style,
+      eventStyle,
+      eventClassName,
     },
     ref
   ) => {
@@ -311,6 +313,8 @@ const DayView = forwardRef<DayViewRef, DayViewProps>(
               onBlockTimeClick={onBlockTimeClick}
               renderEvent={renderEvent}
               renderBlockTime={renderBlockTime}
+              eventStyle={eventStyle}
+              eventClassName={eventClassName}
             />
             {showCurrentTimeLine && (
               <CurrentTimeLine
