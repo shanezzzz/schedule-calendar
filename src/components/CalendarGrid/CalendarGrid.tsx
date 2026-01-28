@@ -9,6 +9,7 @@ import {
   differenceInMinutes,
   slotToMinutes,
 } from '@/utils/util'
+import { calculateEventOverlapLayout } from '@/utils/eventLayout'
 import { getEmployeeBlockTimes, isTimeRangeBlocked } from '@/types/blockTime'
 import {
   DEFAULT_EMPLOYEE_COLUMN_WIDTH,
@@ -185,58 +186,10 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
     const layoutMap = new Map<string, { column: number; columns: number }>()
 
     displayEmployeeIds.forEach(employeeId => {
-      const employeeEvents = events
-        .filter(evt => evt.employeeId === employeeId)
-        .map(evt => {
-          const start = slotToMinutes(evt.start)
-          if (start === null) {
-            return null
-          }
-          const duration = differenceInMinutes(evt.start, evt.end)
-          return {
-            start,
-            end: start + duration,
-            event: evt,
-          }
-        })
-        .filter(
-          (
-            value
-          ): value is {
-            start: number
-            end: number
-            event: CalendarEventData
-          } => value !== null
-        )
-        .sort((a, b) => a.start - b.start)
-
-      const active: Array<{ id: string; end: number; column: number }> = []
-
-      employeeEvents.forEach(item => {
-        for (let idx = active.length - 1; idx >= 0; idx -= 1) {
-          if (active[idx].end <= item.start) {
-            active.splice(idx, 1)
-          }
-        }
-
-        const usedColumns = new Set(active.map(entry => entry.column))
-        let column = 0
-        while (usedColumns.has(column)) {
-          column += 1
-        }
-
-        active.push({ id: item.event.id, end: item.end, column })
-        const currentColumns = active.length
-
-        active.forEach(entry => {
-          const existing = layoutMap.get(entry.id) ?? {
-            column: entry.column,
-            columns: 1,
-          }
-          existing.column = entry.column
-          existing.columns = Math.max(existing.columns, currentColumns)
-          layoutMap.set(entry.id, existing)
-        })
+      const employeeEvents = events.filter(evt => evt.employeeId === employeeId)
+      const employeeLayouts = calculateEventOverlapLayout(employeeEvents)
+      employeeLayouts.forEach((layout, eventId) => {
+        layoutMap.set(eventId, layout)
       })
     })
 
