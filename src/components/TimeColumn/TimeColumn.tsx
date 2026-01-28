@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import dayjs from 'dayjs'
 import styles from './TimeColumn.module.scss'
 import type { TimeColumnProps } from './types'
-import { formatTime } from '@/utils/util'
+import { createTimeValue, formatTime } from '@/utils/util'
+import { getZonedDateParts, isSameZonedDay } from '@/utils/timeZone'
 
 const TimeColumn: React.FC<TimeColumnProps> = ({
   timeSlots = [],
@@ -15,6 +15,7 @@ const TimeColumn: React.FC<TimeColumnProps> = ({
   endHour,
   displayIntervalMinutes,
   currentDate,
+  timeZone,
   use24HourFormat = false,
 }) => {
   const [currentTime, setCurrentTime] = useState<Date>(() => new Date())
@@ -39,8 +40,13 @@ const TimeColumn: React.FC<TimeColumnProps> = ({
     if (!currentDate) {
       return false
     }
-    return dayjs(currentDate).isSame(dayjs(), 'day')
-  }, [currentDate])
+    return isSameZonedDay(currentDate, currentTime, timeZone)
+  }, [currentDate, currentTime, timeZone])
+
+  const currentTimeParts = useMemo(
+    () => getZonedDateParts(currentTime, timeZone),
+    [currentTime, timeZone]
+  )
 
   const currentTimePosition = useMemo(() => {
     if (
@@ -53,8 +59,8 @@ const TimeColumn: React.FC<TimeColumnProps> = ({
       return { top: 0, isInRange: false }
     }
 
-    const currentHour = currentTime.getHours()
-    const currentMinute = currentTime.getMinutes()
+    const currentHour = currentTimeParts.hour
+    const currentMinute = currentTimeParts.minute
 
     if (currentHour < startHour || currentHour >= endHour) {
       return { top: 0, isInRange: false }
@@ -70,7 +76,8 @@ const TimeColumn: React.FC<TimeColumnProps> = ({
     }
   }, [
     cellHeight,
-    currentTime,
+    currentTimeParts.hour,
+    currentTimeParts.minute,
     displayIntervalMinutes,
     endHour,
     isToday,
@@ -85,8 +92,16 @@ const TimeColumn: React.FC<TimeColumnProps> = ({
     if (!shouldShowCurrentTimeIndicator) {
       return ''
     }
-    return formatTime(currentTime, use24HourFormat)
-  }, [currentTime, shouldShowCurrentTimeIndicator, use24HourFormat])
+    return formatTime(
+      createTimeValue(currentTimeParts.hour, currentTimeParts.minute),
+      use24HourFormat
+    )
+  }, [
+    currentTimeParts.hour,
+    currentTimeParts.minute,
+    shouldShowCurrentTimeIndicator,
+    use24HourFormat,
+  ])
 
   return (
     <div className={styles.timeColumn}>

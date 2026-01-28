@@ -27,6 +27,10 @@ export interface TimeColumnProps {
    */
   currentDate?: Date
   /**
+   * IANA time zone name used for current time indicator (e.g. "America/New_York")
+   */
+  timeZone?: Intl.DateTimeFormatOptions['timeZone']
+  /**
    * Whether to use 24-hour format for the current time label, keeping consistent with time labels
    */
   use24HourFormat?: boolean

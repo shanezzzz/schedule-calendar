@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import dayjs from 'dayjs'
 import styles from './CurrentTimeLine.module.scss'
 import type { CurrentTimeLineProps, CurrentTimeLinePosition } from './types'
+import { getZonedDateParts, isSameZonedDay } from '@/utils/timeZone'
 
 const CurrentTimeLine: React.FC<CurrentTimeLineProps> = ({
   startHour,
@@ -10,6 +10,7 @@ const CurrentTimeLine: React.FC<CurrentTimeLineProps> = ({
   displayIntervalMinutes,
   isVisible = true,
   currentDate = new Date(),
+  timeZone,
   style,
   className,
 }) => {
@@ -32,9 +33,14 @@ const CurrentTimeLine: React.FC<CurrentTimeLineProps> = ({
     return () => clearInterval(interval)
   }, [])
 
+  const currentTimeParts = useMemo(
+    () => getZonedDateParts(currentTime, timeZone),
+    [currentTime, timeZone]
+  )
+
   const position = useMemo<CurrentTimeLinePosition>(() => {
-    const currentHour = currentTime.getHours()
-    const currentMinute = currentTime.getMinutes()
+    const currentHour = currentTimeParts.hour
+    const currentMinute = currentTimeParts.minute
 
     if (currentHour < startHour || currentHour >= endHour) {
       return { top: -1000, isInRange: false }
@@ -48,10 +54,20 @@ const CurrentTimeLine: React.FC<CurrentTimeLineProps> = ({
       top: positionInPixels,
       isInRange: true,
     }
-  }, [currentTime, startHour, endHour, displayIntervalMinutes, cellHeight])
+  }, [
+    currentTimeParts.hour,
+    currentTimeParts.minute,
+    startHour,
+    endHour,
+    displayIntervalMinutes,
+    cellHeight,
+  ])
 
   // 检查当前显示的日期是否是今天
-  const isToday = dayjs(currentDate).isSame(dayjs(), 'day')
+  const isToday = useMemo(
+    () => isSameZonedDay(currentDate, currentTime, timeZone),
+    [currentDate, currentTime, timeZone]
+  )
 
   useEffect(() => {
     if (

@@ -58,6 +58,8 @@ export interface WeekViewProps {
   showCurrentTimeLine?: boolean
   /** Style for current time line. */
   currentTimeLineStyle?: CSSProperties
+  /** IANA time zone name used for current time indicator. */
+  timeZone?: Intl.DateTimeFormatOptions['timeZone']
   /** Date format for header display. */
   dateFormat?: string
   /** Width of event elements. @default '100%' */

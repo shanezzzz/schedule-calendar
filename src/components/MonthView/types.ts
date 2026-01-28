@@ -35,6 +35,8 @@ export interface MonthViewProps {
   currentDate?: Date
   /** Week start day: 0=Sunday, 1=Monday. @default 1 */
   weekStartsOn?: 0 | 1
+  /** IANA time zone name used for current time indicator. */
+  timeZone?: Intl.DateTimeFormatOptions['timeZone']
   /** Calendar events with datetime start/end. */
   events?: CalendarEventData[]
   /** Max events to show per cell before "+N more". @default 3 */

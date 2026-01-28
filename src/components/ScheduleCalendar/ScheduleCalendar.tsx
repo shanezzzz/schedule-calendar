@@ -12,6 +12,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
   onDateChange,
   events = [],
   weekStartsOn = 1,
+  timeZone,
   headerActions,
   dateFormat,
   showViewSwitcher = true,
@@ -21,9 +22,8 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
   weekViewProps,
   monthViewProps,
 }) => {
-  const [internalView, setInternalView] = useState<ScheduleCalendarView>(
-    defaultView
-  )
+  const [internalView, setInternalView] =
+    useState<ScheduleCalendarView>(defaultView)
 
   const resolvedView = view ?? internalView
 
@@ -48,6 +48,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
       onViewChange: handleViewChange,
       className,
       style,
+      timeZone,
     }),
     [
       currentDate,
@@ -59,6 +60,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
       handleViewChange,
       className,
       style,
+      timeZone,
     ]
   )
 
@@ -84,13 +86,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
     )
   }
 
-  return (
-    <DayView
-      {...dayViewProps}
-      {...sharedProps}
-      events={events}
-    />
-  )
+  return <DayView {...dayViewProps} {...sharedProps} events={events} />
 }
 
 ScheduleCalendar.displayName = 'ScheduleCalendar'

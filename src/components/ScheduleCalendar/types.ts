@@ -21,6 +21,8 @@ export interface ScheduleCalendarProps {
   events?: CalendarEventData[]
   /** Week start day (0=Sunday, 1=Monday). @default 1 */
   weekStartsOn?: 0 | 1
+  /** IANA time zone name used for current time indicator. */
+  timeZone?: Intl.DateTimeFormatOptions['timeZone']
   /** Custom header actions. */
   headerActions?: ReactNode
   /** Date format for header display. */
@@ -44,6 +46,7 @@ export interface ScheduleCalendarProps {
     | 'showViewSwitcher'
     | 'view'
     | 'onViewChange'
+    | 'timeZone'
   >
   /** Extra props for WeekView (excluding shared props). */
   weekViewProps?: Omit<
@@ -59,6 +62,7 @@ export interface ScheduleCalendarProps {
     | 'view'
     | 'onViewChange'
     | 'weekStartsOn'
+    | 'timeZone'
   >
   /** Extra props for MonthView (excluding shared props). */
   monthViewProps?: Omit<
@@ -74,5 +78,6 @@ export interface ScheduleCalendarProps {
     | 'view'
     | 'onViewChange'
     | 'weekStartsOn'
+    | 'timeZone'
   >
 }

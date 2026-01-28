@@ -39,6 +39,7 @@ const DayView = forwardRef<DayViewRef, DayViewProps>(
       blockTimes = {},
       showCurrentTimeLine = true, // Default to show current time line
       currentTimeLineStyle,
+      timeZone,
       currentDate = new Date(),
       dateFormat,
       eventWidth = '100%',
@@ -289,6 +290,7 @@ const DayView = forwardRef<DayViewRef, DayViewProps>(
               endHour={endHour}
               displayIntervalMinutes={displayIntervalMinutes}
               currentDate={currentDate}
+              timeZone={timeZone}
               use24HourFormat={use24HourFormat}
             />
           </div>
@@ -329,6 +331,7 @@ const DayView = forwardRef<DayViewRef, DayViewProps>(
                 cellHeight={slotsHeight}
                 displayIntervalMinutes={displayIntervalMinutes}
                 currentDate={currentDate}
+                timeZone={timeZone}
                 style={currentTimeLineStyle}
               />
             )}

@@ -7,6 +7,7 @@ export interface CurrentTimeLineProps {
   displayIntervalMinutes: number
   isVisible?: boolean
   currentDate?: Date
+  timeZone?: Intl.DateTimeFormatOptions['timeZone']
   style?: CSSProperties
   className?: string
 }

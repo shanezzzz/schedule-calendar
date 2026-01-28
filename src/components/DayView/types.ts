@@ -137,6 +137,11 @@ export interface DayViewProps {
    * @default undefined
    */
   currentTimeLineStyle?: CSSProperties
+  /**
+   * IANA time zone name used for current time indicator (e.g. "America/New_York")
+   * @default undefined
+   */
+  timeZone?: Intl.DateTimeFormatOptions['timeZone']
 
   /**
    * The date to display in the calendar

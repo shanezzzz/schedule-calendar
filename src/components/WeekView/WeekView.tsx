@@ -7,7 +7,6 @@ import {
   forwardRef,
   useImperativeHandle,
 } from 'react'
-import dayjs from 'dayjs'
 import TimeColumn from '@/components/TimeColumn'
 import CurrentTimeLine from '@/components/CurrentTimeLine'
 import CalendarHeader from '@/components/CalendarHeader'
@@ -18,6 +17,7 @@ import {
   type CalendarScrollConfig,
 } from '@/utils/util'
 import { getWeekDates, getEventsForDate, extractTime } from '@/utils/dateUtils'
+import { getZonedDateString } from '@/utils/timeZone'
 import type { CalendarEventData } from '@/components/CalendarEvent'
 import WeekViewDayHeader from './WeekViewDayHeader'
 import WeekViewGrid from './WeekViewGrid'
@@ -38,6 +38,7 @@ const WeekView = forwardRef<WeekViewRef, WeekViewProps>(
       events = [],
       showCurrentTimeLine = true,
       currentTimeLineStyle,
+      timeZone,
       dateFormat,
       eventWidth = '100%',
       onDateChange,
@@ -184,9 +185,9 @@ const WeekView = forwardRef<WeekViewRef, WeekViewProps>(
 
     // Determine if today is visible and its column index
     const todayColumnIndex = useMemo(() => {
-      const todayStr = dayjs().format('YYYY-MM-DD')
+      const todayStr = getZonedDateString(new Date(), timeZone)
       return weekDates.indexOf(todayStr)
-    }, [weekDates])
+    }, [weekDates, timeZone])
 
     const rootClassName = useMemo(
       () => [styles.weekView, className].filter(Boolean).join(' '),
@@ -221,6 +222,7 @@ const WeekView = forwardRef<WeekViewRef, WeekViewProps>(
               endHour={endHour}
               displayIntervalMinutes={displayIntervalMinutes}
               currentDate={currentDate}
+              timeZone={timeZone}
               use24HourFormat={use24HourFormat}
             />
           </div>
@@ -255,6 +257,7 @@ const WeekView = forwardRef<WeekViewRef, WeekViewProps>(
                 cellHeight={slotsHeight}
                 displayIntervalMinutes={displayIntervalMinutes}
                 currentDate={currentDate}
+                timeZone={timeZone}
                 style={{
                   // Position the line to span only the today column
                   left: `${(todayColumnIndex / 7) * 100}%`,
