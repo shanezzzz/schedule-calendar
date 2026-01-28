@@ -178,6 +178,23 @@ export interface DayViewProps {
   headerActions?: ReactNode
 
   /**
+   * Show the built-in view switcher in the header
+   * @default false
+   */
+  showViewSwitcher?: boolean
+
+  /**
+   * Controlled view value for the header switcher
+   */
+  view?: 'day' | 'week' | 'month'
+
+  /**
+   * Callback fired when view changes via the header switcher
+   * @default undefined
+   */
+  onViewChange?: (view: 'day' | 'week' | 'month') => void
+
+  /**
    * Callback fired when an event is clicked
    * @default undefined
    */

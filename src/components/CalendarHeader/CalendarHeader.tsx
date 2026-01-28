@@ -33,6 +33,9 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
   dateFormat,
   navigationUnit = 'day',
   weekStartsOn = 1,
+  showViewSwitcher = false,
+  view,
+  onViewChange,
   onMonthChange,
   onToggleDatePicker,
 }) => {
@@ -50,6 +53,25 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
   const rootClassName = useMemo(() => {
     return [styles.calendarHeader, className].filter(Boolean).join(' ')
   }, [className])
+
+  const resolvedView = view ?? navigationUnit
+
+  const viewOptions = useMemo(
+    () => [
+      { value: 'day', label: 'Day' },
+      { value: 'week', label: 'Week' },
+      { value: 'month', label: 'Month' },
+    ],
+    []
+  )
+
+  const handleViewSelect = useCallback(
+    (nextView: 'day' | 'week' | 'month') => {
+      if (!onViewChange || nextView === resolvedView) return
+      onViewChange(nextView)
+    },
+    [onViewChange, resolvedView]
+  )
 
   const weekDayLabels = useMemo(
     () => WEEKDAY_LABELS[weekStartsOn],
@@ -610,7 +632,27 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
         )}
       </div>
 
-      <div className={styles.actionsSection}>{actionsSection}</div>
+      <div className={styles.actionsSection}>
+        {actionsSection}
+        {showViewSwitcher && (
+          <div
+            className={styles.viewSwitcher}
+            role="tablist"
+            aria-label="Calendar view"
+          >
+            {viewOptions.map(option => (
+              <button
+                key={option.value}
+                className={`${styles.viewSwitcherButton} ${resolvedView === option.value ? styles.viewSwitcherButtonActive : ''}`}
+                onClick={() => handleViewSelect(option.value)}
+                type="button"
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

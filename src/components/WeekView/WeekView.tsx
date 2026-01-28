@@ -42,6 +42,9 @@ const WeekView = forwardRef<WeekViewRef, WeekViewProps>(
       eventWidth = '100%',
       onDateChange,
       headerActions,
+      showViewSwitcher,
+      view,
+      onViewChange,
       onEventClick,
       onEventDrag,
       onEventDragEnd,
@@ -199,6 +202,9 @@ const WeekView = forwardRef<WeekViewRef, WeekViewProps>(
           dateFormat={dateFormat}
           navigationUnit="week"
           weekStartsOn={weekStartsOn}
+          showViewSwitcher={showViewSwitcher}
+          view={view}
+          onViewChange={onViewChange}
         />
         <div className={styles.weekViewContent} ref={calendarContainerRef}>
           <div className={styles.timeColumnArea}>

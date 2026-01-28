@@ -44,6 +44,9 @@ const DayView = forwardRef<DayViewRef, DayViewProps>(
       eventWidth = '100%',
       onDateChange,
       headerActions,
+      showViewSwitcher,
+      view,
+      onViewChange,
       onEventClick,
       onEventDrag,
       onEventDragEnd,
@@ -269,6 +272,9 @@ const DayView = forwardRef<DayViewRef, DayViewProps>(
           onDateChange={handleDateChange}
           actionsSection={headerActions}
           dateFormat={dateFormat}
+          showViewSwitcher={showViewSwitcher}
+          view={view}
+          onViewChange={onViewChange}
         />
         <div className={styles.dayViewContent} ref={calendarContainerRef}>
           <div className={styles.timeColumnArea}>

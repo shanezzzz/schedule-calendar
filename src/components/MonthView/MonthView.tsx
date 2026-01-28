@@ -14,6 +14,9 @@ const MonthView: React.FC<MonthViewProps> = ({
   dateFormat,
   onDateChange,
   headerActions,
+  showViewSwitcher,
+  view,
+  onViewChange,
   onEventClick,
   onDateClick,
   onMoreClick,
@@ -54,6 +57,9 @@ const MonthView: React.FC<MonthViewProps> = ({
         actionsSection={headerActions}
         dateFormat={dateFormat}
         navigationUnit="month"
+        showViewSwitcher={showViewSwitcher}
+        view={view}
+        onViewChange={onViewChange}
       />
       <MonthViewGrid
         grid={grid}

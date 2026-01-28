@@ -45,6 +45,12 @@ export interface MonthViewProps {
   onDateChange?: (date: Date) => void
   /** Custom header actions. */
   headerActions?: ReactNode
+  /** Show the built-in view switcher in the header. @default false */
+  showViewSwitcher?: boolean
+  /** Controlled view value for the header switcher. */
+  view?: 'day' | 'week' | 'month'
+  /** Callback when view changes via the header switcher. */
+  onViewChange?: (view: 'day' | 'week' | 'month') => void
   /** Event click handler. */
   onEventClick?: MonthViewEventClickHandler
   /** Date cell click handler. */

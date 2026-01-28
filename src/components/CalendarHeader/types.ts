@@ -32,6 +32,19 @@ export interface CalendarHeaderProps {
    * @default 1
    */
   weekStartsOn?: 0 | 1
+  /**
+   * Show the built-in view switcher (Day/Week/Month) on the right.
+   * @default false
+   */
+  showViewSwitcher?: boolean
+  /**
+   * Controlled view value for the switcher.
+   */
+  view?: 'day' | 'week' | 'month'
+  /**
+   * Callback fired when view changes via the switcher.
+   */
+  onViewChange?: (view: 'day' | 'week' | 'month') => void
   onMonthChange?: (visibleMonth: Date) => void
   onToggleDatePicker?: (isOpen: boolean) => void
 }
