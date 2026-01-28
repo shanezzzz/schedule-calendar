@@ -143,6 +143,163 @@
   }
 }
 
+// ======================== Month Picker ========================
+.monthPickerGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.monthCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  border-radius: 12px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #f3f4f6;
+  }
+}
+
+.monthCellSelected {
+  background-color: #3b82f6;
+  color: #ffffff;
+  font-weight: 600;
+
+  &:hover {
+    background-color: #2563eb;
+  }
+}
+
+.monthCellCurrent {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+// ======================== Week Picker ========================
+.weekPickerGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+
+  // Day headers (Mo Tu We...)
+  .dayHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+  }
+}
+
+.weekRow {
+  display: contents;
+  cursor: pointer;
+
+  // Apply hover to all cells in the row via a wrapper
+  // Since display:contents breaks hover, we switch approach
+}
+
+// Actually, display:contents strips the element – use grid subgrid or a row container.
+// Let's use a proper row button that spans all 7 columns.
+.weekPickerGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+
+  // Override: day headers as a flex row
+  & > .dayHeader {
+    display: none; // Remove stale references, we rebuild below
+  }
+}
+
+// Rebuild week picker properly:
+.weekPickerGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px 0;
+
+  .dayHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+  }
+}
+
+.weekRow {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 0;
+  margin: 1px 0;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: #f1f5f9;
+  }
+}
+
+.weekRowSelected {
+  background-color: #3b82f6 !important;
+
+  .weekDayCell {
+    color: #ffffff;
+  }
+
+  .otherMonth {
+    color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.weekRowToday {
+  background-color: #eff6ff;
+}
+
+.weekDayCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+
+  &.otherMonth {
+    color: #9ca3af;
+  }
+}
+
+.weekDayCellToday {
+  font-weight: 700;
+  color: #1d4ed8;
+
+  .weekRowSelected & {
+    color: #ffffff;
+    text-decoration: underline;
+  }
+}
+
 .navigationSection {
   display: flex;
   align-items: center;

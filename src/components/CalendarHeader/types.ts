@@ -18,6 +18,20 @@ export interface CalendarHeaderProps {
    * - 'MM/DD'
    */
   dateFormat?: string
+  /**
+   * Navigation step unit for prev/next buttons.
+   * - 'day': navigate one day at a time (default)
+   * - 'week': navigate one week at a time
+   * - 'month': navigate one month at a time
+   * @default 'day'
+   */
+  navigationUnit?: 'day' | 'week' | 'month'
+  /**
+   * Day the week starts on for week-related navigation and pickers.
+   * 0 = Sunday, 1 = Monday
+   * @default 1
+   */
+  weekStartsOn?: 0 | 1
   onMonthChange?: (visibleMonth: Date) => void
   onToggleDatePicker?: (isOpen: boolean) => void
 }
