@@ -8,6 +8,8 @@ export interface CalendarEventData {
   employeeId: string
   color?: string
   description?: string
+  /** Optional date field ("YYYY-MM-DD") for associating a time-only event with a specific date */
+  date?: string
 }
 
 export interface CalendarEventDragMeta {

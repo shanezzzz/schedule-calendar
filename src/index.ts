@@ -32,5 +32,24 @@ export {
   getEmployeeBlockTimes,
 } from './types/blockTime'
 
+export {
+  parseDateTimeString,
+  extractTime,
+  extractDate,
+  resolveEventDate,
+  getWeekDates,
+  getMonthGrid,
+  getEventsForDate,
+  getEventsForDateRange,
+  groupEventsByDate,
+  isSameDate,
+  isToday,
+  formatDateHeader,
+} from './utils/dateUtils'
+export type { ParsedDateTime } from './utils/dateUtils'
+
+export { calculateEventOverlapLayout } from './utils/eventLayout'
+export type { EventLayoutInfo } from './utils/eventLayout'
+
 // Auto-import styles - out of the box
 import './styles/index.css'
