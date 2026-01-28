@@ -1,6 +1,6 @@
 # Schedule Calendar
 
-Schedule Calendar is a modern React calendar component library built with TypeScript and Tailwind CSS. It is designed for day-view scheduling scenarios where you need to coordinate employees, resources, or rooms, and it ships with rich drag-and-drop interactions and accessibility support out of the box.
+Schedule Calendar is a modern React calendar component library built with TypeScript and Tailwind CSS. It supports day, week, and month scheduling for coordinating employees, resources, or rooms, and it ships with rich drag-and-drop interactions and accessibility support out of the box.
 
 ## Table of Contents
 
@@ -13,6 +13,7 @@ Schedule Calendar is a modern React calendar component library built with TypeSc
 - [Event Handling](#event-handling)
 - [Time Format Support](#time-format-support)
 - [Utility Helpers](#utility-helpers)
+- [View Components](#view-components)
 - [Documentation](#documentation)
 - [Local Development](#local-development)
 - [TypeScript Support](#typescript-support)
@@ -21,7 +22,9 @@ Schedule Calendar is a modern React calendar component library built with TypeSc
 
 ## Features
 
-- Day-view scheduler with configurable time grid and current time indicator
+- Day, week, and month scheduling views
+- Unified `ScheduleCalendar` with built-in view switching (Day/Week/Month)
+- Configurable time grid with current time indicator
 - Resource aware layout for employees, rooms, or equipment
 - Drag-and-drop interactions with grid snapping and collision detection
 - Blocked time ranges per employee for managing availability
@@ -37,6 +40,40 @@ npm install schedule-calendar
 ```
 
 ## Quick Start
+
+### ScheduleCalendar (Day / Week / Month)
+
+```tsx
+import React, { useState } from 'react'
+import { ScheduleCalendar, CalendarEventData } from 'schedule-calendar'
+
+function MyScheduler() {
+  const [currentDate, setCurrentDate] = useState(new Date())
+
+  const events: CalendarEventData[] = [
+    {
+      id: '1',
+      title: 'Team Meeting',
+      start: '2026-01-28 09:00',
+      end: '2026-01-28 10:00',
+      employeeId: 'team',
+      color: '#3b82f6',
+    },
+  ]
+
+  return (
+    <div style={{ height: '600px', width: '1000px' }}>
+      <ScheduleCalendar
+        currentDate={currentDate}
+        onDateChange={setCurrentDate}
+        events={events}
+        showViewSwitcher
+        dayViewProps={{ employees: [{ id: 'team', name: 'Team' }] }}
+      />
+    </div>
+  )
+}
+```
 
 ### Basic Day View
 
@@ -161,6 +198,8 @@ You can also wrap `DayView` with your own classes or compose Tailwind utilities 
 
 ## Component Overview
 
+Schedule Calendar ships with Day/Week/Month views and the unified `ScheduleCalendar` wrapper (see [View Components](#view-components)). `DayView` remains the most flexible surface for resource scheduling.
+
 ### DayView
 
 `DayView` renders the entire scheduling surface. Notable props include:
@@ -237,8 +276,11 @@ interface CalendarEventData {
   employeeId: string
   color?: string
   description?: string
+  date?: string
 }
 ```
+
+For week/month views, if an event only contains time values (e.g. `start: '09:00'`), provide `date: 'YYYY-MM-DD'` so the event can be placed on the correct day.
 
 ## Customization Examples
 
@@ -390,6 +432,18 @@ import {
   differenceInMinutes,
   formatTime,
   generateTimeSlots,
+  parseDateTimeString,
+  extractTime,
+  extractDate,
+  resolveEventDate,
+  getWeekDates,
+  getMonthGrid,
+  getEventsForDate,
+  getEventsForDateRange,
+  groupEventsByDate,
+  isSameDate,
+  isToday,
+  formatDateHeader,
 } from 'schedule-calendar'
 
 const parsed = parseTimeSlot('2:30 PM')
@@ -397,6 +451,100 @@ const minutes = slotToMinutes('14:30')
 const later = addMinutesToSlot('14:30', 45)
 const duration = differenceInMinutes('14:30', '16:00')
 const slots = generateTimeSlots(9, 17, 30, true)
+```
+
+## View Components
+
+### ScheduleCalendar
+
+`ScheduleCalendar` wraps Day/Week/Month views and manages view switching internally.
+
+```ts
+interface ScheduleCalendarProps {
+  view?: 'day' | 'week' | 'month'
+  defaultView?: 'day' | 'week' | 'month'
+  onViewChange?: (view: 'day' | 'week' | 'month') => void
+  currentDate?: Date
+  onDateChange?: (date: Date) => void
+  events?: CalendarEventData[]
+  weekStartsOn?: 0 | 1
+  headerActions?: React.ReactNode
+  dateFormat?: string
+  showViewSwitcher?: boolean
+  dayViewProps?: Omit<
+    DayViewProps,
+    | 'currentDate'
+    | 'onDateChange'
+    | 'headerActions'
+    | 'dateFormat'
+    | 'events'
+    | 'className'
+    | 'style'
+    | 'showViewSwitcher'
+    | 'view'
+    | 'onViewChange'
+  >
+  weekViewProps?: Omit<
+    WeekViewProps,
+    | 'currentDate'
+    | 'onDateChange'
+    | 'headerActions'
+    | 'dateFormat'
+    | 'events'
+    | 'className'
+    | 'style'
+    | 'showViewSwitcher'
+    | 'view'
+    | 'onViewChange'
+    | 'weekStartsOn'
+  >
+  monthViewProps?: Omit<
+    MonthViewProps,
+    | 'currentDate'
+    | 'onDateChange'
+    | 'headerActions'
+    | 'dateFormat'
+    | 'events'
+    | 'className'
+    | 'style'
+    | 'showViewSwitcher'
+    | 'view'
+    | 'onViewChange'
+    | 'weekStartsOn'
+  >
+}
+```
+
+### WeekView
+
+```ts
+interface WeekViewProps {
+  currentDate?: Date
+  weekStartsOn?: 0 | 1
+  events?: CalendarEventData[]
+  onDateChange?: (date: Date) => void
+  headerActions?: React.ReactNode
+  dateFormat?: string
+  showViewSwitcher?: boolean
+  view?: 'day' | 'week' | 'month'
+  onViewChange?: (view: 'day' | 'week' | 'month') => void
+}
+```
+
+### MonthView
+
+```ts
+interface MonthViewProps {
+  currentDate?: Date
+  weekStartsOn?: 0 | 1
+  events?: CalendarEventData[]
+  onDateChange?: (date: Date) => void
+  headerActions?: React.ReactNode
+  dateFormat?: string
+  showViewSwitcher?: boolean
+  view?: 'day' | 'week' | 'month'
+  onViewChange?: (view: 'day' | 'week' | 'month') => void
+}
 ```
 
 ## Documentation
@@ -438,7 +586,10 @@ All components ship with first-class TypeScript definitions:
 
 ```ts
 import type {
+  ScheduleCalendarProps,
   DayViewProps,
+  WeekViewProps,
+  MonthViewProps,
   CalendarEventData,
   Employee,
   BlockTime,
