@@ -25,6 +25,9 @@ export type * from './components/CurrentTimeLine'
 export { default as CalendarHeader } from './components/CalendarHeader'
 export type * from './components/CalendarHeader'
 
+export { default as ScheduleCalendar } from './components/ScheduleCalendar'
+export type * from './components/ScheduleCalendar'
+
 export { default as WeekView } from './components/WeekView'
 export type * from './components/WeekView'
 
