@@ -28,6 +28,9 @@ export type * from './components/CalendarHeader'
 export { default as WeekView } from './components/WeekView'
 export type * from './components/WeekView'
 
+export { default as MonthView } from './components/MonthView'
+export type * from './components/MonthView'
+
 export type { BlockTime, EmployeeBlockTimes } from './types/blockTime'
 export {
   isTimeBlocked,

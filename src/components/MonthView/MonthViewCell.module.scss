@@ -1,0 +1,107 @@
+.cell {
+  min-height: 100px;
+  border-right: 1px solid rgba(226, 232, 240, 0.6);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.3);
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.6);
+  }
+}
+
+.otherMonth {
+  opacity: 0.4;
+  background: transparent;
+}
+
+.today {
+  background: rgba(59, 130, 246, 0.05);
+
+  .dateNumber {
+    color: #fff;
+    background: #3b82f6;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.dateNumber {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+  padding: 2px;
+  margin-bottom: 2px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  align-self: flex-end;
+  line-height: 1;
+
+  &:hover {
+    color: #3b82f6;
+  }
+}
+
+.eventList {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.eventChip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 0.7rem;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+  line-height: 1.4;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+.eventTime {
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.eventTitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.moreLink {
+  font-size: 0.7rem;
+  color: #64748b;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 1px 4px;
+  text-align: left;
+  font-weight: 500;
+
+  &:hover {
+    color: #3b82f6;
+  }
+}
