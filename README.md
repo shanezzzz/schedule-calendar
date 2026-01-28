@@ -282,6 +282,17 @@ interface CalendarEventData {
 
 For week/month views, if an event only contains time values (e.g. `start: '09:00'`), provide `date: 'YYYY-MM-DD'` so the event can be placed on the correct day.
 
+| Field | Type | Description | Example |
+| --- | --- | --- | --- |
+| `id` | `string` | Unique identifier for the event. | `id: 'evt-1'` |
+| `title` | `string` | Event title shown in UI. | `title: 'Standup'` |
+| `start` | `string` | Start time or datetime (`HH:mm` or `YYYY-MM-DD HH:mm`). | `start: '2026-01-28 09:00'` |
+| `end` | `string` | End time or datetime (`HH:mm` or `YYYY-MM-DD HH:mm`). | `end: '2026-01-28 10:00'` |
+| `employeeId` | `string` | Employee/resource ID the event belongs to. | `employeeId: 'team'` |
+| `color` | `string` | Optional color for the event. | `color: '#3b82f6'` |
+| `description` | `string` | Optional details shown in custom renderers. | `description: 'Daily sync'` |
+| `date` | `string` | Required when `start/end` are time-only (format `YYYY-MM-DD`). | `date: '2026-01-28'` |
+
 ## Customization Examples
 
 ### Custom Event Rendering
@@ -455,97 +466,153 @@ const slots = generateTimeSlots(9, 17, 30, true)
 
 ## View Components
 
-### ScheduleCalendar
+`ScheduleCalendar` wraps Day/Week/Month views and manages view switching internally. The tables below list **all props** and how to pass each one.
 
-`ScheduleCalendar` wraps Day/Week/Month views and manages view switching internally.
+### ScheduleCalendar Props (Full)
 
-```ts
-interface ScheduleCalendarProps {
-  view?: 'day' | 'week' | 'month'
-  defaultView?: 'day' | 'week' | 'month'
-  onViewChange?: (view: 'day' | 'week' | 'month') => void
-  currentDate?: Date
-  onDateChange?: (date: Date) => void
-  events?: CalendarEventData[]
-  weekStartsOn?: 0 | 1
-  headerActions?: React.ReactNode
-  dateFormat?: string
-  showViewSwitcher?: boolean
-  dayViewProps?: Omit<
-    DayViewProps,
-    | 'currentDate'
-    | 'onDateChange'
-    | 'headerActions'
-    | 'dateFormat'
-    | 'events'
-    | 'className'
-    | 'style'
-    | 'showViewSwitcher'
-    | 'view'
-    | 'onViewChange'
-  >
-  weekViewProps?: Omit<
-    WeekViewProps,
-    | 'currentDate'
-    | 'onDateChange'
-    | 'headerActions'
-    | 'dateFormat'
-    | 'events'
-    | 'className'
-    | 'style'
-    | 'showViewSwitcher'
-    | 'view'
-    | 'onViewChange'
-    | 'weekStartsOn'
-  >
-  monthViewProps?: Omit<
-    MonthViewProps,
-    | 'currentDate'
-    | 'onDateChange'
-    | 'headerActions'
-    | 'dateFormat'
-    | 'events'
-    | 'className'
-    | 'style'
-    | 'showViewSwitcher'
-    | 'view'
-    | 'onViewChange'
-    | 'weekStartsOn'
-  >
-}
-```
+| Prop | Type | Default | Description | Example |
+| --- | --- | --- | --- | --- |
+| `view` | `'day' \| 'week' \| 'month'` | — | Controlled view value. | `view="week"` |
+| `defaultView` | `'day' \| 'week' \| 'month'` | `'day'` | Initial view for uncontrolled usage. | `defaultView="month"` |
+| `onViewChange` | `(view) => void` | — | Fired when view changes via switcher. | `onViewChange={setView}` |
+| `currentDate` | `Date` | `new Date()` | Current date for header navigation and view rendering. | `currentDate={date}` |
+| `onDateChange` | `(date) => void` | — | Fired when header prev/next/today/date picker changes date. | `onDateChange={setDate}` |
+| `events` | `CalendarEventData[]` | `[]` | Events used across Day/Week/Month views. | `events={events}` |
+| `weekStartsOn` | `0 \| 1` | `1` | Week start day (0=Sunday, 1=Monday). | `weekStartsOn={0}` |
+| `timeZone` | `Intl.DateTimeFormatOptions['timeZone']` | — | IANA time zone for current time indicator. | `timeZone="America/New_York"` |
+| `headerActions` | `ReactNode` | — | Custom actions rendered in header right side. | `headerActions={<MyActions />}` |
+| `dateFormat` | `string` | — | Day.js format for header label. | `dateFormat="YYYY/MM/DD"` |
+| `showViewSwitcher` | `boolean` | `true` | Show built-in Day/Week/Month switcher. | `showViewSwitcher` |
+| `className` | `string` | — | ClassName passed to active view root. | `className="my-calendar"` |
+| `style` | `CSSProperties` | — | Inline style passed to active view root. | `style={{ height: 600 }}` |
+| `dayViewProps` | `Omit<DayViewProps, ...>` | — | Extra props forwarded to DayView (see DayView props). | `dayViewProps={{ employees }}` |
+| `weekViewProps` | `Omit<WeekViewProps, ...>` | — | Extra props forwarded to WeekView (see WeekView props). | `weekViewProps={{ showCurrentTimeLine: false }}` |
+| `monthViewProps` | `Omit<MonthViewProps, ...>` | — | Extra props forwarded to MonthView (see MonthView props). | `monthViewProps={{ maxEventsPerCell: 5 }}` |
 
-### WeekView
+### DayView Props (Full)
 
-```ts
-interface WeekViewProps {
-  currentDate?: Date
-  weekStartsOn?: 0 | 1
-  events?: CalendarEventData[]
-  onDateChange?: (date: Date) => void
-  headerActions?: React.ReactNode
-  dateFormat?: string
-  showViewSwitcher?: boolean
-  view?: 'day' | 'week' | 'month'
-  onViewChange?: (view: 'day' | 'week' | 'month') => void
-}
-```
+| Prop | Type | Default | Description | Example |
+| --- | --- | --- | --- | --- |
+| `startHour` | `number` | `7` | Start hour of the day (0-23). | `startHour={8}` |
+| `endHour` | `number` | `23` | End hour of the day (0-23). | `endHour={18}` |
+| `stepMinutes` | `number` | `30` | Time slot interval in minutes. | `stepMinutes={15}` |
+| `cellHeight` | `number` | `40` | Pixel height per time slot row. | `cellHeight={48}` |
+| `use24HourFormat` | `boolean` | `false` | Render labels in 24-hour format. | `use24HourFormat` |
+| `displayIntervalMinutes` | `number` | `30` | Label display interval in minutes. | `displayIntervalMinutes={60}` |
+| `employeeIds` | `string[]` | — | Employee IDs when not passing `employees`. | `employeeIds={['a','b']}` |
+| `employees` | `DayViewEmployee[]` | — | Employee objects (overrides `employeeIds`). | `employees={[{ id:'a', name:'A' }]}` |
+| `events` | `CalendarEventData[]` | `[]` | Events for day view. | `events={events}` |
+| `blockTimes` | `EmployeeBlockTimes` | `{}` | Unavailable/blocked times per employee. | `blockTimes={{ a: [...] }}` |
+| `showCurrentTimeLine` | `boolean` | `true` | Show current time line. | `showCurrentTimeLine={false}` |
+| `currentTimeLineStyle` | `CSSProperties` | — | Inline style for current time line. | `currentTimeLineStyle={{ color: 'red' }}` |
+| `timeZone` | `Intl.DateTimeFormatOptions['timeZone']` | — | Time zone for current time indicator. | `timeZone="Asia/Shanghai"` |
+| `currentDate` | `Date` | `new Date()` | Date to render. | `currentDate={date}` |
+| `dateFormat` | `string` | — | Day.js header label format. | `dateFormat="YYYY-MM-DD"` |
+| `eventWidth` | `number \| string` | `'100%'` | Event width (px or CSS length/percentage). | `eventWidth={85}` |
+| `onDateChange` | `(date) => void` | — | Fired on header date change. | `onDateChange={setDate}` |
+| `headerActions` | `ReactNode` | — | Custom actions in header. | `headerActions={<MyActions />}` |
+| `showViewSwitcher` | `boolean` | `false` | Show Day/Week/Month switcher. | `showViewSwitcher` |
+| `view` | `'day' \| 'week' \| 'month'` | — | Controlled view value for switcher. | `view="day"` |
+| `onViewChange` | `(view) => void` | — | Fired when view switcher changes. | `onViewChange={setView}` |
+| `onEventClick` | `(event, employee) => void` | — | Event click handler. | `onEventClick={(e, emp) => {}}` |
+| `onEventDrag` | `(event, dx, dy) => void` | — | Event drag handler. | `onEventDrag={() => {}}` |
+| `onEventDragEnd` | `(event, newEmployeeId, newStart) => void` | — | Event drag end handler. | `onEventDragEnd={() => {}}` |
+| `onEventDrop` | `(event, next) => void` | — | Event drop handler. | `onEventDrop={(e, next) => {}}` |
+| `onTimeLabelClick` | `(label, index, slot, employee) => void` | — | Time label click handler. | `onTimeLabelClick={() => {}}` |
+| `onBlockTimeClick` | `(blockTime, slot, employee) => void` | — | Block time click handler. | `onBlockTimeClick={() => {}}` |
+| `renderEvent` | `({ event, isDragging }) => ReactNode` | — | Custom event renderer. | `renderEvent={({ event }) => <div>{event.title}</div>}` |
+| `renderBlockTime` | `(context) => ReactNode` | — | Custom block time renderer. | `renderBlockTime={() => <div />}` |
+| `renderEmployee` | `(employee, index) => ReactNode` | — | Custom employee header renderer. | `renderEmployee={(emp) => <div>{emp.name}</div>}` |
+| `employeeHeaderProps` | `DayViewEmployeeHeaderProps` | — | Props for EmployeeHeader (min width, className, style). | `employeeHeaderProps={{ minColumnWidth: 160 }}` |
+| `timeColumnHeaderContent` | `ReactNode` | — | Custom content for time column header. | `timeColumnHeaderContent={<div>Local</div>}` |
+| `timeColumnSlotContentRenderer` | `(time, index) => ReactNode` | — | Custom time slot content renderer. | `timeColumnSlotContentRenderer={() => null}` |
+| `className` | `string` | — | Root className. | `className="day-view"` |
+| `style` | `CSSProperties` | — | Root inline style. | `style={{ height: 600 }}` |
+| `eventStyle` | `CSSProperties` | — | Style applied to all events. | `eventStyle={{ borderRadius: 8 }}` |
+| `eventClassName` | `string` | — | ClassName applied to all events. | `eventClassName="event"` |
 
-### MonthView
+### WeekView Props (Full)
 
-```ts
-interface MonthViewProps {
-  currentDate?: Date
-  weekStartsOn?: 0 | 1
-  events?: CalendarEventData[]
-  onDateChange?: (date: Date) => void
-  headerActions?: React.ReactNode
-  dateFormat?: string
-  showViewSwitcher?: boolean
-  view?: 'day' | 'week' | 'month'
-  onViewChange?: (view: 'day' | 'week' | 'month') => void
-}
-```
+| Prop | Type | Default | Description | Example |
+| --- | --- | --- | --- | --- |
+| `startHour` | `number` | `7` | Start hour of the day (0-23). | `startHour={8}` |
+| `endHour` | `number` | `23` | End hour of the day (0-23). | `endHour={18}` |
+| `stepMinutes` | `number` | `30` | Time slot interval in minutes. | `stepMinutes={15}` |
+| `cellHeight` | `number` | `40` | Pixel height per time slot. | `cellHeight={48}` |
+| `use24HourFormat` | `boolean` | `false` | Render labels in 24-hour format. | `use24HourFormat` |
+| `displayIntervalMinutes` | `number` | `30` | Label display interval. | `displayIntervalMinutes={60}` |
+| `currentDate` | `Date` | `new Date()` | Any date within the week to display. | `currentDate={date}` |
+| `weekStartsOn` | `0 \| 1` | `1` | Week start day (0=Sun, 1=Mon). | `weekStartsOn={0}` |
+| `events` | `CalendarEventData[]` | `[]` | Events to render in the week. | `events={events}` |
+| `showCurrentTimeLine` | `boolean` | `true` | Show current time line. | `showCurrentTimeLine={false}` |
+| `currentTimeLineStyle` | `CSSProperties` | — | Inline style for current time line. | `currentTimeLineStyle={{ color: 'red' }}` |
+| `timeZone` | `Intl.DateTimeFormatOptions['timeZone']` | — | Time zone for current time indicator. | `timeZone="Europe/London"` |
+| `dateFormat` | `string` | — | Day.js header label format. | `dateFormat="MMM D"` |
+| `eventWidth` | `number \| string` | `'100%'` | Event width (px or CSS length/percentage). | `eventWidth="90%"` |
+| `onDateChange` | `(date) => void` | — | Fired on header date change. | `onDateChange={setDate}` |
+| `headerActions` | `ReactNode` | — | Custom actions in header. | `headerActions={<MyActions />}` |
+| `showViewSwitcher` | `boolean` | `false` | Show Day/Week/Month switcher. | `showViewSwitcher` |
+| `view` | `'day' \| 'week' \| 'month'` | — | Controlled view value for switcher. | `view="week"` |
+| `onViewChange` | `(view) => void` | — | Fired when view switcher changes. | `onViewChange={setView}` |
+| `onEventClick` | `(event, date) => void` | — | Event click handler. | `onEventClick={() => {}}` |
+| `onEventDrag` | `(event, dx, dy) => void` | — | Event drag handler. | `onEventDrag={() => {}}` |
+| `onEventDragEnd` | `(event, newDate, newStart) => void` | — | Event drag end handler. | `onEventDragEnd={() => {}}` |
+| `onEventDrop` | `(event, next) => void` | — | Event drop handler. | `onEventDrop={() => {}}` |
+| `onCellClick` | `(timeSlot, date) => void` | — | Cell click handler. | `onCellClick={() => {}}` |
+| `renderEvent` | `({ event, isDragging, date }) => ReactNode` | — | Custom event renderer. | `renderEvent={({ event }) => <div>{event.title}</div>}` |
+| `renderDayHeader` | `(date, dayOfWeek) => ReactNode` | — | Custom day header renderer. | `renderDayHeader={(date) => <div>{date}</div>}` |
+| `timeColumnHeaderContent` | `ReactNode` | — | Custom time column header. | `timeColumnHeaderContent={<div>Local</div>}` |
+| `timeColumnSlotContentRenderer` | `(time, index) => ReactNode` | — | Custom time slot content. | `timeColumnSlotContentRenderer={() => null}` |
+| `className` | `string` | — | Root className. | `className="week-view"` |
+| `style` | `CSSProperties` | — | Root inline style. | `style={{ height: 600 }}` |
+| `eventStyle` | `CSSProperties` | — | Style applied to events. | `eventStyle={{ borderRadius: 8 }}` |
+| `eventClassName` | `string` | — | ClassName applied to events. | `eventClassName="event"` |
+
+### MonthView Props (Full)
+
+| Prop | Type | Default | Description | Example |
+| --- | --- | --- | --- | --- |
+| `currentDate` | `Date` | `new Date()` | Month to display. | `currentDate={date}` |
+| `weekStartsOn` | `0 \| 1` | `1` | Week start day (0=Sun, 1=Mon). | `weekStartsOn={0}` |
+| `timeZone` | `Intl.DateTimeFormatOptions['timeZone']` | — | Time zone for current time indicator. | `timeZone="Asia/Shanghai"` |
+| `events` | `CalendarEventData[]` | `[]` | Events to render in the month. | `events={events}` |
+| `maxEventsPerCell` | `number` | `3` | Max events per day cell before “+N more”. | `maxEventsPerCell={5}` |
+| `dateFormat` | `string` | — | Day.js header label format. | `dateFormat="MMMM YYYY"` |
+| `onDateChange` | `(date) => void` | — | Fired on header date change. | `onDateChange={setDate}` |
+| `headerActions` | `ReactNode` | — | Custom actions in header. | `headerActions={<MyActions />}` |
+| `showViewSwitcher` | `boolean` | `false` | Show Day/Week/Month switcher. | `showViewSwitcher` |
+| `view` | `'day' \| 'week' \| 'month'` | — | Controlled view value for switcher. | `view="month"` |
+| `onViewChange` | `(view) => void` | — | Fired when view switcher changes. | `onViewChange={setView}` |
+| `onEventClick` | `(event, date) => void` | — | Event click handler. | `onEventClick={() => {}}` |
+| `onDateClick` | `(date) => void` | — | Day cell click handler. | `onDateClick={(date) => {}}` |
+| `onMoreClick` | `(date, events) => void` | — | “+N more” click handler. | `onMoreClick={() => {}}` |
+| `renderEvent` | `({ event, date }) => ReactNode` | — | Custom event renderer. | `renderEvent={({ event }) => <div>{event.title}</div>}` |
+| `renderCell` | `({ date, events, isCurrentMonth, isToday }) => ReactNode` | — | Custom cell renderer (overrides cell). | `renderCell={({ date }) => <div>{date}</div>}` |
+| `renderDayOfWeekHeader` | `(dayOfWeek, label) => ReactNode` | — | Custom day header renderer. | `renderDayOfWeekHeader={(d, l) => <div>{l}</div>}` |
+| `className` | `string` | — | Root className. | `className="month-view"` |
+| `style` | `CSSProperties` | — | Root inline style. | `style={{ height: 600 }}` |
+| `cellClassName` | `string` | — | ClassName for day cells. | `cellClassName="cell"` |
+| `cellStyle` | `CSSProperties` | — | Inline style for day cells. | `cellStyle={{ minHeight: 120 }}` |
+| `eventClassName` | `string` | — | ClassName for event items in cells. | `eventClassName="event"` |
+| `eventStyle` | `CSSProperties` | — | Style for event items in cells. | `eventStyle={{ borderRadius: 6 }}` |
+
+### CalendarHeader Props (Full)
+
+| Prop | Type | Default | Description | Example |
+| --- | --- | --- | --- | --- |
+| `currentDate` | `Date` | `new Date()` | Current date used for label and picker. | `currentDate={date}` |
+| `onDateChange` | `(date) => void` | — | Fired when date changes via header navigation/picker. | `onDateChange={setDate}` |
+| `className` | `string` | — | Root className. | `className="header"` |
+| `actionsSection` | `ReactNode` | — | Custom actions area on right. | `actionsSection={<MyActions />}` |
+| `formatDateLabel` | `(date) => string` | — | Custom label formatter (overrides `dateFormat`). | `formatDateLabel={(d) => ...}` |
+| `dateFormat` | `string` | — | Day.js format string for label. | `dateFormat="YYYY-MM-DD"` |
+| `navigationUnit` | `'day' \| 'week' \| 'month'` | `'day'` | Prev/next step unit and picker mode. | `navigationUnit="week"` |
+| `weekStartsOn` | `0 \| 1` | `1` | Week start day for week picker. | `weekStartsOn={0}` |
+| `showViewSwitcher` | `boolean` | `false` | Show built-in Day/Week/Month switcher. | `showViewSwitcher` |
+| `view` | `'day' \| 'week' \| 'month'` | — | Controlled view value for switcher. | `view="month"` |
+| `onViewChange` | `(view) => void` | — | Fired when view switcher changes. | `onViewChange={setView}` |
+| `onMonthChange` | `(visibleMonth) => void` | — | Fired when month picker navigates. | `onMonthChange={(d) => ...}` |
+| `onToggleDatePicker` | `(isOpen) => void` | — | Fired when date picker opens/closes. | `onToggleDatePicker={(open) => ...}` |
 
 ## Documentation
 
