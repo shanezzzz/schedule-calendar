@@ -1,0 +1,48 @@
+.weekGrid {
+  position: relative;
+  overflow: visible;
+  max-height: fit-content;
+}
+
+.gridContainer {
+  display: grid;
+}
+
+.gridCell {
+  border: none;
+  border-right: 1px solid rgba(226, 232, 240, 0.4);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  transition: background 0.15s ease;
+
+  &:last-child {
+    border-right: none;
+  }
+
+  &:hover {
+    background: rgba(59, 130, 246, 0.04);
+  }
+
+  &:focus-visible {
+    background: rgba(59, 130, 246, 0.08);
+    outline: 2px solid rgba(59, 130, 246, 0.4);
+    outline-offset: -2px;
+  }
+}
+
+.eventLayer {
+  display: grid;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+  }
+}
