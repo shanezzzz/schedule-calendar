@@ -56,7 +56,9 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
 
   const resolvedView = view ?? navigationUnit
 
-  const viewOptions = useMemo(
+  const viewOptions = useMemo<
+    Array<{ value: 'day' | 'week' | 'month'; label: string }>
+  >(
     () => [
       { value: 'day', label: 'Day' },
       { value: 'week', label: 'Week' },
@@ -101,9 +103,7 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
   useEffect(() => {
     const normalizedDate = normalizeDateByUnit(currentDate)
     setSelectedDate(prev =>
-      dayjs(prev).isSame(normalizedDate, 'day')
-        ? prev
-        : normalizedDate.toDate()
+      dayjs(prev).isSame(normalizedDate, 'day') ? prev : normalizedDate.toDate()
     )
     const nextMonthCursor = normalizedDate.startOf('month')
     setMonthCursor(nextMonthCursor)
@@ -140,13 +140,7 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
     }
 
     return dayjs(selectedDate).format('dddd, MMM D, YYYY')
-  }, [
-    formatDateLabel,
-    dateFormat,
-    selectedDate,
-    navigationUnit,
-    getWeekStart,
-  ])
+  }, [formatDateLabel, dateFormat, selectedDate, navigationUnit, getWeekStart])
 
   // 处理点击外部关闭日期选择器
   useEffect(() => {
@@ -226,14 +220,9 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
     [onMonthChange]
   )
 
-  const handleYearNavigate = useCallback(
-    (direction: 'prev' | 'next') => {
-      setYearCursor(prev =>
-        direction === 'next' ? prev + 1 : prev - 1
-      )
-    },
-    []
-  )
+  const handleYearNavigate = useCallback((direction: 'prev' | 'next') => {
+    setYearCursor(prev => (direction === 'next' ? prev + 1 : prev - 1))
+  }, [])
 
   // Select a month (for month picker)
   const handleMonthSelect = useCallback(
@@ -533,8 +522,7 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
           {MONTH_LABELS.map((label, idx) => {
             const isSelected =
               idx === selectedMonth && yearCursor === selectedYear
-            const isCurrent =
-              idx === now.month() && yearCursor === now.year()
+            const isCurrent = idx === now.month() && yearCursor === now.year()
             return (
               <button
                 key={label}
